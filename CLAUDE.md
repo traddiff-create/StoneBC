@@ -1,6 +1,7 @@
 # StoneBC — Stone Bicycle Coalition
 
 **Location:** `/Applications/Apps/StoneBC/`
+**Repo:** `traddiff-create/StoneBC`
 **Type:** Hybrid (iOS App + Website + Open-Source Toolkit)
 **Owners:** Rory & Nicole Stone
 **Status:** Active Development
