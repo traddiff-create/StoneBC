@@ -27,6 +27,9 @@ struct RouteDetailView: View {
                 // Elevation Profile
                 elevationProfile
 
+                // Weather
+                RouteWeatherSection(route: route)
+
                 // Map Preview
                 mapPreview
 

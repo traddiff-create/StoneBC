@@ -61,6 +61,8 @@
 		G00006000000000000000006 /* CellCoverageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = G10006000000000000000006; };
 		G00007000000000000000007 /* OfflineBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = G10007000000000000000007; };
 		G00008000000000000000008 /* cell_towers.json in Resources */ = {isa = PBXBuildFile; fileRef = G10008000000000000000008; };
+		H00001000000000000000001 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = H10001000000000000000001; };
+		H00002000000000000000002 /* RouteWeatherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H10002000000000000000002; };
 		E10001000000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E20001000000000000000001; };
 		C10010000000000000000010 /* bikes.json in Resources */ = {isa = PBXBuildFile; fileRef = C20010000000000000000010; };
 		C10011000000000000000011 /* posts.json in Resources */ = {isa = PBXBuildFile; fileRef = C20011000000000000000011; };
@@ -141,6 +143,8 @@
 		G10006000000000000000006 /* CellCoverageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellCoverageView.swift; sourceTree = "<group>"; };
 		G10007000000000000000007 /* OfflineBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineBannerView.swift; sourceTree = "<group>"; };
 		G10008000000000000000008 /* cell_towers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = cell_towers.json; sourceTree = "<group>"; };
+		H10001000000000000000001 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
+		H10002000000000000000002 /* RouteWeatherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteWeatherView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -215,6 +219,8 @@
 				G10006000000000000000006 /* CellCoverageView.swift */,
 				G10007000000000000000007 /* OfflineBannerView.swift */,
 				G10008000000000000000008 /* cell_towers.json */,
+				H10001000000000000000001 /* WeatherService.swift */,
+				H10002000000000000000002 /* RouteWeatherView.swift */,
 				D30000000000000000000001 /* Radio */,
 				E20001000000000000000001 /* Assets.xcassets */,
 				C20010000000000000000010 /* bikes.json */,
@@ -383,6 +389,8 @@
 				G00005000000000000000005 /* OfflineMapService.swift in Sources */,
 				G00006000000000000000006 /* CellCoverageView.swift in Sources */,
 				G00007000000000000000007 /* OfflineBannerView.swift in Sources */,
+				H00001000000000000000001 /* WeatherService.swift in Sources */,
+				H00002000000000000000002 /* RouteWeatherView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

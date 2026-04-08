@@ -24,7 +24,8 @@
     "enableRoutes": true,
     "enableEvents": true,
     "enableGallery": true,
-    "enableRadio": true
+    "enableRadio": true,
+    "enableWeather": true
   },
   "dataURLs": {
     "wordpressBase": "https://stonebicyclecoalition.com/wp-json/wp/v2",
