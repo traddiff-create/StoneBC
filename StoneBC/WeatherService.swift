@@ -21,7 +21,7 @@ class WeatherService {
     private var cache: [String: CachedWeather] = [:]
     private let cacheExpiry: TimeInterval = 30 * 60 // 30 minutes
 
-    private let service = WeatherKit.WeatherService.shared
+    private let service = WeatherKit.WeatherService()
 
     private init() {}
 
