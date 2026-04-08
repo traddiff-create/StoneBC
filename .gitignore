@@ -1,0 +1,42 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Xcode
+DerivedData/
+build/
+*.xcarchive
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+xcuserdata/
+
+# Swift
+.build/
+.swiftpm/
+Package.resolved
+
+# Large media — keep local only
+RAW PICS/
+Site Pics/
+*.heic
+*.mov
+*.mp4
+*.raw
+*.dng
+
+# Secrets
+.env
+*.pem
+*.key
+*.p8
+
+# IDE
+.serena/cache/
+.vscode/
+.idea/
+
+# Node (for website)
+node_modules/
+dist/
+.netlify/

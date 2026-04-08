@@ -1,0 +1,74 @@
+[
+  {
+    "id": "open-shop-saturday",
+    "title": "Saturday Open Shop",
+    "date": "Every Saturday, 10am - 4pm",
+    "location": "925 9th Street #3, Rapid City",
+    "category": "openShop",
+    "description": "Bring your bike and use our tools and workspace. Volunteers available to help with repairs.",
+    "isRecurring": true
+  },
+  {
+    "id": "wednesday-ride",
+    "title": "Wednesday Group Ride",
+    "date": "Every Wednesday, 5:30pm",
+    "location": "Memorial Park, Rapid City",
+    "category": "ride",
+    "description": "Casual group ride through Rapid City. All skill levels welcome. 15-25 mile route.",
+    "isRecurring": true
+  },
+  {
+    "id": "earn-a-bike-spring",
+    "title": "Earn-A-Bike Workshop",
+    "date": "March 15, 2026",
+    "location": "925 9th Street #3, Rapid City",
+    "category": "workshop",
+    "description": "Learn bike repair skills and earn your own bicycle. 6-session program starts here.",
+    "isRecurring": false
+  },
+  {
+    "id": "safety-class-april",
+    "title": "Bicycle Safety Class",
+    "date": "April 5, 2026",
+    "location": "925 9th Street #3, Rapid City",
+    "category": "workshop",
+    "description": "Learn road safety, hand signals, and basic maintenance. Free helmets for attendees.",
+    "isRecurring": false
+  },
+  {
+    "id": "spring-social",
+    "title": "Spring Kickoff Social",
+    "date": "March 22, 2026",
+    "location": "Hay Camp Brewing, Rapid City",
+    "category": "social",
+    "description": "Celebrate the start of riding season. Meet fellow cyclists and plan the year ahead.",
+    "isRecurring": false
+  },
+  {
+    "id": "gravel-pursuit",
+    "title": "Gravel Pursuit 2026",
+    "date": "June 14, 2026",
+    "location": "Black Hills",
+    "category": "ride",
+    "description": "Annual gravel race through the Black Hills. 60k course with full support.",
+    "isRecurring": false
+  },
+  {
+    "id": "youth-bike-camp",
+    "title": "Youth Bike Camp",
+    "date": "July 7-11, 2026",
+    "location": "925 9th Street #3, Rapid City",
+    "category": "workshop",
+    "description": "Week-long camp for ages 8-16. Learn repair, safety, and trail riding.",
+    "isRecurring": false
+  },
+  {
+    "id": "dakota-50",
+    "title": "Dakota 50 Gravel",
+    "date": "September 2026",
+    "location": "Black Hills",
+    "category": "ride",
+    "description": "50-mile gravel race with beautiful Black Hills scenery.",
+    "isRecurring": false
+  }
+]

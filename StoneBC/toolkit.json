@@ -1,0 +1,68 @@
+[
+  {
+    "id": "sd-coop-law",
+    "title": "SD Cooperative Law Guide",
+    "category": "legal",
+    "filename": "SD-Cooperative-Law-Guide"
+  },
+  {
+    "id": "bylaws-template",
+    "title": "Bicycle Cooperative Bylaws Template",
+    "category": "legal",
+    "filename": "Bicycle-Cooperative-Bylaws-Template"
+  },
+  {
+    "id": "shop-setup",
+    "title": "Shop Setup Guide",
+    "category": "operations",
+    "filename": "Shop-Setup-Guide"
+  },
+  {
+    "id": "tool-list",
+    "title": "Essential Tool List",
+    "category": "operations",
+    "filename": "Essential-Tool-List"
+  },
+  {
+    "id": "volunteer-mgmt",
+    "title": "Volunteer Management Guide",
+    "category": "operations",
+    "filename": "Volunteer-Management-Guide"
+  },
+  {
+    "id": "earn-a-bike-template",
+    "title": "Earn-A-Bike Program Template",
+    "category": "programs",
+    "filename": "Earn-A-Bike-Program-Template"
+  },
+  {
+    "id": "safety-curriculum",
+    "title": "Bicycle Safety Curriculum",
+    "category": "programs",
+    "filename": "Bicycle-Safety-Curriculum"
+  },
+  {
+    "id": "youth-framework",
+    "title": "Youth Program Framework",
+    "category": "programs",
+    "filename": "Youth-Program-Framework"
+  },
+  {
+    "id": "membership-models",
+    "title": "Membership Structure Template",
+    "category": "finance",
+    "filename": "Membership-Structure-Template"
+  },
+  {
+    "id": "grant-writing",
+    "title": "Grant Writing Guide",
+    "category": "finance",
+    "filename": "Grant-Writing-Guide"
+  },
+  {
+    "id": "parts-sourcing",
+    "title": "Parts Sourcing & Partnership Guide",
+    "category": "resources",
+    "filename": "Parts-Sourcing-Partnership-Guide"
+  }
+]

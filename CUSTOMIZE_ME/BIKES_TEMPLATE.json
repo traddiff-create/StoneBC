@@ -1,0 +1,20 @@
+{
+  "bikes": [
+    {
+      "id": "YBC-001",
+      "status": "available",
+      "model": "Your First Bike Model",
+      "type": "hybrid",
+      "frameSize": "M",
+      "wheelSize": "700c",
+      "color": "Blue",
+      "condition": "good",
+      "features": ["Feature 1", "Feature 2"],
+      "photos": [],
+      "sponsorPrice": 200,
+      "description": "Description of the bike and any refurbishment work done.",
+      "dateAdded": "2026-01-01",
+      "acquiredVia": "donation"
+    }
+  ]
+}

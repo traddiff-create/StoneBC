@@ -1,0 +1,68 @@
+{
+  "bikes": [
+    {
+      "id": "SBC-001",
+      "status": "available",
+      "model": "Trek 7100 Hybrid",
+      "type": "hybrid",
+      "frameSize": "56cm",
+      "wheelSize": "700c",
+      "color": "Blue",
+      "condition": "good",
+      "features": ["Fenders", "Kickstand", "Rear rack"],
+      "photos": ["SBC-001-front.jpg"],
+      "sponsorPrice": 275,
+      "description": "Reliable commuter hybrid. New tires, brake pads, and chain. Ready to ride.",
+      "dateAdded": "2026-03-26",
+      "acquiredVia": "donation"
+    },
+    {
+      "id": "SBC-002",
+      "status": "available",
+      "model": "Specialized Rockhopper",
+      "type": "mountain",
+      "frameSize": "18in",
+      "wheelSize": "27.5in",
+      "color": "Black/Red",
+      "condition": "excellent",
+      "features": ["Front suspension", "Disc brakes", "21-speed"],
+      "photos": ["SBC-002-front.jpg"],
+      "sponsorPrice": 350,
+      "description": "Trail-ready mountain bike. Full tune-up with new cables and housing.",
+      "dateAdded": "2026-03-26",
+      "acquiredVia": "purchase"
+    },
+    {
+      "id": "SBC-003",
+      "status": "refurbishing",
+      "model": "Schwinn Cruiser",
+      "type": "cruiser",
+      "frameSize": "M",
+      "wheelSize": "26in",
+      "color": "Teal",
+      "condition": "fair",
+      "features": ["Coaster brake", "Wide seat", "Single speed"],
+      "photos": ["SBC-003-front.jpg"],
+      "sponsorPrice": 150,
+      "description": "Classic cruiser getting new tires and a fresh paint job. Almost ready.",
+      "dateAdded": "2026-03-20",
+      "acquiredVia": "donation"
+    },
+    {
+      "id": "SBC-004",
+      "status": "available",
+      "model": "Giant Escape 3",
+      "type": "hybrid",
+      "frameSize": "L",
+      "wheelSize": "700c",
+      "color": "Silver",
+      "condition": "good",
+      "features": ["24-speed", "Flat bars", "Lightweight frame"],
+      "photos": ["SBC-004-front.jpg"],
+      "sponsorPrice": 225,
+      "description": "Great first bike for commuting or fitness. New grips and pedals.",
+      "dateAdded": "2026-03-22",
+      "acquiredVia": "donation"
+    }
+  ]
+}

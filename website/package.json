@@ -1,0 +1,14 @@
+{
+  "name": "stonebc-website",
+  "version": "1.0.0",
+  "description": "Stone Bicycle Coalition website — powered by Eleventy + WordPress headless CMS",
+  "scripts": {
+    "build": "npx @11ty/eleventy",
+    "serve": "npx @11ty/eleventy --serve",
+    "debug": "DEBUG=Eleventy* npx @11ty/eleventy"
+  },
+  "dependencies": {
+    "@11ty/eleventy": "^3.0.0",
+    "node-fetch": "^3.3.0"
+  }
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "id": "post-001",
+    "title": "AEP Grant Awarded!",
+    "body": "Big news — Stone Bicycle Coalition has been awarded a **$1,000 grant** from the American Empathy Project!\n\nThis funding supports our Pedal for Empathy community ride on May 2nd. We'll be riding together, cleaning up trails, and sharing a meal.\n\nNo fancy bike needed. Just show up.",
+    "imageURL": null,
+    "date": "2026-03-31",
+    "category": "featured"
+  },
+  {
+    "id": "post-002",
+    "title": "Pedal for Empathy — May 2nd",
+    "body": "Mark your calendars! Our biggest community ride of the year is coming up.\n\n**When:** May 2, 2026 at 10am\n**Where:** Minneluzahan Senior Center, 315 N 4th St\n**What:** Group ride + trail cleanup + community meal\n\nAll ages, all skills, all bikes welcome. Free to attend.\n\nPartner: Acme Bikes",
+    "imageURL": null,
+    "date": "2026-03-28",
+    "category": "event"
+  },
+  {
+    "id": "post-003",
+    "title": "Free Bikes Seeking Riders",
+    "body": "We have bikes available for anyone who needs reliable transportation. Refurbished with care, tuned up, and ready to ride.\n\nEvery donated bike means new opportunities, fresh air, and a few more smiles out on the road.\n\nContact us to find your match.",
+    "imageURL": null,
+    "date": "2026-03-25",
+    "category": "announcement"
+  },
+  {
+    "id": "post-004",
+    "title": "Tuesday Open Shop is Back",
+    "body": "Stop by every **Tuesday from 3:30–6pm** at the Minneluzahan Senior Center.\n\nBring your bike for a tune-up, learn basic repairs, or just hang out with fellow cyclists. Tools and expertise provided — all skill levels welcome.\n\nCycling is one of the most democratic forms of transportation. Let's keep it rolling.",
+    "imageURL": null,
+    "date": "2026-03-20",
+    "category": "news"
+  },
+  {
+    "id": "post-005",
+    "title": "Black Hills Works Partnership",
+    "body": "Huge thanks to our friends at Black Hills Works for hosting a fleet maintenance workshop. Together we processed 18 bikes and got 15 back on the road.\n\nThis is what community looks like — ride together, clean together, eat together.",
+    "imageURL": null,
+    "date": "2026-03-15",
+    "category": "news"
+  }
+]

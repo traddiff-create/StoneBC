@@ -1,0 +1,120 @@
+---
+layout: base.njk
+title: Events
+description: Stone Bicycle Coalition events - Community rides, workshops, and cycling events in Rapid City, SD.
+activeNav: events
+---
+
+<section class="page-header">
+    <h1>Events</h1>
+    <p>Community rides, workshops, and gatherings</p>
+</section>
+
+<section class="content-section">
+    <div class="container">
+        <h2 class="section-title">Upcoming Events</h2>
+
+        <div class="events-list" style="max-width: 800px; margin: 0 auto;">
+            {% if wp.events.length > 0 %}
+                {% for event in wp.events %}
+                    {% if not event.isRecurring %}
+                    <div class="event-item">
+                        <div class="event-date">
+                            <div class="month">{{ event.date | monthAbbr }}</div>
+                            <div class="day">{{ event.date | dayNum }}</div>
+                        </div>
+                        <div class="event-details">
+                            <h3>{{ event.title }}</h3>
+                            <p>{{ event.description }}</p>
+                            <div class="event-meta">
+                                {% if event.time %}<span>&#128344; {{ event.time }}</span>{% endif %}
+                                {% if event.location %}<span>&#128205; {{ event.location }}</span>{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                {# Fallback: static events when WordPress is not configured #}
+                <div class="event-item">
+                    <div class="event-date">
+                        <div class="month">MAY</div>
+                        <div class="day">02</div>
+                    </div>
+                    <div class="event-details">
+                        <h3>Pedal for Empathy</h3>
+                        <p>Community ride + trail cleanup + community meal. All ages, all skills, all bikes welcome. Free to attend. Supported by American Empathy Project grant.</p>
+                        <div class="event-meta">
+                            <span>&#128344; 10:00 AM</span>
+                            <span>&#128205; Minneluzahan Senior Center, 315 N 4th St</span>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<section class="content-section">
+    <div class="container">
+        <h2 class="section-title">Regular Events</h2>
+        <div class="cards-grid" style="max-width: 900px; margin: 0 auto;">
+            {% if wp.events.length > 0 %}
+                {% for event in wp.events %}
+                    {% if event.isRecurring %}
+                    <div class="card">
+                        <div class="card-content">
+                            <h3>{{ event.title }}</h3>
+                            <p>{{ event.description }}</p>
+                            <p><strong>{{ event.date }}</strong></p>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="card">
+                    <div class="card-content">
+                        <h3>Open Shop Hours</h3>
+                        <p>Work on your own bike with our tools and volunteer assistance.</p>
+                        <p><strong>Tuesday & Thursday:</strong> 5-8 PM<br>
+                        <strong>Saturday:</strong> 10 AM - 2 PM</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <h3>Wednesday Wrench Night</h3>
+                        <p>Weekly repair workshop covering a different topic each week. Great for beginners!</p>
+                        <p><strong>Wednesdays:</strong> 6-8 PM</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <h3>Saturday Social Ride</h3>
+                        <p>No-drop community ride. Different routes and distances. All welcome!</p>
+                        <p><strong>Saturdays:</strong> 8 AM (seasonal)</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<section class="content-section" style="background: var(--color-gray-100);">
+    <div class="container" style="max-width: 600px; text-align: center;">
+        <h2>Add to Your Calendar</h2>
+        <p>Subscribe to our calendar to stay up to date with all events.</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
+            <a href="#" class="btn btn-outline">Google Calendar</a>
+            <a href="#" class="btn btn-outline">iCal / Apple</a>
+            <a href="#" class="btn btn-outline">Outlook</a>
+        </div>
+    </div>
+</section>
+
+<section class="content-section">
+    <div class="container" style="max-width: 600px; text-align: center;">
+        <h2>Host an Event With Us</h2>
+        <p>Want to organize a community ride, workshop, or bike-related event? We'd love to partner!</p>
+        <a href="/contact/" class="btn btn-primary" style="margin-top: 1rem;">Get in Touch</a>
+    </div>
+</section>

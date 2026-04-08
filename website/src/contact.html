@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contact Stone Bicycle Coalition - Get in touch, volunteer, or become a member.">
+    <title>Contact | Stone Bicycle Coalition</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="nav-container">
+            <a href="/" class="logo">
+                <span class="logo-icon">&#9881;</span>
+                <span class="logo-text">Stone Bicycle Coalition</span>
+            </a>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="programs.html">Programs</a></li>
+                <li><a href="quarry.html">The Quarry</a></li>
+                <li><a href="routes.html">Routes</a></li>
+                <li><a href="events.html">Events</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="contact.html" class="active">Contact</a></li>
+                <li><a href="donate.html" class="btn btn-primary">Donate</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="page-header">
+            <h1>Contact Us</h1>
+            <p>We'd love to hear from you</p>
+        </section>
+
+        <section class="content-section">
+            <div class="container">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem; max-width: 1000px; margin: 0 auto;">
+
+                    <!-- Contact Form -->
+                    <div>
+                        <h2>Send a Message</h2>
+                        <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+                            <input type="hidden" name="form-name" value="contact">
+                            <p style="display: none;">
+                                <label>Don't fill this out: <input name="bot-field"></label>
+                            </p>
+                            <div class="form-group">
+                                <label for="name">Name *</label>
+                                <input type="text" id="name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email *</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="subject">Subject</label>
+                                <select id="subject" name="subject">
+                                    <option value="general">General Inquiry</option>
+                                    <option value="volunteer">Volunteer Interest</option>
+                                    <option value="membership">Membership</option>
+                                    <option value="earn-a-bike">Earn-A-Bike Program</option>
+                                    <option value="donation">Bike Donation</option>
+                                    <option value="partnership">Partnership</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Message *</label>
+                                <textarea id="message" name="message" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Send Message</button>
+                        </form>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div>
+                        <h2>Get in Touch</h2>
+
+                        <div style="margin-bottom: 2rem;">
+                            <h3 style="font-size: 1.125rem; margin-bottom: 0.5rem;">&#128205; Address</h3>
+                            <p>Stone Bicycle Coalition<br>
+                            925 9th Street #3<br>
+                            Rapid City, SD 57701</p>
+                        </div>
+
+                        <div style="margin-bottom: 2rem;">
+                            <h3 style="font-size: 1.125rem; margin-bottom: 0.5rem;">&#128231; Email</h3>
+                            <p><a href="mailto:stonerory@gmail.com">stonerory@gmail.com</a></p>
+                        </div>
+
+                        <div style="margin-bottom: 2rem;">
+                            <h3 style="font-size: 1.125rem; margin-bottom: 0.5rem;">&#128344; Hours</h3>
+                            <p><strong>Open Shop:</strong><br>
+                            Tuesday & Thursday: 5-8 PM<br>
+                            Saturday: 10 AM - 2 PM</p>
+                        </div>
+
+                        <div style="margin-bottom: 2rem;">
+                            <h3 style="font-size: 1.125rem; margin-bottom: 0.5rem;">&#127760; Online</h3>
+                            <p>
+                                <a href="https://stonebicyclecoalition.com">stonebicyclecoalition.com</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Volunteer Section -->
+        <section id="volunteer" class="content-section">
+            <div class="container">
+                <div style="max-width: 700px; margin: 0 auto;">
+                    <h2 class="section-title">Volunteer With Us</h2>
+                    <p style="text-align: center; margin-bottom: 2rem;">No experience necessary - we'll train you! Volunteers help with bike repair, teaching, events, and more.</p>
+
+                    <form name="volunteer" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+                        <input type="hidden" name="form-name" value="volunteer">
+                        <p style="display: none;">
+                            <label>Don't fill this out: <input name="bot-field"></label>
+                        </p>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                            <div class="form-group">
+                                <label for="vol-name">Name *</label>
+                                <input type="text" id="vol-name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="vol-email">Email *</label>
+                                <input type="email" id="vol-email" name="email" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="vol-phone">Phone</label>
+                            <input type="tel" id="vol-phone" name="phone">
+                        </div>
+                        <div class="form-group">
+                            <label>Interests (check all that apply)</label>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
+                                <label style="font-weight: normal; display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" name="interests[]" value="repair"> Bike Repair
+                                </label>
+                                <label style="font-weight: normal; display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" name="interests[]" value="teaching"> Teaching/Instruction
+                                </label>
+                                <label style="font-weight: normal; display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" name="interests[]" value="youth"> Youth Programs
+                                </label>
+                                <label style="font-weight: normal; display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" name="interests[]" value="events"> Events/Outreach
+                                </label>
+                                <label style="font-weight: normal; display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" name="interests[]" value="admin"> Admin/Office
+                                </label>
+                                <label style="font-weight: normal; display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" name="interests[]" value="other"> Other
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="vol-experience">Tell us about yourself</label>
+                            <textarea id="vol-experience" name="experience" placeholder="Any bike repair experience? Why do you want to volunteer?"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Sign Up to Volunteer</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Membership Section -->
+        <section id="membership" class="content-section">
+            <div class="container">
+                <div style="max-width: 700px; margin: 0 auto;">
+                    <h2 class="section-title">Become a Member</h2>
+                    <p style="text-align: center; margin-bottom: 2rem;">Join the Stone Bicycle Coalition and help us build a community bike co-op!</p>
+
+                    <div class="cards-grid" style="margin-bottom: 2rem;">
+                        <div class="card">
+                            <div class="card-content text-center">
+                                <h3>Individual</h3>
+                                <p style="font-size: 2rem; font-weight: 700; color: var(--color-primary);">$35<span style="font-size: 1rem; font-weight: normal;">/year</span></p>
+                                <ul style="text-align: left; list-style: disc; padding-left: 1.5rem; margin: 1rem 0;">
+                                    <li>Shop access during open hours</li>
+                                    <li>10% parts discount</li>
+                                    <li>Newsletter and updates</li>
+                                    <li>Voting rights</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-content text-center">
+                                <h3>Family</h3>
+                                <p style="font-size: 2rem; font-weight: 700; color: var(--color-primary);">$50<span style="font-size: 1rem; font-weight: normal;">/year</span></p>
+                                <ul style="text-align: left; list-style: disc; padding-left: 1.5rem; margin: 1rem 0;">
+                                    <li>All Individual benefits</li>
+                                    <li>Covers entire household</li>
+                                    <li>Youth program priority</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form name="membership" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+                        <input type="hidden" name="form-name" value="membership">
+                        <p style="display: none;">
+                            <label>Don't fill this out: <input name="bot-field"></label>
+                        </p>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                            <div class="form-group">
+                                <label for="mem-name">Name *</label>
+                                <input type="text" id="mem-name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="mem-email">Email *</label>
+                                <input type="email" id="mem-email" name="email" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="mem-type">Membership Type</label>
+                            <select id="mem-type" name="membership-type">
+                                <option value="individual">Individual ($35/year)</option>
+                                <option value="family">Family ($50/year)</option>
+                                <option value="supporting">Supporting ($100+/year)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="mem-address">Mailing Address</label>
+                            <textarea id="mem-address" name="address" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Request Membership</button>
+                        <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--color-gray-600);">We'll contact you with payment instructions after receiving your request.</p>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-about">
+                    <h3>Stone Bicycle Coalition</h3>
+                    <p>Building community through cycling in Rapid City, South Dakota.</p>
+                    <p class="footer-address">
+                        925 9th Street #3<br>
+                        Rapid City, SD 57701
+                    </p>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="programs.html">Programs</a></li>
+                        <li><a href="quarry.html">The Quarry</a></li>
+                <li><a href="routes.html">Routes</a></li>
+                        <li><a href="events.html">Events</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Programs</h4>
+                    <ul>
+                        <li><a href="programs.html#earn-a-bike">Earn-A-Bike</a></li>
+                        <li><a href="programs.html#open-shop">Open Shop</a></li>
+                        <li><a href="programs.html#safety">Safety Classes</a></li>
+                        <li><a href="programs.html#youth">Youth Programs</a></li>
+                    </ul>
+                </div>
+                <div class="footer-support">
+                    <h4>Support Us</h4>
+                    <a href="donate.html" class="btn btn-primary btn-small">Donate</a>
+                    <p class="footer-tax">Stone Bicycle Coalition L.L.C.</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Stone Bicycle Coalition L.L.C. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

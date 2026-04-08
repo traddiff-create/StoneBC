@@ -1,0 +1,20 @@
+*Code,*Name,*Type,Description,Tax Code
+4400,Bike Sales Revenue,REVENUE,Revenue from refurbished bike sales,Tax Exempt
+4410,Sponsorship Revenue,REVENUE,Sponsor contributions for pick-a-bike or general pool,Tax Exempt
+4420,General Contributions,REVENUE,Non-sponsorship contributions,Tax Exempt
+4430,Membership Dues,REVENUE,Cooperative membership dues,Tax Exempt
+4440,Event Fees & Grants,REVENUE,Grant income and event registration fees,Tax Exempt
+4450,Workshop Fees,REVENUE,Revenue from repair classes and workshops,Tax Exempt
+5000,Bike Acquisition Costs,DIRECTCOSTS,Purchase price of bikes acquired for resale,Tax Exempt
+5010,Donated Bike Fair Value,DIRECTCOSTS,Estimated FMV of donated bikes for valuation,Tax Exempt
+5020,Parts & Components,DIRECTCOSTS,Replacement parts for bike refurbishment,Tax Exempt
+5030,Refurbishment Labor,DIRECTCOSTS,Labor costs applied to bike refurbishment,Tax Exempt
+5040,Paint & Cosmetic Materials,DIRECTCOSTS,Paint and cosmetic materials for refurbishment,Tax Exempt
+6500,Shop Rent/Space,EXPENSE,Monthly rent for workshop space,Tax Exempt
+6510,Shop Utilities,EXPENSE,Electric and water for shop,Tax Exempt
+6520,Tools & Equipment Maintenance,EXPENSE,Repair and replacement of shop tools,Tax Exempt
+6530,Event Expenses,EXPENSE,Permits and materials for community events,Tax Exempt
+6540,Training,EXPENSE,Staff and volunteer training on bike repair,Tax Exempt
+1400,Bike Inventory,CURRENT,Refurbished bikes held for sale or sponsorship,
+1410,Spare Parts Inventory,CURRENT,Stock of common replacement parts,
+2300,Deferred Sponsorship Revenue,CURRLIAB,Sponsor payments received before bike is assigned,

@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The Quarry - Browse available bikes from Stone Bicycle Coalition. Buy for yourself or sponsor a bike for someone in the community.">
+    <title>The Quarry | Stone Bicycle Coalition</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        /* The Quarry - Bike Listing Styles */
+        .quarry-hero {
+            padding: calc(var(--header-height) + var(--spacing-2xl)) var(--spacing-lg) var(--spacing-2xl);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: var(--color-white);
+            text-align: center;
+        }
+
+        .quarry-hero h1 {
+            color: var(--color-white);
+            margin-bottom: var(--spacing-sm);
+            font-size: 3rem;
+        }
+
+        .quarry-hero .tagline {
+            font-size: 1.15rem;
+            opacity: 0.85;
+            max-width: 600px;
+            margin: 0 auto var(--spacing-lg);
+        }
+
+        .quarry-hero .subtitle {
+            font-size: 1.35rem;
+            font-weight: 500;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-lg) var(--spacing-lg);
+            background-color: var(--color-white);
+            border-bottom: 1px solid var(--color-gray-200);
+            position: sticky;
+            top: var(--header-height);
+            z-index: 100;
+        }
+
+        .filter-btn {
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-full);
+            background: var(--color-white);
+            font-family: var(--font-body);
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--color-gray-600);
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .filter-btn:hover {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .filter-btn.active {
+            background-color: var(--color-primary);
+            border-color: var(--color-primary);
+            color: var(--color-white);
+        }
+
+        /* Bike Grid */
+        .bike-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--spacing-xl);
+            padding: var(--spacing-2xl) var(--spacing-lg);
+            max-width: var(--container-max);
+            margin: 0 auto;
+        }
+
+        .bike-card {
+            background-color: var(--color-white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            transition: transform var(--transition), box-shadow var(--transition);
+        }
+
+        .bike-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .bike-card-image {
+            height: 220px;
+            background-color: var(--color-gray-200);
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .bike-card-image .status-badge {
+            position: absolute;
+            top: var(--spacing-md);
+            left: var(--spacing-md);
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-available {
+            background-color: var(--color-secondary);
+            color: var(--color-white);
+        }
+
+        .status-refurbishing {
+            background-color: var(--color-accent);
+            color: var(--color-dark);
+        }
+
+        .type-badge {
+            position: absolute;
+            top: var(--spacing-md);
+            right: var(--spacing-md);
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: var(--color-white);
+            letter-spacing: 0.5px;
+        }
+
+        .bike-card-body {
+            padding: var(--spacing-lg);
+        }
+
+        .bike-card-body h3 {
+            font-size: 1.15rem;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .bike-specs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+            font-size: 0.8rem;
+            color: var(--color-gray-600);
+        }
+
+        .bike-specs span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .bike-specs span::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background-color: var(--color-gray-400);
+        }
+
+        .bike-specs span:first-child::before {
+            display: none;
+        }
+
+        .bike-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .bike-features span {
+            padding: 2px 8px;
+            background-color: var(--color-gray-100);
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            color: var(--color-gray-600);
+        }
+
+        .bike-description {
+            font-size: 0.9rem;
+            color: var(--color-gray-600);
+            margin-bottom: var(--spacing-lg);
+            line-height: 1.5;
+        }
+
+        .bike-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: var(--spacing-md);
+            border-top: 1px solid var(--color-gray-200);
+        }
+
+        .bike-price {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-dark);
+        }
+
+        .bike-card-footer .btn {
+            font-size: 0.875rem;
+        }
+
+        .bike-card.refurbishing .bike-card-footer .btn {
+            background-color: var(--color-gray-400);
+            border-color: var(--color-gray-400);
+            cursor: not-allowed;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-3xl);
+            color: var(--color-gray-600);
+            grid-column: 1 / -1;
+        }
+
+        .empty-state h3 {
+            color: var(--color-gray-600);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        /* How It Works */
+        .how-it-works {
+            background-color: var(--color-white);
+            padding: var(--spacing-3xl) var(--spacing-lg);
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-xl);
+            max-width: var(--container-max);
+            margin: 0 auto;
+        }
+
+        .step-card {
+            text-align: center;
+            padding: var(--spacing-xl);
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: var(--color-primary);
+            color: var(--color-white);
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .step-card h3 {
+            margin-bottom: var(--spacing-sm);
+            font-size: 1.15rem;
+        }
+
+        .step-card p {
+            color: var(--color-gray-600);
+            font-size: 0.9375rem;
+        }
+
+        /* General Pool CTA */
+        .pool-cta {
+            background: linear-gradient(135deg, var(--color-gray-900) 0%, var(--color-gray-700) 100%);
+            color: var(--color-white);
+            text-align: center;
+            padding: var(--spacing-3xl) var(--spacing-lg);
+        }
+
+        .pool-cta h2 {
+            color: var(--color-white);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .pool-cta p {
+            max-width: 600px;
+            margin: 0 auto var(--spacing-xl);
+            opacity: 0.9;
+            font-size: 1.125rem;
+        }
+
+        .pool-cta .btn-primary {
+            background-color: var(--color-secondary);
+            border-color: var(--color-secondary);
+            font-size: 1.125rem;
+            padding: var(--spacing-md) var(--spacing-xl);
+        }
+
+        .pool-cta .btn-primary:hover {
+            background-color: var(--color-secondary-dark);
+            border-color: var(--color-secondary-dark);
+        }
+
+        /* FAQ */
+        .quarry-faq {
+            padding: var(--spacing-3xl) var(--spacing-lg);
+            background-color: var(--color-bg);
+        }
+
+        .faq-list {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background-color: var(--color-white);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .faq-item h4 {
+            margin-bottom: var(--spacing-sm);
+            color: var(--color-dark);
+        }
+
+        .faq-item p {
+            color: var(--color-gray-600);
+            font-size: 0.9375rem;
+            margin: 0;
+        }
+
+        /* Condition indicator */
+        .condition-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 4px;
+        }
+
+        .condition-excellent { background-color: #10b981; }
+        .condition-good { background-color: #3b82f6; }
+        .condition-fair { background-color: #f59e0b; }
+
+        @media (max-width: 768px) {
+            .quarry-hero h1 {
+                font-size: 2.25rem;
+            }
+
+            .bike-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <nav class="nav-container">
+            <a href="/" class="logo">
+                <span class="logo-icon">&#9881;</span>
+                <span class="logo-text">Stone Bicycle Coalition</span>
+            </a>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="programs.html">Programs</a></li>
+                <li><a href="quarry.html" class="active">The Quarry</a></li>
+                <li><a href="routes.html">Routes</a></li>
+                <li><a href="events.html">Events</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="donate.html" class="btn btn-primary">Donate</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero -->
+        <section class="quarry-hero">
+            <div class="container">
+                <h1>The Quarry</h1>
+                <p class="subtitle">Where rough stones become ready rides.</p>
+                <p class="tagline">Every bike here was donated or rescued, refurbished by our community, and is ready for its next chapter. Buy one for yourself or sponsor one for someone who needs it.</p>
+            </div>
+        </section>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <button class="filter-btn active" data-filter="all">All Bikes</button>
+            <button class="filter-btn" data-filter="road">Road</button>
+            <button class="filter-btn" data-filter="mountain">Mountain</button>
+            <button class="filter-btn" data-filter="hybrid">Hybrid</button>
+            <button class="filter-btn" data-filter="cruiser">Cruiser</button>
+            <button class="filter-btn" data-filter="kids">Kids</button>
+        </div>
+
+        <!-- Bike Grid -->
+        <section class="bike-grid" id="bike-grid">
+            <!-- Bikes loaded dynamically from bikes.json -->
+            <div class="empty-state">
+                <h3>Loading bikes...</h3>
+                <p>Checking the inventory.</p>
+            </div>
+        </section>
+
+        <!-- How It Works -->
+        <section class="how-it-works">
+            <div class="container">
+                <h2 class="section-title">How It Works</h2>
+                <div class="steps-grid">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h3>Browse</h3>
+                        <p>Check out the available bikes above. Each one has been inspected and refurbished by our team.</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h3>Choose</h3>
+                        <p>Buy a bike for yourself, or sponsor one for a community member who needs reliable transportation.</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h3>Ride</h3>
+                        <p>Pick up at our shop in Rapid City or we'll deliver locally. Every bike leaves with a basic safety check.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- General Pool CTA -->
+        <section class="pool-cta">
+            <div class="container">
+                <h2>Contribute to the Pool</h2>
+                <p>Can't decide on a specific bike? Contribute any amount to our general sponsorship pool. We'll match your contribution to a bike for someone referred through our community programs.</p>
+                <a href="#" class="btn btn-primary btn-large" id="pool-btn">Contribute to the Pool</a>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section class="quarry-faq">
+            <div class="container">
+                <h2 class="section-title">Questions</h2>
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <h4>Is my sponsorship tax deductible?</h4>
+                        <p>Stone Bicycle Coalition is an LLC, not a 501(c)(3) nonprofit. Your payment is a purchase, not a charitable donation. If you're a business, your accountant may be able to classify it as a marketing or community sponsorship expense.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4>Who receives sponsored bikes?</h4>
+                        <p>Community members referred through our Earn-A-Bike program, local organizations, or direct requests. We prioritize people who need reliable transportation for work, school, or daily life.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4>Can I donate a bike?</h4>
+                        <p>Yes! We accept bikes in any condition. Working bikes go straight to inventory. Bikes needing work get refurbished. Parts bikes supply our repair stock. <a href="contact.html">Contact us</a> to arrange a drop-off.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4>What does the price cover?</h4>
+                        <p>Each bike's price reflects the actual cost of parts, materials, and labor that went into making it road-ready. We price at break-even plus a small margin to keep the shop running.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4>Can I test ride before buying?</h4>
+                        <p>Absolutely. Stop by during Open Shop hours (Saturdays 10am-4pm) and take any available bike for a spin around the block.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-about">
+                    <h3>Stone Bicycle Coalition</h3>
+                    <p>Building community through cycling in Rapid City, South Dakota.</p>
+                    <p class="footer-address">
+                        925 9th Street #3<br>
+                        Rapid City, SD 57701
+                    </p>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="programs.html">Programs</a></li>
+                        <li><a href="quarry.html">The Quarry</a></li>
+                        <li><a href="routes.html">Routes</a></li>
+                        <li><a href="events.html">Events</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Programs</h4>
+                    <ul>
+                        <li><a href="programs.html#earn-a-bike">Earn-A-Bike</a></li>
+                        <li><a href="programs.html#open-shop">Open Shop</a></li>
+                        <li><a href="programs.html#safety">Safety Classes</a></li>
+                        <li><a href="programs.html#youth">Youth Programs</a></li>
+                    </ul>
+                </div>
+                <div class="footer-support">
+                    <h4>Support Us</h4>
+                    <a href="donate.html" class="btn btn-primary btn-small">Donate</a>
+                    <p class="footer-tax">Stone Bicycle Coalition L.L.C.</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Stone Bicycle Coalition L.L.C. All rights reserved.</p>
+                <p class="open-source-note">Our <a href="https://github.com/stonebicyclecoalition/toolkit">Open Source Toolkit</a> is available for communities everywhere.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/quarry.js"></script>
+</body>
+</html>

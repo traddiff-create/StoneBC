@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Quarry — Inventory POS</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+
+.header { background: #1e293b; border-bottom: 2px solid #334155; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+.header h1 { font-size: 1.5rem; color: #f8fafc; }
+.header h1 span { color: #60a5fa; }
+.header-actions { display: flex; gap: 12px; }
+.header-actions button { padding: 8px 16px; border-radius: 6px; border: none; font-size: 0.875rem; font-weight: 600; cursor: pointer; }
+.btn-export { background: #059669; color: white; }
+.btn-export:hover { background: #047857; }
+.btn-clear { background: #475569; color: #e2e8f0; }
+.btn-clear:hover { background: #64748b; }
+
+.layout { display: flex; height: calc(100vh - 64px); }
+
+/* Left: Bike List */
+.bike-list { width: 280px; background: #1e293b; border-right: 1px solid #334155; overflow-y: auto; flex-shrink: 0; }
+.bike-list-header { padding: 12px 16px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+.bike-list-header h2 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; }
+.btn-add { background: #3b82f6; color: white; border: none; width: 28px; height: 28px; border-radius: 6px; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.btn-add:hover { background: #2563eb; }
+
+.bike-item { padding: 12px 16px; border-bottom: 1px solid #1e293b; cursor: pointer; transition: background 0.15s; display: flex; justify-content: space-between; align-items: center; }
+.bike-item:hover { background: #334155; }
+.bike-item.active { background: #1e3a5f; border-left: 3px solid #3b82f6; }
+.bike-item-id { font-weight: 700; font-size: 0.8rem; color: #60a5fa; }
+.bike-item-name { font-size: 0.85rem; color: #cbd5e1; margin-top: 2px; }
+.bike-item-status { font-size: 0.7rem; padding: 2px 8px; border-radius: 99px; font-weight: 600; }
+.status-new { background: #1e3a5f; color: #60a5fa; }
+.status-refurbishing { background: #422006; color: #fbbf24; }
+.status-available { background: #052e16; color: #4ade80; }
+.status-sold { background: #1c1917; color: #a8a29e; }
+
+/* Right: Form */
+.form-area { flex: 1; overflow-y: auto; padding: 24px; }
+.form-area h2 { font-size: 1.25rem; margin-bottom: 20px; color: #f8fafc; }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+.form-grid.full { grid-template-columns: 1fr; }
+
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8; }
+.field input, .field select, .field textarea { background: #1e293b; border: 1px solid #334155; border-radius: 6px; padding: 10px 12px; color: #f8fafc; font-size: 0.9rem; font-family: inherit; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.3); }
+.field select { appearance: auto; }
+.field textarea { resize: vertical; min-height: 60px; }
+.field input::placeholder { color: #475569; }
+
+.section-divider { border: none; border-top: 1px solid #334155; margin: 24px 0; }
+.section-label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #64748b; margin-bottom: 12px; }
+
+/* Refurb table */
+.refurb-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+.refurb-table th { text-align: left; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; padding: 8px; border-bottom: 1px solid #334155; }
+.refurb-table td { padding: 4px; }
+.refurb-table input { width: 100%; background: #1e293b; border: 1px solid #334155; border-radius: 4px; padding: 6px 8px; color: #f8fafc; font-size: 0.85rem; }
+.refurb-table input:focus { outline: none; border-color: #3b82f6; }
+.btn-add-row { background: none; border: 1px dashed #475569; color: #64748b; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; width: 100%; }
+.btn-add-row:hover { border-color: #60a5fa; color: #60a5fa; }
+
+/* Totals box */
+.totals-box { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 16px; margin-top: 16px; }
+.totals-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.9rem; }
+.totals-row.total { border-top: 2px solid #334155; margin-top: 8px; padding-top: 12px; font-weight: 700; font-size: 1.1rem; color: #4ade80; }
+
+/* Empty state */
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #475569; }
+.empty-state h3 { font-size: 1.25rem; margin-bottom: 8px; color: #64748b; }
+
+/* Delete button */
+.btn-delete { background: #7f1d1d; color: #fca5a5; border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; margin-top: 16px; }
+.btn-delete:hover { background: #991b1b; }
+
+@media (max-width: 768px) {
+  .layout { flex-direction: column; }
+  .bike-list { width: 100%; height: 200px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-grid.three { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span>The Quarry</span> — Inventory</h1>
+  <div class="header-actions">
+    <button class="btn-export" onclick="exportJSON()">Export bikes.json</button>
+    <button class="btn-export" onclick="exportIntake()">Export INTAKE.md</button>
+    <button class="btn-clear" onclick="if(confirm('Clear ALL bikes?')) { bikes=[]; selectedId=null; save(); render(); }">Reset</button>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="bike-list">
+    <div class="bike-list-header">
+      <h2>Bikes</h2>
+      <button class="btn-add" onclick="addBike()" title="Add bike">+</button>
+    </div>
+    <div id="list"></div>
+  </div>
+  <div class="form-area" id="form-area">
+    <div class="empty-state">
+      <h3>No bike selected</h3>
+      <p>Click + to add a bike or select one from the list</p>
+    </div>
+  </div>
+</div>
+
+<script>
+var bikes = JSON.parse(localStorage.getItem('quarry-bikes') || '[]');
+var selectedId = null;
+var nextNum = 1;
+
+function getNextId() {
+  var max = 0;
+  bikes.forEach(function(b) {
+    var n = parseInt(b.id.replace('SBC-',''));
+    if (n > max) max = n;
+  });
+  return 'SBC-' + String(max + 1).padStart(3, '0');
+}
+
+function save() {
+  localStorage.setItem('quarry-bikes', JSON.stringify(bikes));
+}
+
+function addBike() {
+  var id = getNextId();
+  bikes.push({
+    id: id, dateIn: new Date().toISOString().split('T')[0], source: 'donation',
+    cost: 0, donor: '', model: '', type: 'hybrid', frameSize: '', wheelSize: '',
+    color: '', condition: 'fair', features: '', notes: '', status: 'refurbishing',
+    refurb: [], paintCost: 0, laborRate: 25
+  });
+  selectedId = id;
+  save();
+  render();
+}
+
+function selectBike(id) {
+  selectedId = id;
+  render();
+}
+
+function deleteBike(id) {
+  if (!confirm('Delete ' + id + '?')) return;
+  bikes = bikes.filter(function(b) { return b.id !== id; });
+  if (selectedId === id) selectedId = null;
+  save();
+  render();
+}
+
+function getBike(id) {
+  return bikes.find(function(b) { return b.id === id; });
+}
+
+function updateField(id, field, value) {
+  var b = getBike(id);
+  if (b) { b[field] = value; save(); renderList(); }
+}
+
+function addRefurbRow(id) {
+  var b = getBike(id);
+  if (b) { b.refurb.push({ date: new Date().toISOString().split('T')[0], item: '', cost: 0, hours: 0 }); save(); renderForm(); }
+}
+
+function updateRefurb(id, idx, field, value) {
+  var b = getBike(id);
+  if (b && b.refurb[idx]) { b.refurb[idx][field] = value; save(); renderTotals(b); }
+}
+
+function removeRefurb(id, idx) {
+  var b = getBike(id);
+  if (b) { b.refurb.splice(idx, 1); save(); renderForm(); }
+}
+
+function calcTotals(b) {
+  var parts = 0, hours = 0;
+  b.refurb.forEach(function(r) { parts += parseFloat(r.cost) || 0; hours += parseFloat(r.hours) || 0; });
+  var labor = hours * (parseFloat(b.laborRate) || 25);
+  var paint = parseFloat(b.paintCost) || 0;
+  var acq = parseFloat(b.cost) || 0;
+  var breakeven = acq + parts + labor + paint;
+  var sponsor = Math.ceil(breakeven * 1.15 / 5) * 5;
+  return { parts: parts, hours: hours, labor: labor, paint: paint, acq: acq, breakeven: breakeven, sponsor: sponsor };
+}
+
+function render() { renderList(); renderForm(); }
+
+function renderList() {
+  var el = document.getElementById('list');
+  var html = '';
+  bikes.forEach(function(b) {
+    var cls = b.id === selectedId ? ' active' : '';
+    var stCls = 'status-' + (b.status || 'new');
+    var name = b.model || 'Untitled';
+    html += '<div class="bike-item' + cls + '" onclick="selectBike(\'' + b.id + '\')">' +
+      '<div><div class="bike-item-id">' + esc(b.id) + '</div><div class="bike-item-name">' + esc(name) + '</div></div>' +
+      '<span class="bike-item-status ' + stCls + '">' + esc(b.status || 'new') + '</span></div>';
+  });
+  el.textContent = '';
+  el.insertAdjacentHTML('beforeend', html);
+}
+
+function renderForm() {
+  var area = document.getElementById('form-area');
+  var b = getBike(selectedId);
+  if (!b) {
+    area.textContent = '';
+    area.insertAdjacentHTML('beforeend', '<div class="empty-state"><h3>No bike selected</h3><p>Click + to add a bike or select one from the list</p></div>');
+    return;
+  }
+
+  var refurbRows = '';
+  b.refurb.forEach(function(r, i) {
+    refurbRows += '<tr>' +
+      '<td><input value="' + esc(r.date) + '" onchange="updateRefurb(\'' + b.id + '\',' + i + ',\'date\',this.value)" type="date"></td>' +
+      '<td><input value="' + esc(r.item) + '" onchange="updateRefurb(\'' + b.id + '\',' + i + ',\'item\',this.value)" placeholder="New chain, brake pads..."></td>' +
+      '<td><input value="' + (r.cost || '') + '" onchange="updateRefurb(\'' + b.id + '\',' + i + ',\'cost\',this.value)" type="number" step="0.01" placeholder="0.00"></td>' +
+      '<td><input value="' + (r.hours || '') + '" onchange="updateRefurb(\'' + b.id + '\',' + i + ',\'hours\',this.value)" type="number" step="0.25" placeholder="0"></td>' +
+      '<td style="width:30px;text-align:center"><span style="cursor:pointer;color:#f87171;font-size:1.1rem" onclick="removeRefurb(\'' + b.id + '\',' + i + ')">x</span></td></tr>';
+  });
+
+  var t = calcTotals(b);
+
+  var html = '<h2>' + esc(b.id) + ' — ' + esc(b.model || 'New Bike') + '</h2>' +
+
+    '<div class="section-label">Acquisition</div>' +
+    '<div class="form-grid three">' +
+      field('Date In', 'date', b.dateIn, b.id, 'dateIn') +
+      fieldSelect('Source', b.source, b.id, 'source', ['donation','purchase']) +
+      field('Cost ($)', 'number', b.cost, b.id, 'cost', '0.00') +
+    '</div>' +
+    '<div class="form-grid">' +
+      field('Donor / Seller', 'text', b.donor, b.id, 'donor', 'Name or org') +
+      field('Notes', 'text', b.notes, b.id, 'notes', 'Any notes...') +
+    '</div>' +
+
+    '<hr class="section-divider">' +
+    '<div class="section-label">Bike Details</div>' +
+    '<div class="form-grid">' +
+      field('Model', 'text', b.model, b.id, 'model', 'Trek 7100 Hybrid') +
+      fieldSelect('Type', b.type, b.id, 'type', ['road','mountain','hybrid','cruiser','kids','bmx']) +
+    '</div>' +
+    '<div class="form-grid three">' +
+      field('Frame Size', 'text', b.frameSize, b.id, 'frameSize', '56cm / L / 21in') +
+      field('Wheel Size', 'text', b.wheelSize, b.id, 'wheelSize', '700c / 27.5 / 26') +
+      field('Color', 'text', b.color, b.id, 'color', 'Blue') +
+    '</div>' +
+    '<div class="form-grid three">' +
+      fieldSelect('Condition', b.condition, b.id, 'condition', ['excellent','good','fair','poor']) +
+      fieldSelect('Status', b.status, b.id, 'status', ['refurbishing','available','sponsored','sold']) +
+      field('Features', 'text', b.features, b.id, 'features', 'Fenders, lights, rack...') +
+    '</div>' +
+
+    '<hr class="section-divider">' +
+    '<div class="section-label">Refurbishment Work</div>' +
+    '<table class="refurb-table"><thead><tr><th>Date</th><th>Item</th><th>Cost ($)</th><th>Labor Hrs</th><th></th></tr></thead><tbody>' +
+    refurbRows + '</tbody></table>' +
+    '<button class="btn-add-row" onclick="addRefurbRow(\'' + b.id + '\')">+ Add work item</button>' +
+
+    '<div class="form-grid three" style="margin-top:16px">' +
+      field('Paint/Cosmetic ($)', 'number', b.paintCost, b.id, 'paintCost', '0.00') +
+      field('Labor Rate ($/hr)', 'number', b.laborRate, b.id, 'laborRate', '25') +
+      '<div></div>' +
+    '</div>' +
+
+    '<div class="totals-box" id="totals-box">' +
+      totalsHTML(t) +
+    '</div>' +
+
+    '<button class="btn-delete" onclick="deleteBike(\'' + b.id + '\')">Delete ' + esc(b.id) + '</button>';
+
+  area.textContent = '';
+  area.insertAdjacentHTML('beforeend', html);
+}
+
+function renderTotals(b) {
+  var box = document.getElementById('totals-box');
+  if (box) { box.textContent = ''; box.insertAdjacentHTML('beforeend', totalsHTML(calcTotals(b))); }
+}
+
+function totalsHTML(t) {
+  return '<div class="totals-row"><span>Acquisition</span><span>$' + t.acq.toFixed(2) + '</span></div>' +
+    '<div class="totals-row"><span>Parts</span><span>$' + t.parts.toFixed(2) + '</span></div>' +
+    '<div class="totals-row"><span>Labor (' + t.hours + ' hrs x $' + '25)</span><span>$' + t.labor.toFixed(2) + '</span></div>' +
+    '<div class="totals-row"><span>Paint/Cosmetic</span><span>$' + t.paint.toFixed(2) + '</span></div>' +
+    '<div class="totals-row total"><span>Break-even</span><span>$' + t.breakeven.toFixed(2) + '</span></div>' +
+    '<div class="totals-row total"><span>Sponsor Price (15%)</span><span>$' + t.sponsor.toFixed(2) + '</span></div>';
+}
+
+function field(label, type, value, id, key, placeholder) {
+  return '<div class="field"><label>' + label + '</label><input type="' + type + '" value="' + esc(String(value || '')) + '" placeholder="' + (placeholder || '') + '" onchange="updateField(\'' + id + '\',\'' + key + '\',this.value)"></div>';
+}
+
+function fieldSelect(label, value, id, key, options) {
+  var opts = options.map(function(o) { return '<option value="' + o + '"' + (o === value ? ' selected' : '') + '>' + o + '</option>'; }).join('');
+  return '<div class="field"><label>' + label + '</label><select onchange="updateField(\'' + id + '\',\'' + key + '\',this.value)">' + opts + '</select></div>';
+}
+
+function esc(s) { return s ? s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : ''; }
+
+function exportJSON() {
+  var out = { bikes: bikes.filter(function(b) { return b.model; }).map(function(b) {
+    var t = calcTotals(b);
+    return {
+      id: b.id, status: b.status, model: b.model, type: b.type,
+      frameSize: b.frameSize, wheelSize: b.wheelSize, color: b.color,
+      condition: b.condition, features: (b.features || '').split(',').map(function(f) { return f.trim(); }).filter(Boolean),
+      photos: [b.id + '-front.jpg'], sponsorPrice: t.sponsor,
+      description: b.notes || (b.model + '. Refurbished and ready.'),
+      dateAdded: b.dateIn, acquiredVia: b.source
+    };
+  })};
+  download('bikes.json', JSON.stringify(out, null, 2));
+}
+
+function exportIntake() {
+  var md = '# Bike Intake Log\n\n';
+  bikes.forEach(function(b) {
+    var t = calcTotals(b);
+    md += '### ' + b.id + '\n';
+    md += '- **Date In:** ' + (b.dateIn || '') + '\n';
+    md += '- **Source:** ' + (b.source || '') + '\n';
+    md += '- **Cost:** $' + (b.cost || 0) + '\n';
+    md += '- **Donor/Seller:** ' + (b.donor || '') + '\n';
+    md += '- **Model:** ' + (b.model || '') + '\n';
+    md += '- **Type:** ' + (b.type || '') + '\n';
+    md += '- **Frame Size:** ' + (b.frameSize || '') + '\n';
+    md += '- **Wheel Size:** ' + (b.wheelSize || '') + '\n';
+    md += '- **Color:** ' + (b.color || '') + '\n';
+    md += '- **Condition In:** ' + (b.condition || '') + '\n';
+    md += '- **Notes:** ' + (b.notes || '') + '\n';
+    md += '- **Status:** ' + (b.status || '') + '\n\n';
+    md += '#### Refurb Work\n| Date | Item | Cost | Labor Hrs |\n|------|------|------|------|' + '\n';
+    b.refurb.forEach(function(r) { md += '| ' + (r.date||'') + ' | ' + (r.item||'') + ' | $' + (r.cost||0) + ' | ' + (r.hours||0) + ' |\n'; });
+    md += '\n#### Totals\n';
+    md += '- Parts: $' + t.parts.toFixed(2) + '\n';
+    md += '- Labor: ' + t.hours + ' hrs x $25 = $' + t.labor.toFixed(2) + '\n';
+    md += '- Paint/Cosmetic: $' + t.paint.toFixed(2) + '\n';
+    md += '- **Break-even:** $' + t.breakeven.toFixed(2) + '\n';
+    md += '- **Sponsor Price:** $' + t.sponsor.toFixed(2) + '\n\n---\n\n';
+  });
+  download('INTAKE.md', md);
+}
+
+function download(name, content) {
+  var blob = new Blob([content], {type: 'text/plain'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+}
+
+render();
+</script>
+</body>
+</html>

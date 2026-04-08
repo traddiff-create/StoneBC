@@ -1,0 +1,34 @@
+{
+  "coalitionName": "YOUR BIKE CO-OP NAME",
+  "shortName": "YBC",
+  "tagline": "Your tagline here",
+  "websiteURL": "https://yourbikecoop.com",
+  "email": "hello@yourbikecoop.com",
+  "phone": null,
+  "instagramHandle": "your_handle",
+  "location": {
+    "name": "Your Workshop Location",
+    "address": "123 Main St",
+    "city": "Your City",
+    "state": "ST",
+    "zip": "00000"
+  },
+  "colors": {
+    "brandBlue": "#2563eb",
+    "brandGreen": "#059669",
+    "brandAmber": "#f59e0b"
+  },
+  "features": {
+    "enableMarketplace": true,
+    "enableCommunityFeed": true,
+    "enableRoutes": true,
+    "enableEvents": true,
+    "enableGallery": true
+  },
+  "dataURLs": {
+    "wordpressBase": null,
+    "bikes": null,
+    "events": null,
+    "posts": null
+  }
+}

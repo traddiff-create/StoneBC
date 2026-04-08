@@ -1,0 +1,60 @@
+# Netlify configuration for Stone Bicycle Coalition
+
+[build]
+  command = "npm install && npx @11ty/eleventy"
+  publish = "_site"
+
+[build.environment]
+  # Set WP_API_URL to enable WordPress content fetching
+  # WP_API_URL = "https://stonebikeco.com"
+
+# Redirects - redirect www to non-www
+[[redirects]]
+  from = "https://www.stonebicyclecoalition.com/*"
+  to = "https://stonebicyclecoalition.com/:splat"
+  status = 301
+  force = true
+
+# Custom 404 page
+[[redirects]]
+  from = "/*"
+  to = "/404.html"
+  status = 404
+
+# Headers for security and performance
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Cache static assets
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.gpx"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+    Content-Type = "application/gpx+xml"
+
+# Form notifications
+[build.processing]
+  skip_processing = false
+
+[build.processing.html]
+  pretty_urls = true

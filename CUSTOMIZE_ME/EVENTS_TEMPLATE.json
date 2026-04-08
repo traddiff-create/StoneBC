@@ -1,0 +1,20 @@
+[
+  {
+    "id": "event-001",
+    "title": "Weekly Open Shop",
+    "date": "Every Saturday, 10am-4pm",
+    "location": "Your Workshop Location",
+    "category": "openShop",
+    "description": "Bring your bike for repairs or just hang out. Tools and expertise provided.",
+    "isRecurring": true
+  },
+  {
+    "id": "event-002",
+    "title": "Community Group Ride",
+    "date": "Every Wednesday, 6pm",
+    "location": "Meet at the shop",
+    "category": "ride",
+    "description": "All skill levels welcome. No fancy bike needed.",
+    "isRecurring": true
+  }
+]

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ description | default('Stone Bicycle Coalition - Building community through cycling in Rapid City, South Dakota.') }}">
+    <title>{{ title | default('Stone Bicycle Coalition') }}{% if title %} | Stone Bicycle Coalition{% endif %}</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="nav-container">
+            <a href="/" class="logo">
+                <span class="logo-icon">&#9881;</span>
+                <span class="logo-text">Stone Bicycle Coalition</span>
+            </a>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu">
+                <li><a href="/"{% if activeNav == "home" %} class="active"{% endif %}>Home</a></li>
+                <li><a href="/about/"{% if activeNav == "about" %} class="active"{% endif %}>About</a></li>
+                <li><a href="/programs/"{% if activeNav == "programs" %} class="active"{% endif %}>Programs</a></li>
+                <li><a href="/quarry/"{% if activeNav == "quarry" %} class="active"{% endif %}>The Quarry</a></li>
+                <li><a href="/routes/"{% if activeNav == "routes" %} class="active"{% endif %}>Routes</a></li>
+                <li><a href="/events/"{% if activeNav == "events" %} class="active"{% endif %}>Events</a></li>
+                <li><a href="/blog/"{% if activeNav == "blog" %} class="active"{% endif %}>Blog</a></li>
+                <li><a href="/contact/"{% if activeNav == "contact" %} class="active"{% endif %}>Contact</a></li>
+                <li><a href="/donate/" class="btn btn-primary">Donate</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {{ content | safe }}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-about">
+                    <h3>Stone Bicycle Coalition</h3>
+                    <p>Building community through cycling in Rapid City, South Dakota.</p>
+                    <p class="footer-address">
+                        925 9th Street #3<br>
+                        Rapid City, SD 57701
+                    </p>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/about/">About Us</a></li>
+                        <li><a href="/programs/">Programs</a></li>
+                        <li><a href="/quarry/">The Quarry</a></li>
+                        <li><a href="/routes/">Routes</a></li>
+                        <li><a href="/events/">Events</a></li>
+                        <li><a href="/contact/">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Programs</h4>
+                    <ul>
+                        <li><a href="/programs/#earn-a-bike">Earn-A-Bike</a></li>
+                        <li><a href="/programs/#open-shop">Open Shop</a></li>
+                        <li><a href="/programs/#safety">Safety Classes</a></li>
+                        <li><a href="/programs/#youth">Youth Programs</a></li>
+                    </ul>
+                </div>
+                <div class="footer-support">
+                    <h4>Support Us</h4>
+                    <a href="/donate/" class="btn btn-primary btn-small">Donate</a>
+                    <p class="footer-tax">Stone Bicycle Coalition L.L.C.</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; {{ "now" | date("Y") }} Stone Bicycle Coalition L.L.C. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+</body>
+</html>
