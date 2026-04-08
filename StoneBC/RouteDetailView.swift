@@ -30,6 +30,9 @@ struct RouteDetailView: View {
                 // Map Preview
                 mapPreview
 
+                // Offline & Coverage tools
+                offlineToolsSection
+
                 // Description
                 descriptionSection
             }
@@ -222,6 +225,75 @@ struct RouteDetailView: View {
             .frame(height: 200)
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .allowsHitTesting(false)
+        }
+        .padding(BCSpacing.md)
+        .background(BCColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    // MARK: - Offline & Coverage Tools
+    private var offlineToolsSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("RIDE TOOLS")
+                .font(.system(size: 10, weight: .semibold))
+                .tracking(1)
+                .foregroundColor(.secondary)
+
+            HStack(spacing: 12) {
+                NavigationLink(destination: CellCoverageView(route: route)) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "antenna.radiowaves.left.and.right")
+                            .font(.system(size: 12))
+                            .foregroundColor(.orange)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Cell Coverage")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(.primary)
+                            Text("See dead zones on route")
+                                .font(.system(size: 10))
+                                .foregroundColor(.secondary)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 10))
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(BCSpacing.sm)
+                    .background(BCColors.cardBackground.opacity(0.5))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+                .buttonStyle(.plain)
+            }
+
+            // Prepare for Offline button
+            Button {
+                Task {
+                    await OfflineMapService.shared.warmTiles(for: route)
+                    await OfflineMapService.shared.generateSnapshot(for: route)
+                }
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "arrow.down.circle")
+                        .font(.system(size: 12))
+                        .foregroundColor(BCColors.brandBlue)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Prepare for Offline")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.primary)
+                        Text("Cache map tiles for this route")
+                            .font(.system(size: 10))
+                            .foregroundColor(.secondary)
+                    }
+                    Spacer()
+                    Image(systemName: "icloud.and.arrow.down")
+                        .font(.system(size: 10))
+                        .foregroundColor(.secondary)
+                }
+                .padding(BCSpacing.sm)
+                .background(BCColors.cardBackground.opacity(0.5))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+            .buttonStyle(.plain)
         }
         .padding(BCSpacing.md)
         .background(BCColors.cardBackground)

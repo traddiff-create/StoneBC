@@ -2,7 +2,7 @@
 //  RouteNavigationView.swift
 //  StoneBC
 //
-//  Live route navigation — user location on map, progress tracking, off-route alerts
+//  Live route navigation — map + ride dashboard with compass, altimeter, speed
 //
 
 import SwiftUI
@@ -13,42 +13,17 @@ struct RouteNavigationView: View {
     let route: Route
 
     @State private var locationService = LocationService()
+    @State private var altimeterService = AltimeterService()
+    @State private var session: RideSession
     @State private var position: MapCameraPosition = .automatic
     @State private var isFollowingUser = true
+    @State private var mapStyle: MapStyleOption = .standard
+    @State private var showEndConfirm = false
     @Environment(\.dismiss) var dismiss
 
-    private var closestPointIndex: Int? {
-        guard let userLoc = locationService.userLocation else { return nil }
-        let userCL = CLLocation(latitude: userLoc.latitude, longitude: userLoc.longitude)
-        return route.clTrackpoints.enumerated().min { a, b in
-            let locA = CLLocation(latitude: a.element.latitude, longitude: a.element.longitude)
-            let locB = CLLocation(latitude: b.element.latitude, longitude: b.element.longitude)
-            return userCL.distance(from: locA) < userCL.distance(from: locB)
-        }?.offset
-    }
-
-    private var distanceFromRoute: Double {
-        guard let userLoc = locationService.userLocation,
-              let idx = closestPointIndex else { return 0 }
-        let userCL = CLLocation(latitude: userLoc.latitude, longitude: userLoc.longitude)
-        let closestCL = CLLocation(
-            latitude: route.clTrackpoints[idx].latitude,
-            longitude: route.clTrackpoints[idx].longitude
-        )
-        return userCL.distance(from: closestCL)
-    }
-
-    private var isOffRoute: Bool { distanceFromRoute > 50 }
-
-    private var progressPercent: Double {
-        guard let idx = closestPointIndex, !route.clTrackpoints.isEmpty else { return 0 }
-        return Double(idx) / Double(max(route.clTrackpoints.count - 1, 1))
-    }
-
-    private var distanceRemaining: Double {
-        guard let idx = closestPointIndex else { return route.distanceMiles }
-        let remaining = Array(route.trackpoints[idx...])
-        return Route.haversineDistance(remaining)
+    init(route: Route) {
+        self.route = route
+        self._session = State(initialValue: RideSession(route: route))
     }
 
     var body: some View {
@@ -96,8 +71,14 @@ struct RouteNavigationView: View {
                     }
                 }
             }
-            .mapStyle(.standard(elevation: .realistic))
+            .mapStyle(mapStyle.style)
             .onChange(of: locationService.userLocation?.latitude) {
+                // Update session with new location
+                if let loc = locationService.userLocation {
+                    session.updateLocation(loc, speed: locationService.speedMPS)
+                }
+
+                // Follow user
                 if isFollowingUser, let loc = locationService.userLocation {
                     withAnimation(.easeInOut(duration: 0.5)) {
                         position = .camera(MapCamera(
@@ -109,91 +90,70 @@ struct RouteNavigationView: View {
                     }
                 }
             }
-            .onMapCameraChange { _ in
-                // User panned manually — stop auto-following
-                // Re-enable with recenter button
-            }
 
-            // HUD overlay
+            // Dashboard overlay
             VStack(spacing: 0) {
-                // Top stats panel
-                VStack(spacing: BCSpacing.sm) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(route.name)
-                                .font(.system(size: 14, weight: .semibold))
-                                .lineLimit(1)
-                            if locationService.userLocation != nil {
-                                Text(String(format: "%.1f mi remaining", distanceRemaining))
-                                    .font(.bcCaption)
-                                    .foregroundColor(.secondary)
-                            } else {
-                                Text("Acquiring location...")
-                                    .font(.bcCaption)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-
-                        Spacer()
-
-                        Button {
-                            locationService.stopTracking()
-                            dismiss()
-                        } label: {
-                            Text("END")
-                                .font(.system(size: 10, weight: .bold))
-                                .tracking(1)
-                                .padding(.horizontal, 14)
-                                .padding(.vertical, 8)
-                                .background(Color.red.opacity(0.9))
-                                .foregroundColor(.white)
-                                .clipShape(Capsule())
-                        }
-                    }
-
-                    // Progress bar
-                    if locationService.userLocation != nil {
-                        ProgressView(value: progressPercent)
-                            .tint(BCColors.brandGreen)
-                    }
+                // Offline banner
+                if !ConnectivityService.shared.isConnected {
+                    OfflineBannerView()
                 }
-                .padding(BCSpacing.md)
-                .background(.ultraThinMaterial)
 
-                // Off-route warning
-                if isOffRoute {
-                    HStack(spacing: 8) {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .foregroundColor(.orange)
-                        Text("You're off route (\(Int(distanceFromRoute))m away)")
-                            .font(.bcSecondaryText)
-                        Spacer()
-                    }
-                    .padding(BCSpacing.sm)
-                    .padding(.horizontal, BCSpacing.sm)
-                    .background(Color.orange.opacity(0.15))
-                    .transition(.move(edge: .top).combined(with: .opacity))
-                }
+                // Ride dashboard at top
+                RideDashboardView(
+                    session: session,
+                    locationService: locationService,
+                    altimeterService: altimeterService
+                )
 
                 Spacer()
 
-                // Recenter button
-                if !isFollowingUser {
-                    HStack {
-                        Spacer()
+                // Bottom controls
+                HStack(spacing: 16) {
+                    // Map style toggle
+                    Button {
+                        withAnimation {
+                            mapStyle = mapStyle.next
+                        }
+                    } label: {
+                        Image(systemName: mapStyle.icon)
+                            .font(.system(size: 14))
+                            .padding(10)
+                            .background(.ultraThinMaterial)
+                            .clipShape(Circle())
+                    }
+
+                    Spacer()
+
+                    // Recenter button
+                    if !isFollowingUser {
                         Button {
                             isFollowingUser = true
                         } label: {
                             Image(systemName: "location.fill")
-                                .font(.system(size: 16))
-                                .padding(12)
+                                .font(.system(size: 14))
+                                .padding(10)
                                 .background(.ultraThinMaterial)
                                 .clipShape(Circle())
-                                .shadow(radius: 2)
                         }
-                        .padding(BCSpacing.md)
+                        .transition(.scale.combined(with: .opacity))
+                    }
+
+                    // End ride button
+                    Button {
+                        showEndConfirm = true
+                    } label: {
+                        Text("END RIDE")
+                            .font(.system(size: 10, weight: .bold))
+                            .tracking(1)
+                            .padding(.horizontal, 18)
+                            .padding(.vertical, 10)
+                            .background(Color.red.opacity(0.9))
+                            .foregroundColor(.white)
+                            .clipShape(Capsule())
                     }
                 }
+                .padding(.horizontal, BCSpacing.md)
+                .padding(.bottom, BCSpacing.md)
             }
         }
         .navigationTitle("")
@@ -208,10 +168,53 @@ struct RouteNavigationView: View {
         .onAppear {
             locationService.requestPermission()
             locationService.startTracking()
+            altimeterService.start()
+            session.start()
         }
         .onDisappear {
             locationService.stopTracking()
+            altimeterService.stop()
+            session.stop()
         }
+        .confirmationDialog("End this ride?", isPresented: $showEndConfirm) {
+            Button("End Ride", role: .destructive) {
+                locationService.stopTracking()
+                altimeterService.stop()
+                session.stop()
+                dismiss()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("\(session.formattedDistance) ridden in \(session.formattedElapsedTime)")
+        }
+    }
+}
+
+// MARK: - Map Style Option
+
+enum MapStyleOption: CaseIterable {
+    case standard, satellite, hybrid
+
+    var style: MapStyle {
+        switch self {
+        case .standard: .standard(elevation: .realistic)
+        case .satellite: .imagery(elevation: .realistic)
+        case .hybrid: .hybrid(elevation: .realistic)
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .standard: "map"
+        case .satellite: "globe.americas"
+        case .hybrid: "square.stack.3d.up"
+        }
+    }
+
+    var next: MapStyleOption {
+        let all = MapStyleOption.allCases
+        let idx = all.firstIndex(of: self) ?? 0
+        return all[(idx + 1) % all.count]
     }
 }
 

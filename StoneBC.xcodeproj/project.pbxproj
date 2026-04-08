@@ -53,6 +53,14 @@
 		F00004000000000000000004 /* RouteNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10004000000000000000004; };
 		F00005000000000000000005 /* RouteShareCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10005000000000000000005; };
 		F00006000000000000000006 /* RouteExplorerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10006000000000000000006; };
+		G00001000000000000000001 /* AltimeterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = G10001000000000000000001; };
+		G00002000000000000000002 /* RideSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = G10002000000000000000002; };
+		G00003000000000000000003 /* RideDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = G10003000000000000000003; };
+		G00004000000000000000004 /* ConnectivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = G10004000000000000000004; };
+		G00005000000000000000005 /* OfflineMapService.swift in Sources */ = {isa = PBXBuildFile; fileRef = G10005000000000000000005; };
+		G00006000000000000000006 /* CellCoverageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = G10006000000000000000006; };
+		G00007000000000000000007 /* OfflineBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = G10007000000000000000007; };
+		G00008000000000000000008 /* cell_towers.json in Resources */ = {isa = PBXBuildFile; fileRef = G10008000000000000000008; };
 		E10001000000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E20001000000000000000001; };
 		C10010000000000000000010 /* bikes.json in Resources */ = {isa = PBXBuildFile; fileRef = C20010000000000000000010; };
 		C10011000000000000000011 /* posts.json in Resources */ = {isa = PBXBuildFile; fileRef = C20011000000000000000011; };
@@ -125,6 +133,14 @@
 		F10004000000000000000004 /* RouteNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteNavigationView.swift; sourceTree = "<group>"; };
 		F10005000000000000000005 /* RouteShareCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteShareCardView.swift; sourceTree = "<group>"; };
 		F10006000000000000000006 /* RouteExplorerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteExplorerView.swift; sourceTree = "<group>"; };
+		G10001000000000000000001 /* AltimeterService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AltimeterService.swift; sourceTree = "<group>"; };
+		G10002000000000000000002 /* RideSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideSession.swift; sourceTree = "<group>"; };
+		G10003000000000000000003 /* RideDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideDashboardView.swift; sourceTree = "<group>"; };
+		G10004000000000000000004 /* ConnectivityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectivityService.swift; sourceTree = "<group>"; };
+		G10005000000000000000005 /* OfflineMapService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineMapService.swift; sourceTree = "<group>"; };
+		G10006000000000000000006 /* CellCoverageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellCoverageView.swift; sourceTree = "<group>"; };
+		G10007000000000000000007 /* OfflineBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineBannerView.swift; sourceTree = "<group>"; };
+		G10008000000000000000008 /* cell_towers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = cell_towers.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -191,6 +207,14 @@
 				F10004000000000000000004 /* RouteNavigationView.swift */,
 				F10005000000000000000005 /* RouteShareCardView.swift */,
 				F10006000000000000000006 /* RouteExplorerView.swift */,
+				G10001000000000000000001 /* AltimeterService.swift */,
+				G10002000000000000000002 /* RideSession.swift */,
+				G10003000000000000000003 /* RideDashboardView.swift */,
+				G10004000000000000000004 /* ConnectivityService.swift */,
+				G10005000000000000000005 /* OfflineMapService.swift */,
+				G10006000000000000000006 /* CellCoverageView.swift */,
+				G10007000000000000000007 /* OfflineBannerView.swift */,
+				G10008000000000000000008 /* cell_towers.json */,
 				D30000000000000000000001 /* Radio */,
 				E20001000000000000000001 /* Assets.xcassets */,
 				C20010000000000000000010 /* bikes.json */,
@@ -295,6 +319,7 @@
 				C10011000000000000000011 /* posts.json in Resources */,
 				C10012000000000000000012 /* config.json in Resources */,
 				E10001000000000000000001 /* Assets.xcassets in Resources */,
+				G00008000000000000000008 /* cell_towers.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -351,6 +376,13 @@
 				F00004000000000000000004 /* RouteNavigationView.swift in Sources */,
 				F00005000000000000000005 /* RouteShareCardView.swift in Sources */,
 				F00006000000000000000006 /* RouteExplorerView.swift in Sources */,
+				G00001000000000000000001 /* AltimeterService.swift in Sources */,
+				G00002000000000000000002 /* RideSession.swift in Sources */,
+				G00003000000000000000003 /* RideDashboardView.swift in Sources */,
+				G00004000000000000000004 /* ConnectivityService.swift in Sources */,
+				G00005000000000000000005 /* OfflineMapService.swift in Sources */,
+				G00006000000000000000006 /* CellCoverageView.swift in Sources */,
+				G00007000000000000000007 /* OfflineBannerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
