@@ -4,6 +4,84 @@ All notable changes to the Stone Bicycle Coalition project will be documented in
 
 ---
 
+## [0.5.0] - 2026-04-08
+
+### Added — Lewis & Clark Routes Upgrade (6 Phases)
+- **Ride Dashboard** — full cycling cockpit overlay during navigation
+  - Compass ring with bearing-to-next-waypoint arrow
+  - CMAltimeter barometric pressure, relative altitude, climb rate (ft/min)
+  - GPS speed (current/avg/max MPH), course tracking
+  - RideSession model: elapsed/moving time, distance, progress %, off-route detection
+- **Weather Intelligence** — WeatherKit integration on route detail
+  - Current conditions: temp, wind speed/direction, precipitation, UV, humidity
+  - Headwind/tailwind/crosswind analysis relative to route bearing
+  - Best Ride Window recommendation (scores hourly forecast on wind/rain/temp)
+  - 12-hour hourly forecast strip with SF Symbols
+- **Offline Toolkit** — works without cell signal
+  - ConnectivityService (NWPathMonitor) with offline banner
+  - OfflineMapService: MKMapSnapshotter pre-cache + tile warming
+  - "Prepare for Offline" button on route detail
+  - Cell Coverage dead zone map (60 bundled towers for Black Hills region)
+  - Coverage analysis per route: colored polyline (green=coverage, red=dead zone)
+  - Carrier filter chips (Verizon/AT&T/T-Mobile/US Cellular)
+- **HealthKit Workouts** — ride recording
+  - HKWorkoutBuilder for cycling workouts
+  - HKWorkoutRouteBuilder attaches GPS trail to Apple Health
+  - Auto-starts on ride begin, saves on end
+- **Live Activities** — lock screen + Dynamic Island
+  - RideActivityAttributes model + RideActivityManager
+  - Shows speed, distance, elapsed time, progress, off-route status
+  - (Widget Extension target needed for UI rendering)
+- **Enhanced Navigation** — premium cycling GPS experience
+  - AVSpeechSynthesizer turn-by-turn audio cues
+  - Turn detection from trackpoint geometry (angle between segments)
+  - Off-route voice warnings, mile marker callouts, ride complete announcement
+  - Breadcrumb trail: dashed orange polyline of actual GPS path vs planned route
+  - Audio toggle button (speaker icon on map)
+  - Map style picker: standard / satellite / hybrid
+  - End Ride confirmation dialog with distance/time summary
+- **Onboarding Flow** — 5-page first-launch experience
+  - Welcome, GPS Navigation, Ride Dashboard, Record Workouts, Ready pages
+  - Permission requests for Location and HealthKit
+  - Feature checklist on ready page
+  - @AppStorage("onboardingComplete") gate
+- **PermissionService** — centralized permission tracker
+- **HTML Route Map** (`map.html`) — Leaflet.js interactive map of all 41 routes
+
+### Changed
+- RouteNavigationView completely rewritten with dashboard + services integration
+- LocationService enhanced: speed, course, altitude, location history, session stats
+- RouteDetailView: added Weather section, Ride Tools section (Cell Coverage + Offline)
+- config.json: added `enableWeather` feature flag
+- project.pbxproj: added NSHealthShare/UpdateUsageDescription, NSSupportsLiveActivities, background location mode
+- Xcode project renamed from StoneBC.xcodeproj to app.xcodeproj
+
+### New Files (22)
+- `AltimeterService.swift` — CMAltimeter wrapper
+- `RideSession.swift` — active ride state model
+- `RideDashboardView.swift` — compass + altimeter + speed cockpit
+- `NavigationAudioService.swift` — AVSpeechSynthesizer nav cues
+- `WeatherService.swift` — WeatherKit with 30-min cache
+- `RouteWeatherView.swift` — weather section for route detail
+- `ConnectivityService.swift` — NWPathMonitor singleton
+- `OfflineMapService.swift` — MKMapSnapshotter pre-cache actor
+- `OfflineBannerView.swift` — offline banner + .offlineAware() modifier
+- `CellCoverageView.swift` — cell tower dead zone map
+- `cell_towers.json` — 60 towers for Black Hills/western SD
+- `WorkoutService.swift` — HKWorkoutBuilder + RouteBuilder
+- `RideActivityAttributes.swift` — ActivityKit model
+- `RideActivityManager.swift` — Live Activity lifecycle
+- `OnboardingView.swift` — 5-page first-launch flow
+- `PermissionService.swift` — location + HealthKit status
+- `StoneBC.entitlements` — app entitlements file
+- `map.html` — Leaflet.js interactive route map
+
+### QA Results
+- 46/47 Blitz tests passed (1 skipped — toolbar button inaccessible to automation)
+- Tested: onboarding, routes list/detail/filters, weather, cell coverage, route explorer, navigation dashboard, bikes, community, events, dark mode
+
+---
+
 ## [0.4.0] - 2026-04-01
 
 ### Added

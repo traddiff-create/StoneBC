@@ -5,7 +5,7 @@
 **Type:** Hybrid (iOS App + Website + Open-Source Toolkit)
 **Owners:** Rory & Nicole Stone
 **Status:** Active Development
-**Bundle ID:** `com.traddiff.StoneBC` | **Version:** 0.2
+**Bundle ID:** `com.traddiff.StoneBC` | **Version:** 0.5
 **Deployment Target:** iOS 17.0
 
 ---
@@ -25,7 +25,7 @@ The app is **config-driven** so other bike co-ops can fork and customize it.
 
 | Component | Technology |
 |-----------|-----------|
-| iOS App | Swift 5, SwiftUI, MapKit, MultipeerConnectivity, AVFoundation |
+| iOS App | Swift 5, SwiftUI, MapKit, CoreLocation, CoreMotion, WeatherKit, HealthKit, ActivityKit, AVFoundation, MultipeerConnectivity |
 | Architecture | MVVM with @Observable AppState |
 | Data | Bundled JSON (local-first) + optional WordPress REST API sync |
 | Voice Chat | MultipeerConnectivity (peer-to-peer, no backend) |

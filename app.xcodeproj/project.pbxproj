@@ -7,79 +7,79 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A10001000000000000000001 /* StoneBCApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20001000000000000000001; };
-		A10002000000000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20002000000000000000002; };
-		A10003000000000000000003 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20003000000000000000003; };
-		A10004000000000000000004 /* RoutesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20004000000000000000004; };
-		A10005000000000000000005 /* RouteDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20005000000000000000005; };
-		A10006000000000000000006 /* RouteMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20006000000000000000006; };
-		A10007000000000000000007 /* CommunityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20007000000000000000007; };
-		A10008000000000000000008 /* GalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20008000000000000000008; };
-		A10009000000000000000009 /* ContactView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20009000000000000000009; };
-		A1000A00000000000000000A /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000A00000000000000000A; };
-		A1000B00000000000000000B /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000B00000000000000000B; };
-		A1000C00000000000000000C /* Program.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000C00000000000000000C; };
-		A1000D00000000000000000D /* ToolkitArticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000D00000000000000000D; };
-		A1000E00000000000000000E /* BCPhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000E00000000000000000E; };
-		A1000F00000000000000000F /* BCDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000F00000000000000000F; };
-		C10001000000000000000001 /* Bike.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20001000000000000000001; };
-		C10002000000000000000002 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20002000000000000000002; };
-		C10003000000000000000003 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20003000000000000000003; };
-		C10004000000000000000004 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20004000000000000000004; };
-		C10005000000000000000005 /* TabContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20005000000000000000005; };
-		C10006000000000000000006 /* MarketplaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20006000000000000000006; };
-		C10007000000000000000007 /* BikeDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20007000000000000000007; };
-		C10008000000000000000008 /* BikeCardRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20008000000000000000008; };
-		C10009000000000000000009 /* BikeFilterBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20009000000000000000009; };
-		C1000A00000000000000000A /* CommunityFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2000A00000000000000000A; };
-		C1000B00000000000000000B /* PostDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2000B00000000000000000B; };
-		C1000C00000000000000000C /* PostCardRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2000C00000000000000000C; };
-		C1000D00000000000000000D /* MoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2000D00000000000000000D; };
-		C1000E00000000000000000E /* WordPressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2000E00000000000000000E; };
-		D10001000000000000000001 /* RadioConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20001000000000000000001; };
-		D10002000000000000000002 /* RadioPeer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20002000000000000000002; };
-		D10003000000000000000003 /* RadioChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20003000000000000000003; };
-		D10004000000000000000004 /* RadioState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20004000000000000000004; };
-		D10005000000000000000005 /* RadioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20005000000000000000005; };
-		D10006000000000000000006 /* AudioStreamService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20006000000000000000006; };
-		D10007000000000000000007 /* RadioViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20007000000000000000007; };
-		D10008000000000000000008 /* RadioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20008000000000000000008; };
-		D10009000000000000000009 /* PTTButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20009000000000000000009; };
-		D1000A00000000000000000A /* RadioOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000A00000000000000000A; };
-		D1000B00000000000000000B /* AppState+Radio.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000B00000000000000000B; };
-		F00001000000000000000001 /* GPXService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10001000000000000000001; };
-		F00002000000000000000002 /* GPXImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10002000000000000000002; };
-		F00003000000000000000003 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10003000000000000000003; };
-		F00004000000000000000004 /* RouteNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10004000000000000000004; };
-		F00005000000000000000005 /* RouteShareCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10005000000000000000005; };
-		F00006000000000000000006 /* RouteExplorerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10006000000000000000006; };
-		G00001000000000000000001 /* AltimeterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = G10001000000000000000001; };
-		G00002000000000000000002 /* RideSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = G10002000000000000000002; };
-		G00003000000000000000003 /* RideDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = G10003000000000000000003; };
-		G00004000000000000000004 /* ConnectivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = G10004000000000000000004; };
-		G00005000000000000000005 /* OfflineMapService.swift in Sources */ = {isa = PBXBuildFile; fileRef = G10005000000000000000005; };
-		G00006000000000000000006 /* CellCoverageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = G10006000000000000000006; };
-		G00007000000000000000007 /* OfflineBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = G10007000000000000000007; };
-		G00008000000000000000008 /* cell_towers.json in Resources */ = {isa = PBXBuildFile; fileRef = G10008000000000000000008; };
-		H00001000000000000000001 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = H10001000000000000000001; };
-		H00002000000000000000002 /* RouteWeatherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H10002000000000000000002; };
-		H00003000000000000000003 /* NavigationAudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = H10003000000000000000003; };
-		H00004000000000000000004 /* WorkoutService.swift in Sources */ = {isa = PBXBuildFile; fileRef = H10004000000000000000004; };
-		H00005000000000000000005 /* RideActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = H10005000000000000000005; };
-		H00006000000000000000006 /* RideActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = H10006000000000000000006; };
-		J00001000000000000000001 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = J10001000000000000000001; };
-		J00002000000000000000002 /* PermissionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = J10002000000000000000002; };
-		E10001000000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E20001000000000000000001; };
-		C10010000000000000000010 /* bikes.json in Resources */ = {isa = PBXBuildFile; fileRef = C20010000000000000000010; };
-		C10011000000000000000011 /* posts.json in Resources */ = {isa = PBXBuildFile; fileRef = C20011000000000000000011; };
-		C10012000000000000000012 /* config.json in Resources */ = {isa = PBXBuildFile; fileRef = C20012000000000000000012; };
-		A10010000000000000000010 /* routes.json in Resources */ = {isa = PBXBuildFile; fileRef = A20010000000000000000010; };
-		A10011000000000000000011 /* events.json in Resources */ = {isa = PBXBuildFile; fileRef = A20011000000000000000011; };
-		A10012000000000000000012 /* programs.json in Resources */ = {isa = PBXBuildFile; fileRef = A20012000000000000000012; };
-		A10013000000000000000013 /* toolkit.json in Resources */ = {isa = PBXBuildFile; fileRef = A20013000000000000000013; };
-		A10014000000000000000014 /* photos.json in Resources */ = {isa = PBXBuildFile; fileRef = A20014000000000000000014; };
-		A10015000000000000000015 /* Thumbnails in Resources */ = {isa = PBXBuildFile; fileRef = A20015000000000000000015; };
-		A10016000000000000000016 /* Toolkit in Resources */ = {isa = PBXBuildFile; fileRef = A20016000000000000000016; };
+		A10001000000000000000001 /* StoneBCApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20001000000000000000001 /* StoneBCApp.swift */; };
+		A10002000000000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20002000000000000000002 /* ContentView.swift */; };
+		A10003000000000000000003 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20003000000000000000003 /* HomeView.swift */; };
+		A10004000000000000000004 /* RoutesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20004000000000000000004 /* RoutesView.swift */; };
+		A10005000000000000000005 /* RouteDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20005000000000000000005 /* RouteDetailView.swift */; };
+		A10006000000000000000006 /* RouteMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20006000000000000000006 /* RouteMapView.swift */; };
+		A10007000000000000000007 /* CommunityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20007000000000000000007 /* CommunityView.swift */; };
+		A10008000000000000000008 /* GalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20008000000000000000008 /* GalleryView.swift */; };
+		A10009000000000000000009 /* ContactView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20009000000000000000009 /* ContactView.swift */; };
+		A1000A00000000000000000A /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000A00000000000000000A /* Route.swift */; };
+		A1000B00000000000000000B /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000B00000000000000000B /* Event.swift */; };
+		A1000C00000000000000000C /* Program.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000C00000000000000000C /* Program.swift */; };
+		A1000D00000000000000000D /* ToolkitArticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000D00000000000000000D /* ToolkitArticle.swift */; };
+		A1000E00000000000000000E /* BCPhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000E00000000000000000E /* BCPhoto.swift */; };
+		A1000F00000000000000000F /* BCDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000F00000000000000000F /* BCDesignSystem.swift */; };
+		A10010000000000000000010 /* routes.json in Resources */ = {isa = PBXBuildFile; fileRef = A20010000000000000000010 /* routes.json */; };
+		A10011000000000000000011 /* events.json in Resources */ = {isa = PBXBuildFile; fileRef = A20011000000000000000011 /* events.json */; };
+		A10012000000000000000012 /* programs.json in Resources */ = {isa = PBXBuildFile; fileRef = A20012000000000000000012 /* programs.json */; };
+		A10013000000000000000013 /* toolkit.json in Resources */ = {isa = PBXBuildFile; fileRef = A20013000000000000000013 /* toolkit.json */; };
+		A10014000000000000000014 /* photos.json in Resources */ = {isa = PBXBuildFile; fileRef = A20014000000000000000014 /* photos.json */; };
+		A10015000000000000000015 /* Thumbnails in Resources */ = {isa = PBXBuildFile; fileRef = A20015000000000000000015 /* Thumbnails */; };
+		A10016000000000000000016 /* Toolkit in Resources */ = {isa = PBXBuildFile; fileRef = A20016000000000000000016 /* Toolkit */; };
+		C10001000000000000000001 /* Bike.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20001000000000000000001 /* Bike.swift */; };
+		C10002000000000000000002 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20002000000000000000002 /* Post.swift */; };
+		C10003000000000000000003 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20003000000000000000003 /* AppConfig.swift */; };
+		C10004000000000000000004 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20004000000000000000004 /* AppState.swift */; };
+		C10005000000000000000005 /* TabContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20005000000000000000005 /* TabContainerView.swift */; };
+		C10006000000000000000006 /* MarketplaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20006000000000000000006 /* MarketplaceView.swift */; };
+		C10007000000000000000007 /* BikeDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20007000000000000000007 /* BikeDetailView.swift */; };
+		C10008000000000000000008 /* BikeCardRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20008000000000000000008 /* BikeCardRow.swift */; };
+		C10009000000000000000009 /* BikeFilterBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20009000000000000000009 /* BikeFilterBar.swift */; };
+		C1000A00000000000000000A /* CommunityFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2000A00000000000000000A /* CommunityFeedView.swift */; };
+		C1000B00000000000000000B /* PostDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2000B00000000000000000B /* PostDetailView.swift */; };
+		C1000C00000000000000000C /* PostCardRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2000C00000000000000000C /* PostCardRow.swift */; };
+		C1000D00000000000000000D /* MoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2000D00000000000000000D /* MoreView.swift */; };
+		C1000E00000000000000000E /* WordPressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2000E00000000000000000E /* WordPressService.swift */; };
+		C10010000000000000000010 /* bikes.json in Resources */ = {isa = PBXBuildFile; fileRef = C20010000000000000000010 /* bikes.json */; };
+		C10011000000000000000011 /* posts.json in Resources */ = {isa = PBXBuildFile; fileRef = C20011000000000000000011 /* posts.json */; };
+		C10012000000000000000012 /* config.json in Resources */ = {isa = PBXBuildFile; fileRef = C20012000000000000000012 /* config.json */; };
+		D10001000000000000000001 /* RadioConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20001000000000000000001 /* RadioConfig.swift */; };
+		D10002000000000000000002 /* RadioPeer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20002000000000000000002 /* RadioPeer.swift */; };
+		D10003000000000000000003 /* RadioChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20003000000000000000003 /* RadioChannel.swift */; };
+		D10004000000000000000004 /* RadioState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20004000000000000000004 /* RadioState.swift */; };
+		D10005000000000000000005 /* RadioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20005000000000000000005 /* RadioService.swift */; };
+		D10006000000000000000006 /* AudioStreamService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20006000000000000000006 /* AudioStreamService.swift */; };
+		D10007000000000000000007 /* RadioViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20007000000000000000007 /* RadioViewModel.swift */; };
+		D10008000000000000000008 /* RadioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20008000000000000000008 /* RadioView.swift */; };
+		D10009000000000000000009 /* PTTButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20009000000000000000009 /* PTTButton.swift */; };
+		D1000A00000000000000000A /* RadioOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000A00000000000000000A /* RadioOverlayView.swift */; };
+		D1000B00000000000000000B /* AppState+Radio.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000B00000000000000000B /* AppState+Radio.swift */; };
+		E10001000000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E20001000000000000000001 /* Assets.xcassets */; };
+		F00001000000000000000001 /* GPXService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10001000000000000000001 /* GPXService.swift */; };
+		F00002000000000000000002 /* GPXImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10002000000000000000002 /* GPXImportView.swift */; };
+		F00003000000000000000003 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10003000000000000000003 /* LocationService.swift */; };
+		F00004000000000000000004 /* RouteNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10004000000000000000004 /* RouteNavigationView.swift */; };
+		F00005000000000000000005 /* RouteShareCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10005000000000000000005 /* RouteShareCardView.swift */; };
+		F00006000000000000000006 /* RouteExplorerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10006000000000000000006 /* RouteExplorerView.swift */; };
+		G00001000000000000000001 /* AltimeterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = G10001000000000000000001 /* AltimeterService.swift */; };
+		G00002000000000000000002 /* RideSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = G10002000000000000000002 /* RideSession.swift */; };
+		G00003000000000000000003 /* RideDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = G10003000000000000000003 /* RideDashboardView.swift */; };
+		G00004000000000000000004 /* ConnectivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = G10004000000000000000004 /* ConnectivityService.swift */; };
+		G00005000000000000000005 /* OfflineMapService.swift in Sources */ = {isa = PBXBuildFile; fileRef = G10005000000000000000005 /* OfflineMapService.swift */; };
+		G00006000000000000000006 /* CellCoverageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = G10006000000000000000006 /* CellCoverageView.swift */; };
+		G00007000000000000000007 /* OfflineBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = G10007000000000000000007 /* OfflineBannerView.swift */; };
+		G00008000000000000000008 /* cell_towers.json in Resources */ = {isa = PBXBuildFile; fileRef = G10008000000000000000008 /* cell_towers.json */; };
+		H00001000000000000000001 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = H10001000000000000000001 /* WeatherService.swift */; };
+		H00002000000000000000002 /* RouteWeatherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H10002000000000000000002 /* RouteWeatherView.swift */; };
+		H00003000000000000000003 /* NavigationAudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = H10003000000000000000003 /* NavigationAudioService.swift */; };
+		H00004000000000000000004 /* WorkoutService.swift in Sources */ = {isa = PBXBuildFile; fileRef = H10004000000000000000004 /* WorkoutService.swift */; };
+		H00005000000000000000005 /* RideActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = H10005000000000000000005 /* RideActivityAttributes.swift */; };
+		H00006000000000000000006 /* RideActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = H10006000000000000000006 /* RideActivityManager.swift */; };
+		J00001000000000000000001 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = J10001000000000000000001 /* OnboardingView.swift */; };
+		J00002000000000000000002 /* PermissionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = J10002000000000000000002 /* PermissionService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -105,6 +105,7 @@
 		A20014000000000000000014 /* photos.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = photos.json; sourceTree = "<group>"; };
 		A20015000000000000000015 /* Thumbnails */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Thumbnails; sourceTree = "<group>"; };
 		A20016000000000000000016 /* Toolkit */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Toolkit; sourceTree = "<group>"; };
+		A30000000000000000000001 /* StoneBC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StoneBC.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C20001000000000000000001 /* Bike.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bike.swift; sourceTree = "<group>"; };
 		C20002000000000000000002 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 		C20003000000000000000003 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
@@ -119,6 +120,9 @@
 		C2000C00000000000000000C /* PostCardRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCardRow.swift; sourceTree = "<group>"; };
 		C2000D00000000000000000D /* MoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreView.swift; sourceTree = "<group>"; };
 		C2000E00000000000000000E /* WordPressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordPressService.swift; sourceTree = "<group>"; };
+		C20010000000000000000010 /* bikes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = bikes.json; sourceTree = "<group>"; };
+		C20011000000000000000011 /* posts.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = posts.json; sourceTree = "<group>"; };
+		C20012000000000000000012 /* config.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = config.json; sourceTree = "<group>"; };
 		D20001000000000000000001 /* RadioConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioConfig.swift; sourceTree = "<group>"; };
 		D20002000000000000000002 /* RadioPeer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioPeer.swift; sourceTree = "<group>"; };
 		D20003000000000000000003 /* RadioChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioChannel.swift; sourceTree = "<group>"; };
@@ -131,10 +135,6 @@
 		D2000A00000000000000000A /* RadioOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioOverlayView.swift; sourceTree = "<group>"; };
 		D2000B00000000000000000B /* AppState+Radio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppState+Radio.swift"; sourceTree = "<group>"; };
 		E20001000000000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		C20010000000000000000010 /* bikes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = bikes.json; sourceTree = "<group>"; };
-		C20011000000000000000011 /* posts.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = posts.json; sourceTree = "<group>"; };
-		C20012000000000000000012 /* config.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = config.json; sourceTree = "<group>"; };
-		A30000000000000000000001 /* StoneBC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StoneBC.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F10001000000000000000001 /* GPXService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPXService.swift; sourceTree = "<group>"; };
 		F10002000000000000000002 /* GPXImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPXImportView.swift; sourceTree = "<group>"; };
 		F10003000000000000000003 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
@@ -250,6 +250,14 @@
 			path = StoneBC;
 			sourceTree = "<group>";
 		};
+		A50003000000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A30000000000000000000001 /* StoneBC.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		D30000000000000000000001 /* Radio */ = {
 			isa = PBXGroup;
 			children = (
@@ -266,14 +274,6 @@
 				D2000B00000000000000000B /* AppState+Radio.swift */,
 			);
 			path = Radio;
-			sourceTree = "<group>";
-		};
-		A50003000000000000000003 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				A30000000000000000000001 /* StoneBC.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -311,7 +311,7 @@
 					};
 				};
 			};
-			buildConfigurationList = A80001000000000000000001 /* Build configuration list for PBXProject "StoneBC" */;
+			buildConfigurationList = A80001000000000000000001 /* Build configuration list for PBXProject "app" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -549,19 +549,19 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = StoneBC/StoneBC.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = SP854VZ979;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = SP854VZ979;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Rally Radio discovers nearby riders on your local network.";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Rally Radio uses your microphone for group voice chat during rides.";
-				INFOPLIST_KEY_NSBonjourServices = ("_stonebc-radio._tcp");
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "StoneBC uses your location to track your position on cycling routes.";
+				INFOPLIST_KEY_NSBonjourServices = "_stonebc-radio._tcp";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "StoneBC reads your cycling workouts to show ride history.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "StoneBC saves your rides as cycling workouts in Apple Health.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Rally Radio discovers nearby riders on your local network.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "StoneBC uses your location to track your position on cycling routes.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Rally Radio uses your microphone for group voice chat during rides.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UIBackgroundModes = "$(inherited) audio location";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -588,19 +588,19 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = StoneBC/StoneBC.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = SP854VZ979;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = SP854VZ979;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Rally Radio discovers nearby riders on your local network.";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Rally Radio uses your microphone for group voice chat during rides.";
-				INFOPLIST_KEY_NSBonjourServices = ("_stonebc-radio._tcp");
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "StoneBC uses your location to track your position on cycling routes.";
+				INFOPLIST_KEY_NSBonjourServices = "_stonebc-radio._tcp";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "StoneBC reads your cycling workouts to show ride history.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "StoneBC saves your rides as cycling workouts in Apple Health.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Rally Radio discovers nearby riders on your local network.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "StoneBC uses your location to track your position on cycling routes.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Rally Radio uses your microphone for group voice chat during rides.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UIBackgroundModes = "$(inherited) audio location";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -623,7 +623,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A80001000000000000000001 /* Build configuration list for PBXProject "StoneBC" */ = {
+		A80001000000000000000001 /* Build configuration list for PBXProject "app" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B10001000000000000000001 /* Debug */,
@@ -642,7 +642,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
 	};
 	rootObject = A90000000000000000000001 /* Project object */;
 }
