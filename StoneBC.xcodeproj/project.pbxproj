@@ -63,6 +63,10 @@
 		G00008000000000000000008 /* cell_towers.json in Resources */ = {isa = PBXBuildFile; fileRef = G10008000000000000000008; };
 		H00001000000000000000001 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = H10001000000000000000001; };
 		H00002000000000000000002 /* RouteWeatherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = H10002000000000000000002; };
+		H00003000000000000000003 /* NavigationAudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = H10003000000000000000003; };
+		H00004000000000000000004 /* WorkoutService.swift in Sources */ = {isa = PBXBuildFile; fileRef = H10004000000000000000004; };
+		H00005000000000000000005 /* RideActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = H10005000000000000000005; };
+		H00006000000000000000006 /* RideActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = H10006000000000000000006; };
 		E10001000000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E20001000000000000000001; };
 		C10010000000000000000010 /* bikes.json in Resources */ = {isa = PBXBuildFile; fileRef = C20010000000000000000010; };
 		C10011000000000000000011 /* posts.json in Resources */ = {isa = PBXBuildFile; fileRef = C20011000000000000000011; };
@@ -145,6 +149,10 @@
 		G10008000000000000000008 /* cell_towers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = cell_towers.json; sourceTree = "<group>"; };
 		H10001000000000000000001 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
 		H10002000000000000000002 /* RouteWeatherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteWeatherView.swift; sourceTree = "<group>"; };
+		H10003000000000000000003 /* NavigationAudioService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationAudioService.swift; sourceTree = "<group>"; };
+		H10004000000000000000004 /* WorkoutService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutService.swift; sourceTree = "<group>"; };
+		H10005000000000000000005 /* RideActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideActivityAttributes.swift; sourceTree = "<group>"; };
+		H10006000000000000000006 /* RideActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideActivityManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -221,6 +229,10 @@
 				G10008000000000000000008 /* cell_towers.json */,
 				H10001000000000000000001 /* WeatherService.swift */,
 				H10002000000000000000002 /* RouteWeatherView.swift */,
+				H10003000000000000000003 /* NavigationAudioService.swift */,
+				H10004000000000000000004 /* WorkoutService.swift */,
+				H10005000000000000000005 /* RideActivityAttributes.swift */,
+				H10006000000000000000006 /* RideActivityManager.swift */,
 				D30000000000000000000001 /* Radio */,
 				E20001000000000000000001 /* Assets.xcassets */,
 				C20010000000000000000010 /* bikes.json */,
@@ -391,6 +403,10 @@
 				G00007000000000000000007 /* OfflineBannerView.swift in Sources */,
 				H00001000000000000000001 /* WeatherService.swift in Sources */,
 				H00002000000000000000002 /* RouteWeatherView.swift in Sources */,
+				H00003000000000000000003 /* NavigationAudioService.swift in Sources */,
+				H00004000000000000000004 /* WorkoutService.swift in Sources */,
+				H00005000000000000000005 /* RideActivityAttributes.swift in Sources */,
+				H00006000000000000000006 /* RideActivityManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -532,6 +548,8 @@
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Rally Radio uses your microphone for group voice chat during rides.";
 				INFOPLIST_KEY_NSBonjourServices = ("_stonebc-radio._tcp");
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "StoneBC uses your location to track your position on cycling routes.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "StoneBC reads your cycling workouts to show ride history.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "StoneBC saves your rides as cycling workouts in Apple Health.";
 				INFOPLIST_KEY_UIBackgroundModes = "$(inherited) audio";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -567,6 +585,8 @@
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Rally Radio uses your microphone for group voice chat during rides.";
 				INFOPLIST_KEY_NSBonjourServices = ("_stonebc-radio._tcp");
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "StoneBC uses your location to track your position on cycling routes.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "StoneBC reads your cycling workouts to show ride history.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "StoneBC saves your rides as cycling workouts in Apple Health.";
 				INFOPLIST_KEY_UIBackgroundModes = "$(inherited) audio";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";

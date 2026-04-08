@@ -2,7 +2,8 @@
 //  RouteNavigationView.swift
 //  StoneBC
 //
-//  Live route navigation — map + ride dashboard with compass, altimeter, speed
+//  Live route navigation — map + ride dashboard with compass, altimeter, speed,
+//  audio turn cues, breadcrumb trail, and off-route warnings
 //
 
 import SwiftUI
@@ -14,11 +15,17 @@ struct RouteNavigationView: View {
 
     @State private var locationService = LocationService()
     @State private var altimeterService = AltimeterService()
+    @State private var audioService = NavigationAudioService()
+    @State private var workoutService = WorkoutService()
+    @State private var activityManager = RideActivityManager()
     @State private var session: RideSession
     @State private var position: MapCameraPosition = .automatic
     @State private var isFollowingUser = true
     @State private var mapStyle: MapStyleOption = .standard
     @State private var showEndConfirm = false
+    @State private var wasOffRoute = false
+    @State private var breadcrumbs: [CLLocationCoordinate2D] = []
+    @State private var showAudioToggle = false
     @Environment(\.dismiss) var dismiss
 
     init(route: Route) {
@@ -30,9 +37,15 @@ struct RouteNavigationView: View {
         ZStack {
             // Map
             Map(position: $position) {
-                // Route polyline
+                // Route polyline (planned)
                 MapPolyline(coordinates: route.clTrackpoints)
                     .stroke(BCColors.brandBlue, lineWidth: 4)
+
+                // Breadcrumb trail (actual path ridden)
+                if breadcrumbs.count >= 2 {
+                    MapPolyline(coordinates: breadcrumbs)
+                        .stroke(.orange, style: StrokeStyle(lineWidth: 3, dash: [6, 4]))
+                }
 
                 // Start pin
                 if let first = route.clTrackpoints.first {
@@ -73,13 +86,66 @@ struct RouteNavigationView: View {
             }
             .mapStyle(mapStyle.style)
             .onChange(of: locationService.userLocation?.latitude) {
-                // Update session with new location
-                if let loc = locationService.userLocation {
-                    session.updateLocation(loc, speed: locationService.speedMPS)
+                guard let loc = locationService.userLocation else { return }
+
+                // Update session
+                session.updateLocation(loc, speed: locationService.speedMPS)
+
+                // Add breadcrumb (every ~10m to avoid excessive points)
+                if let last = breadcrumbs.last {
+                    let lastCL = CLLocation(latitude: last.latitude, longitude: last.longitude)
+                    let currentCL = CLLocation(latitude: loc.latitude, longitude: loc.longitude)
+                    if currentCL.distance(from: lastCL) > 10 {
+                        breadcrumbs.append(loc)
+                    }
+                } else {
+                    breadcrumbs.append(loc)
+                }
+
+                // Audio: off-route detection
+                if session.isOffRoute {
+                    if !wasOffRoute {
+                        audioService.announceOffRoute(distanceMeters: session.distanceFromRouteMeters)
+                        wasOffRoute = true
+                    }
+                } else if wasOffRoute {
+                    audioService.announceBackOnRoute()
+                    wasOffRoute = false
+                }
+
+                // Audio: milestone check
+                audioService.checkMilestone(
+                    distanceMiles: session.distanceTraveledMiles,
+                    totalMiles: route.distanceMiles
+                )
+
+                // Live Activity update
+                activityManager.updateActivity(
+                    speedMPH: locationService.speedMPH,
+                    distanceTraveled: session.distanceTraveledMiles,
+                    distanceRemaining: session.distanceRemainingMiles,
+                    elapsedTime: session.formattedElapsedTime,
+                    progress: session.progressPercent,
+                    isOffRoute: session.isOffRoute,
+                    heading: locationService.heading
+                )
+
+                // HealthKit: feed GPS data every ~5 points
+                if workoutService.isRecording && breadcrumbs.count % 5 == 0 {
+                    let recent = Array(locationService.locationHistory.suffix(5))
+                    workoutService.addRouteData(recent)
+                }
+
+                // Audio: turn detection
+                if let turn = NavigationAudioService.detectTurn(
+                    trackpoints: route.clTrackpoints,
+                    currentIndex: session.closestTrackpointIndex
+                ), turn.distanceMeters < 200 {
+                    audioService.announceTurn(direction: turn.direction, distanceAhead: turn.distanceMeters)
                 }
 
                 // Follow user
-                if isFollowingUser, let loc = locationService.userLocation {
+                if isFollowingUser {
                     withAnimation(.easeInOut(duration: 0.5)) {
                         position = .camera(MapCamera(
                             centerCoordinate: loc,
@@ -108,15 +174,25 @@ struct RouteNavigationView: View {
                 Spacer()
 
                 // Bottom controls
-                HStack(spacing: 16) {
+                HStack(spacing: 12) {
                     // Map style toggle
                     Button {
-                        withAnimation {
-                            mapStyle = mapStyle.next
-                        }
+                        withAnimation { mapStyle = mapStyle.next }
                     } label: {
                         Image(systemName: mapStyle.icon)
                             .font(.system(size: 14))
+                            .padding(10)
+                            .background(.ultraThinMaterial)
+                            .clipShape(Circle())
+                    }
+
+                    // Audio toggle
+                    Button {
+                        audioService.isEnabled.toggle()
+                    } label: {
+                        Image(systemName: audioService.isEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill")
+                            .font(.system(size: 14))
+                            .foregroundColor(audioService.isEnabled ? .white : .orange)
                             .padding(10)
                             .background(.ultraThinMaterial)
                             .clipShape(Circle())
@@ -169,7 +245,21 @@ struct RouteNavigationView: View {
             locationService.requestPermission()
             locationService.startTracking()
             altimeterService.start()
+            audioService.reset()
             session.start()
+            activityManager.startActivity(
+                routeName: route.name,
+                distanceMiles: route.distanceMiles,
+                category: route.category
+            )
+        }
+        .task {
+            if workoutService.isAvailable {
+                await workoutService.requestAuthorization()
+                if workoutService.isAuthorized {
+                    await workoutService.startWorkout(routeName: route.name)
+                }
+            }
         }
         .onDisappear {
             locationService.stopTracking()
@@ -178,6 +268,20 @@ struct RouteNavigationView: View {
         }
         .confirmationDialog("End this ride?", isPresented: $showEndConfirm) {
             Button("End Ride", role: .destructive) {
+                audioService.announceRideComplete(
+                    distance: session.distanceTraveledMiles,
+                    time: session.formattedElapsedTime
+                )
+                activityManager.endActivity(
+                    finalDistance: session.distanceTraveledMiles,
+                    finalTime: session.formattedElapsedTime
+                )
+                Task {
+                    await workoutService.endWorkout(
+                        distance: session.distanceTraveledMiles,
+                        duration: session.elapsedSeconds
+                    )
+                }
                 locationService.stopTracking()
                 altimeterService.stop()
                 session.stop()
