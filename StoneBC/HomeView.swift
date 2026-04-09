@@ -165,6 +165,40 @@ struct HomeView: View {
 
     private var quickLinksSection: some View {
         VStack(alignment: .leading, spacing: BCSpacing.sm) {
+            // Rally Radio CTA
+            if appState.config.features.enableRadio {
+                NavigationLink(destination: RadioView()) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "antenna.radiowaves.left.and.right")
+                            .font(.system(size: 18, weight: .medium))
+                            .foregroundColor(.white)
+                            .frame(width: 44, height: 44)
+                            .background(BCColors.brandBlue)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Rally Radio")
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundColor(.primary)
+                            Text("Push-to-talk for group rides")
+                                .font(.system(size: 11))
+                                .foregroundColor(.secondary)
+                        }
+
+                        Spacer()
+
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 12))
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(BCSpacing.md)
+                    .background(BCColors.cardBackground)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Rally Radio. Push-to-talk voice chat for group rides.")
+            }
+
             sectionHeader("EXPLORE", icon: "arrow.right.circle")
 
             VStack(spacing: 1) {

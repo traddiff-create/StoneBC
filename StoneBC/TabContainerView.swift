@@ -37,19 +37,11 @@ struct TabContainerView: View {
                     .tag(2)
             }
 
-            if appState.config.features.enableRadio {
-                RadioView()
-                    .tabItem {
-                        Label("Radio", systemImage: "antenna.radiowaves.left.and.right")
-                    }
-                    .tag(3)
-            }
-
             MoreView()
                 .tabItem {
                     Label("More", systemImage: "ellipsis")
                 }
-                .tag(4)
+                .tag(3)
         }
         .tint(BCColors.brandBlue)
     }
