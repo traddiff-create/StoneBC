@@ -7,18 +7,35 @@
 //
 
 import AVFoundation
+import os.log
 
 protocol AudioStreamDelegate: AnyObject {
     func audioStream(_ service: AudioStreamService, didCapture data: Data)
+    func audioStreamWasInterrupted(_ service: AudioStreamService)
+    func audioStreamInterruptionEnded(_ service: AudioStreamService)
 }
 
-class AudioStreamService {
+class AudioStreamService: NSObject {
+    private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.traddiff.StoneBC", category: "AudioStream")
+
     // Separate engines — capture and playback must not interfere
     private var captureEngine: AVAudioEngine?
     private var playbackEngine: AVAudioEngine?
     private var playerNode: AVAudioPlayerNode?
-    private var isCapturing = false
-    private var isPlaybackReady = false
+    private let stateLock = NSLock()
+    private var _isCapturing = false
+    private var _isPlaybackReady = false
+    private var wasCapturingBeforeInterruption = false
+
+    private var isCapturing: Bool {
+        get { stateLock.withLock { _isCapturing } }
+        set { stateLock.withLock { _isCapturing = newValue } }
+    }
+
+    private var isPlaybackReady: Bool {
+        get { stateLock.withLock { _isPlaybackReady } }
+        set { stateLock.withLock { _isPlaybackReady = newValue } }
+    }
 
     weak var delegate: AudioStreamDelegate?
 
@@ -35,16 +52,64 @@ class AudioStreamService {
             try session.setPreferredSampleRate(RadioConfig.sampleRate)
             try session.setPreferredIOBufferDuration(0.02) // 20ms for low latency
             try session.setActive(true)
-            print("[AudioStream] Audio session configured: \(session.sampleRate)Hz")
+            Self.logger.info("Audio session configured: \(session.sampleRate)Hz")
         } catch {
-            print("[AudioStream] ERROR configuring audio session: \(error)")
+            Self.logger.error("Error configuring audio session: \(error.localizedDescription)")
         }
+
+        // Observe interruptions (phone calls, Siri, etc.)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleInterruption),
+            name: AVAudioSession.interruptionNotification,
+            object: session
+        )
     }
 
     func teardownAudioSession() {
+        NotificationCenter.default.removeObserver(self, name: AVAudioSession.interruptionNotification, object: nil)
         stopCapture()
         stopPlayback()
         try? AVAudioSession.sharedInstance().setActive(false)
+    }
+
+    @objc private func handleInterruption(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let typeValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
+              let type = AVAudioSession.InterruptionType(rawValue: typeValue) else { return }
+
+        switch type {
+        case .began:
+            Self.logger.info("Interruption began (phone call, Siri, etc.)")
+            wasCapturingBeforeInterruption = isCapturing
+            stopCapture()
+            stopPlayback()
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                self.delegate?.audioStreamWasInterrupted(self)
+            }
+
+        case .ended:
+            Self.logger.info("Interruption ended")
+            let options = userInfo[AVAudioSessionInterruptionOptionKey] as? UInt ?? 0
+            let shouldResume = AVAudioSession.InterruptionOptions(rawValue: options).contains(.shouldResume)
+
+            if shouldResume {
+                try? AVAudioSession.sharedInstance().setActive(true)
+                if wasCapturingBeforeInterruption {
+                    startCapture()
+                }
+                setupPlaybackEngine()
+            }
+
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                self.delegate?.audioStreamInterruptionEnded(self)
+            }
+
+        @unknown default:
+            break
+        }
     }
 
     // MARK: - Capture (Microphone → Data)
@@ -56,7 +121,7 @@ class AudioStreamService {
         let inputNode = engine.inputNode
         let inputFormat = inputNode.outputFormat(forBus: 0)
 
-        print("[AudioStream] Starting capture: input format = \(inputFormat)")
+        Self.logger.info("Starting capture: input format = \(String(describing: inputFormat))")
 
         // Use the hardware format for the tap, convert in the callback
         inputNode.installTap(onBus: 0, bufferSize: 1024, format: inputFormat) { [weak self] buffer, _ in
@@ -85,9 +150,9 @@ class AudioStreamService {
             try engine.start()
             captureEngine = engine
             isCapturing = true
-            print("[AudioStream] Capture started")
+            Self.logger.info("Capture started")
         } catch {
-            print("[AudioStream] ERROR starting capture: \(error)")
+            Self.logger.error("Error starting capture: \(error.localizedDescription)")
         }
     }
 
@@ -97,7 +162,7 @@ class AudioStreamService {
         captureEngine?.stop()
         captureEngine = nil
         isCapturing = false
-        print("[AudioStream] Capture stopped")
+        Self.logger.info("Capture stopped")
     }
 
     // MARK: - Playback (Data → Speaker)
@@ -114,7 +179,7 @@ class AudioStreamService {
 
         // Convert data to PCM buffer
         guard let buffer = dataToBuffer(data) else {
-            print("[AudioStream] Failed to convert data to buffer (\(data.count) bytes)")
+            Self.logger.warning("Failed to convert data to buffer (\(data.count) bytes)")
             return
         }
         player.scheduleBuffer(buffer)
@@ -132,9 +197,9 @@ class AudioStreamService {
             playbackEngine = engine
             playerNode = player
             isPlaybackReady = true
-            print("[AudioStream] Playback engine ready")
+            Self.logger.info("Playback engine ready")
         } catch {
-            print("[AudioStream] ERROR starting playback: \(error)")
+            Self.logger.error("Error starting playback: \(error.localizedDescription)")
         }
     }
 
@@ -151,7 +216,7 @@ class AudioStreamService {
     private func convertBuffer(_ buffer: AVAudioPCMBuffer, to format: AVAudioFormat) -> AVAudioPCMBuffer? {
         guard buffer.format != format else { return buffer }
         guard let converter = AVAudioConverter(from: buffer.format, to: format) else {
-            print("[AudioStream] Cannot create converter from \(buffer.format) to \(format)")
+            Self.logger.warning("Cannot create converter from \(String(describing: buffer.format)) to \(String(describing: format))")
             return nil
         }
 
@@ -175,7 +240,7 @@ class AudioStreamService {
         }
 
         if let error {
-            print("[AudioStream] Conversion error: \(error)")
+            Self.logger.error("Conversion error: \(error.localizedDescription)")
             return nil
         }
 

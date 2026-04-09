@@ -32,6 +32,13 @@ enum RadioConfig {
         AVAudioFrameCount(sampleRate * bufferDuration)
     }
 
+    // Reconnection
+    static let reconnectTimeout: TimeInterval = 60  // seconds to keep trying
+
+    // Peer Validation
+    static let appIdentifier = "StoneBC"
+    static let protocolVersion = "1"
+
     // UI
     static let pttButtonSize: CGFloat = 80
     static let peerAvatarSize: CGFloat = 40

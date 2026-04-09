@@ -7,6 +7,7 @@
 
 import Foundation
 import MultipeerConnectivity
+import os.log
 
 protocol RadioServiceDelegate: AnyObject {
     func radioService(_ service: RadioService, didReceiveAudio data: Data, from peer: MCPeerID)
@@ -16,6 +17,8 @@ protocol RadioServiceDelegate: AnyObject {
 }
 
 class RadioService: NSObject {
+    private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.traddiff.StoneBC", category: "RadioService")
+
     private let myPeerID: MCPeerID
     private var session: MCSession?
     private var advertiser: MCNearbyServiceAdvertiser?
@@ -35,7 +38,7 @@ class RadioService: NSObject {
         let name = UIDevice.current.name
         self.myPeerID = MCPeerID(displayName: name)
         super.init()
-        print("[Radio] Initialized with peer name: \(name)")
+        Self.logger.info("Initialized with peer name: \(name)")
     }
 
     // MARK: - Lifecycle
@@ -44,20 +47,23 @@ class RadioService: NSObject {
         let session = MCSession(
             peer: myPeerID,
             securityIdentity: nil,
-            encryptionPreference: .none
+            encryptionPreference: .required
         )
         session.delegate = self
         self.session = session
 
         let advertiser = MCNearbyServiceAdvertiser(
             peer: myPeerID,
-            discoveryInfo: ["app": "StoneBC"],
+            discoveryInfo: [
+                "app": RadioConfig.appIdentifier,
+                "v": RadioConfig.protocolVersion
+            ],
             serviceType: RadioConfig.serviceType
         )
         advertiser.delegate = self
         advertiser.startAdvertisingPeer()
         self.advertiser = advertiser
-        print("[Radio] Advertising as '\(myPeerID.displayName)' on service '\(RadioConfig.serviceType)'")
+        Self.logger.info("Advertising as '\(self.myPeerID.displayName)' on service '\(RadioConfig.serviceType)'")
 
         let browser = MCNearbyServiceBrowser(
             peer: myPeerID,
@@ -66,7 +72,7 @@ class RadioService: NSObject {
         browser.delegate = self
         browser.startBrowsingForPeers()
         self.browser = browser
-        print("[Radio] Browsing for peers on service '\(RadioConfig.serviceType)'")
+        Self.logger.info("Browsing for peers on service '\(RadioConfig.serviceType)'")
     }
 
     func stop() {
@@ -76,7 +82,7 @@ class RadioService: NSObject {
         advertiser = nil
         browser = nil
         session = nil
-        print("[Radio] Stopped and disconnected")
+        Self.logger.info("Stopped and disconnected")
     }
 
     // MARK: - Audio Data
@@ -91,7 +97,7 @@ class RadioService: NSObject {
         do {
             try session.send(tagged, toPeers: session.connectedPeers, with: .unreliable)
         } catch {
-            print("[Radio] Send audio error: \(error)")
+            Self.logger.error("Send audio error: \(error.localizedDescription)")
         }
     }
 
@@ -102,7 +108,7 @@ class RadioService: NSObject {
         do {
             try session.send(data, toPeers: session.connectedPeers, with: .reliable)
         } catch {
-            print("[Radio] Send transmit state error: \(error)")
+            Self.logger.error("Send transmit state error: \(error.localizedDescription)")
         }
     }
 }
@@ -118,7 +124,7 @@ extension RadioService: MCSessionDelegate {
         case .notConnected: stateStr = "DISCONNECTED"
         @unknown default: stateStr = "unknown"
         }
-        print("[Radio] Peer '\(peerID.displayName)' state: \(stateStr)")
+        Self.logger.info("Peer '\(peerID.displayName)' state: \(stateStr)")
 
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
@@ -165,12 +171,24 @@ extension RadioService: MCSessionDelegate {
 
 extension RadioService: MCNearbyServiceAdvertiserDelegate {
     func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void) {
-        print("[Radio] Received invitation from '\(peerID.displayName)' — auto-accepting")
+        // Accept invitations only when we have an active session
+        // Peer identity is already validated by the browser before inviting
+        guard let session else {
+            Self.logger.warning("Rejected invitation — no active session")
+            invitationHandler(false, nil)
+            return
+        }
+        guard session.connectedPeers.count < RadioConfig.maxPeers else {
+            Self.logger.warning("Rejected invitation — max peers reached")
+            invitationHandler(false, nil)
+            return
+        }
+        Self.logger.info("Accepted invitation from '\(peerID.displayName)'")
         invitationHandler(true, session)
     }
 
     func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didNotStartAdvertisingPeer error: Error) {
-        print("[Radio] ERROR: Failed to start advertising: \(error)")
+        Self.logger.error("Failed to start advertising: \(error.localizedDescription)")
     }
 }
 
@@ -178,24 +196,34 @@ extension RadioService: MCNearbyServiceAdvertiserDelegate {
 
 extension RadioService: MCNearbyServiceBrowserDelegate {
     func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String: String]?) {
-        print("[Radio] Found peer '\(peerID.displayName)' — inviting")
-        guard let session else {
-            print("[Radio] ERROR: No session available to invite peer")
-            return
-        }
-        guard session.connectedPeers.count < RadioConfig.maxPeers else {
-            print("[Radio] Max peers reached, ignoring '\(peerID.displayName)'")
+        Self.logger.info("Found peer '\(peerID.displayName)' — checking identity")
+
+        // Validate peer is a StoneBC app with compatible protocol
+        guard let info,
+              info["app"] == RadioConfig.appIdentifier,
+              info["v"] == RadioConfig.protocolVersion else {
+            Self.logger.warning("Rejected peer '\(peerID.displayName)' — invalid or missing discoveryInfo")
             return
         }
 
+        guard let session else {
+            Self.logger.error("No session available to invite peer")
+            return
+        }
+        guard session.connectedPeers.count < RadioConfig.maxPeers else {
+            Self.logger.info("Max peers reached, ignoring '\(peerID.displayName)'")
+            return
+        }
+
+        Self.logger.info("Peer '\(peerID.displayName)' verified — inviting")
         browser.invitePeer(peerID, to: session, withContext: nil, timeout: 30)
     }
 
     func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {
-        print("[Radio] Lost peer '\(peerID.displayName)'")
+        Self.logger.info("Lost peer '\(peerID.displayName)'")
     }
 
     func browser(_ browser: MCNearbyServiceBrowser, didNotStartBrowsingForPeers error: Error) {
-        print("[Radio] ERROR: Failed to start browsing: \(error)")
+        Self.logger.error("Failed to start browsing: \(error.localizedDescription)")
     }
 }

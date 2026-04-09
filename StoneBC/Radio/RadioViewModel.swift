@@ -17,6 +17,9 @@ class RadioViewModel: NSObject {
     var isOpenMic: Bool = false
     var currentSpeaker: String?
 
+    // Reconnection tracking
+    private var recentlyDisconnected: [String: Date] = [:]
+
     // Services
     private let radioService = RadioService()
     private let audioService = AudioStreamService()
@@ -35,12 +38,7 @@ class RadioViewModel: NSObject {
         state = .connecting
         audioService.setupAudioSession()
         radioService.start()
-
-        // Move to connected after brief delay (even with no peers)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
-            guard let self, self.state == .connecting else { return }
-            self.state = .connected
-        }
+        // State transitions to .connected when first peer connects (via peerDidConnect delegate)
     }
 
     func stopRadio() {
@@ -48,6 +46,7 @@ class RadioViewModel: NSObject {
         radioService.stop()
         audioService.teardownAudioSession()
         connectedPeers.removeAll()
+        recentlyDisconnected.removeAll()
         currentSpeaker = nil
         state = .idle
     }
@@ -105,12 +104,16 @@ extension RadioViewModel: RadioServiceDelegate {
     }
 
     func radioService(_ service: RadioService, peerDidConnect peer: MCPeerID) {
+        let isReconnect = recentlyDisconnected.removeValue(forKey: peer.displayName) != nil
         let radioPeer = RadioPeer(id: peer.displayName, displayName: peer.displayName)
         if !connectedPeers.contains(where: { $0.id == radioPeer.id }) {
             connectedPeers.append(radioPeer)
         }
         if state == .connecting {
             state = .connected
+        }
+        if isReconnect {
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
         }
     }
 
@@ -119,6 +122,9 @@ extension RadioViewModel: RadioServiceDelegate {
         if peer.displayName == currentSpeaker {
             currentSpeaker = nil
         }
+        // Track for auto-reconnect — browser stays active and will re-invite
+        recentlyDisconnected[peer.displayName] = Date()
+        UINotificationFeedbackGenerator().notificationOccurred(.warning)
     }
 
     func radioService(_ service: RadioService, peerIsTransmitting peer: MCPeerID, transmitting: Bool) {
@@ -134,5 +140,21 @@ extension RadioViewModel: RadioServiceDelegate {
 extension RadioViewModel: AudioStreamDelegate {
     func audioStream(_ service: AudioStreamService, didCapture data: Data) {
         radioService.sendAudio(data)
+    }
+
+    func audioStreamWasInterrupted(_ service: AudioStreamService) {
+        if state == .transmitting {
+            radioService.sendTransmitState(false)
+            state = .connected
+        }
+    }
+
+    func audioStreamInterruptionEnded(_ service: AudioStreamService) {
+        // Resume open mic if it was active
+        if isOpenMic && state == .connected {
+            radioService.sendTransmitState(true)
+            audioService.startCapture()
+            state = .transmitting
+        }
     }
 }
