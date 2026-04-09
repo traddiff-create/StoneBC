@@ -16,6 +16,7 @@ class PermissionService: NSObject, CLLocationManagerDelegate {
     var locationStatus: CLAuthorizationStatus = .notDetermined
     var healthKitAvailable: Bool { HKHealthStore.isHealthDataAvailable() }
     var healthKitAuthorized = false
+    var microphoneGranted = false
 
     private let locationManager = CLLocationManager()
     private let healthStore = HKHealthStore()
@@ -24,6 +25,7 @@ class PermissionService: NSObject, CLLocationManagerDelegate {
         super.init()
         locationManager.delegate = self
         locationStatus = locationManager.authorizationStatus
+        microphoneGranted = AVAudioApplication.shared.recordPermission == .granted
     }
 
     // MARK: - Location
@@ -38,6 +40,16 @@ class PermissionService: NSObject, CLLocationManagerDelegate {
 
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         locationStatus = manager.authorizationStatus
+    }
+
+    // MARK: - Microphone
+
+    func requestMicrophone() {
+        AVAudioApplication.requestRecordPermission { granted in
+            DispatchQueue.main.async {
+                self.microphoneGranted = granted
+            }
+        }
     }
 
     // MARK: - HealthKit

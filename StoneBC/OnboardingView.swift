@@ -21,8 +21,9 @@ struct OnboardingView: View {
                     welcomePage.tag(0)
                     locationPage.tag(1)
                     sensorsPage.tag(2)
-                    healthPage.tag(3)
-                    readyPage.tag(4)
+                    radioPage.tag(3)
+                    healthPage.tag(4)
+                    readyPage.tag(5)
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .animation(.easeInOut(duration: 0.3), value: currentPage)
@@ -73,6 +74,22 @@ struct OnboardingView: View {
         )
     }
 
+    private var radioPage: some View {
+        OnboardingPage(
+            icon: "antenna.radiowaves.left.and.right",
+            iconColor: BCColors.brandBlue,
+            title: "Rally Radio",
+            subtitle: "Voice Chat for Rides",
+            description: "Push-to-talk group voice chat that works without cell service. Uses peer-to-peer WiFi to keep your ride group connected — no backend, no accounts, just talk.",
+            showPermissionButton: true,
+            permissionLabel: permissionService.microphoneGranted ? "Microphone Enabled" : "Enable Microphone",
+            permissionGranted: permissionService.microphoneGranted,
+            permissionAction: {
+                permissionService.requestMicrophone()
+            }
+        )
+    }
+
     private var healthPage: some View {
         OnboardingPage(
             icon: "heart.fill",
@@ -113,6 +130,7 @@ struct OnboardingView: View {
                 featureCheck("Weather & Wind Analysis", granted: true)
                 featureCheck("Offline Maps & Cell Coverage", granted: true)
                 featureCheck("Location Services", granted: permissionService.locationGranted)
+                featureCheck("Rally Radio Microphone", granted: permissionService.microphoneGranted)
                 if permissionService.healthKitAvailable {
                     featureCheck("Apple Health Workouts", granted: permissionService.healthKitAuthorized)
                 }
@@ -156,7 +174,7 @@ struct OnboardingView: View {
         VStack(spacing: 16) {
             // Page dots
             HStack(spacing: 8) {
-                ForEach(0..<5, id: \.self) { page in
+                ForEach(0..<6, id: \.self) { page in
                     Circle()
                         .fill(page == currentPage ? BCColors.brandGreen : Color.secondary.opacity(0.3))
                         .frame(width: 8, height: 8)
@@ -164,10 +182,10 @@ struct OnboardingView: View {
             }
 
             // Buttons
-            if currentPage < 4 {
+            if currentPage < 5 {
                 HStack {
                     Button("Skip") {
-                        withAnimation { currentPage = 4 }
+                        withAnimation { currentPage = 5 }
                     }
                     .font(.system(size: 13))
                     .foregroundColor(.secondary)
