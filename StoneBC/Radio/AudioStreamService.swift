@@ -47,7 +47,7 @@ class AudioStreamService: NSObject {
             try session.setCategory(
                 .playAndRecord,
                 mode: .voiceChat,
-                options: [.defaultToSpeaker, .allowBluetooth, .mixWithOthers]
+                options: [.defaultToSpeaker, .allowBluetoothHFP, .mixWithOthers]
             )
             try session.setPreferredSampleRate(RadioConfig.sampleRate)
             try session.setPreferredIOBufferDuration(0.02) // 20ms for low latency
