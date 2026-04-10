@@ -553,7 +553,7 @@
 				DEVELOPMENT_TEAM = SP854VZ979;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSBonjourServices = "_stonebc-radio._tcp";
+					INFOPLIST_FILE = StoneBC/Info.plist;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "StoneBC reads your cycling workouts to show ride history.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "StoneBC saves your rides as cycling workouts in Apple Health.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Rally Radio discovers nearby riders on your local network.";
@@ -562,7 +562,6 @@
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UIBackgroundModes = "$(inherited) audio location";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -592,7 +591,7 @@
 				DEVELOPMENT_TEAM = SP854VZ979;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSBonjourServices = "_stonebc-radio._tcp";
+					INFOPLIST_FILE = StoneBC/Info.plist;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "StoneBC reads your cycling workouts to show ride history.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "StoneBC saves your rides as cycling workouts in Apple Health.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Rally Radio discovers nearby riders on your local network.";
@@ -601,7 +600,6 @@
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UIBackgroundModes = "$(inherited) audio location";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
