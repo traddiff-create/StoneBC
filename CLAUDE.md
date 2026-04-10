@@ -5,7 +5,7 @@
 **Type:** Hybrid (iOS App + Website + Open-Source Toolkit)
 **Owners:** Rory & Nicole Stone
 **Status:** Active Development
-**Bundle ID:** `com.traddiff.StoneBC` | **Version:** 0.5
+**Bundle ID:** `com.traddiff.StoneBC` | **Version:** 0.6
 **Deployment Target:** iOS 17.0
 
 ---
@@ -126,11 +126,12 @@ StoneBC/
 
 | Tab | View | Content |
 |-----|------|---------|
-| Home | HomeView | Dashboard: featured bikes, recent posts, quick links |
+| Home | HomeView | Dashboard: featured bikes, recent posts, Rally Radio card, quick links |
 | Routes | RoutesView | 42 Black Hills routes with filters |
 | Bikes | MarketplaceView | The Quarry inventory with status/type filters |
-| Radio | RadioView | Rally Radio push-to-talk voice chat |
 | More | MoreView | Community feed, events, programs, gallery, contact |
+
+**Rally Radio** is accessed via a NavigationLink card on the Home tab (not a tab — iOS 26 Liquid Glass hides 5th tabs).
 
 ---
 
@@ -173,5 +174,5 @@ StoneBC/
 
 ---
 
-**Last Updated:** 2026-04-01
+**Last Updated:** 2026-04-09
 **Maintained By:** Rory Stone

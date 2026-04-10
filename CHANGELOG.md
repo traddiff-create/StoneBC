@@ -4,6 +4,48 @@ All notable changes to the Stone Bicycle Coalition project will be documented in
 
 ---
 
+## [0.6.0] - 2026-04-09
+
+### Rally Radio — Security, Reliability & UX Overhaul
+
+#### Security (Critical)
+- **DTLS encryption enabled** — MCSession `encryptionPreference` changed from `.none` to `.required`. All voice data now encrypted in transit
+- **Peer validation** — discoveryInfo verification ensures only StoneBC apps with matching protocol version can connect. Rejects unknown peers
+- **Invitation gating** — advertiser rejects invitations when at max peers or no active session
+
+#### Reliability
+- **Audio interruption handling** — AVAudioSession interruption observer recovers gracefully from phone calls, Siri, and other audio interruptions. Auto-resumes open mic after interruption ends
+- **Auto-reconnect tracking** — disconnected peers tracked with haptic feedback (warning on disconnect, success on reconnect). Browser stays active for automatic re-discovery
+- **Production logging** — all 20+ `print()` statements replaced with `os.log` Logger (privacy-safe, filterable)
+- **Thread safety** — AudioStreamService state flags (`isCapturing`, `isPlaybackReady`) synchronized with NSLock
+
+#### UX & Navigation
+- **Radio moved to Home tab** — iOS 26 Liquid Glass tab bar hides 5th tab. Rally Radio now accessible via prominent card on Home screen with antenna icon and "Push-to-talk for group rides" subtitle
+- **4-tab layout** — Tab bar reduced from 5 to 4 tabs (Home, Routes, Bikes, More) for Liquid Glass compatibility
+- **Honest state display** — removed fake 2-second "connecting" delay. Shows "Searching..." until actual peer connects
+
+#### Onboarding
+- **Rally Radio onboarding page** — new page 4 with microphone permission request. 6-page flow: Welcome → Location → Sensors → Rally Radio → HealthKit → Ready
+- **Microphone permission** — PermissionService gains `requestMicrophone()` and `microphoneGranted` tracking
+- **Ready page checklist** — now includes "Rally Radio Microphone" status
+
+#### Infrastructure Fix
+- **Info.plist created** — `NSBonjourServices` was incorrectly declared as a string via build settings (requires array). Created proper `StoneBC/Info.plist` with array-type keys for Bonjour services and background modes. This was the root cause of Local Network permission never being triggered
+- **Deprecated API fix** — `.allowBluetooth` replaced with `.allowBluetoothHFP`
+
+### Changed
+- TabContainerView: 4 tabs (removed Radio tab, added to Home as NavigationLink)
+- HomeView: added Rally Radio card in quick links section
+- OnboardingView: 6 pages (added Rally Radio microphone page)
+- PermissionService: added microphone permission support
+- RadioConfig: added `appIdentifier`, `protocolVersion`, `reconnectTimeout` constants
+- app.xcodeproj: INFOPLIST_FILE points to StoneBC/Info.plist, removed broken INFOPLIST_KEY_ array entries
+
+### New Files
+- `StoneBC/Info.plist` — proper array-type keys (NSBonjourServices, UIBackgroundModes)
+
+---
+
 ## [0.5.0] - 2026-04-08
 
 ### Added — Lewis & Clark Routes Upgrade (6 Phases)

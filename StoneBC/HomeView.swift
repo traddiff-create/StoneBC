@@ -249,7 +249,7 @@ struct HomeView: View {
                     .font(.system(size: 10))
                     .foregroundColor(.secondary)
             }
-            Text("v0.2")
+            Text("v0.6")
                 .font(.system(size: 10))
                 .foregroundColor(BCColors.tertiaryText)
         }
