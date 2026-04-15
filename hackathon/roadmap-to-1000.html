@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roadmap to $1,000 — Ignite RC Hackathon</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: #1a1a1a;
+  line-height: 1.6;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 32px;
+  background: #fff;
+}
+h1 { font-size: 32px; font-weight: 700; margin-bottom: 4px; color: #111; }
+.subtitle { font-size: 16px; color: #666; margin-bottom: 32px; }
+h2 {
+  font-size: 18px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.5px; color: #333;
+  border-bottom: 2px solid #222; padding-bottom: 6px;
+  margin-top: 40px; margin-bottom: 16px;
+}
+h3 { font-size: 16px; font-weight: 600; margin-top: 20px; margin-bottom: 8px; color: #222; }
+p { margin-bottom: 12px; }
+ul, ol { margin: 0 0 16px 20px; }
+li { margin-bottom: 6px; }
+strong { font-weight: 600; }
+
+/* Scoring system */
+.score-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  margin: 20px 0;
+}
+.score-card {
+  background: #f8f8f5; border: 2px solid #e0e0e0; border-radius: 8px;
+  padding: 20px; text-align: center;
+}
+.score-card.win { border-color: #4CAF50; background: #f0f8f0; }
+.score-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #666; }
+.score-value { font-size: 36px; font-weight: 700; color: #222; margin: 4px 0; }
+.score-card.win .score-value { color: #2d7d2d; }
+.score-note { font-size: 13px; color: #888; }
+
+/* Timeline */
+.timeline { margin: 20px 0; }
+.day-header {
+  background: #222; color: #fff; padding: 12px 20px; border-radius: 6px 6px 0 0;
+  font-weight: 700; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.day-header.green { background: #2d5a3d; }
+.day-header.dark { background: #1a1a2e; }
+.time-block {
+  border: 1px solid #e0e0e0; border-top: none; padding: 16px 20px;
+  display: grid; grid-template-columns: 100px 1fr; gap: 16px; align-items: start;
+}
+.time-block:last-child { border-radius: 0 0 6px 6px; }
+.time-block:nth-child(even) { background: #fafafa; }
+.time { font-weight: 700; font-size: 14px; color: #222; white-space: nowrap; }
+.action { font-size: 14px; }
+.action .goal { font-weight: 700; color: #2d5a3d; display: block; margin-bottom: 4px; }
+.action .detail { color: #555; }
+.action .you-do {
+  background: #fff3cd; padding: 6px 10px; border-radius: 4px;
+  margin-top: 8px; font-size: 13px; display: inline-block;
+}
+.action .critical {
+  background: #f8d7da; padding: 6px 10px; border-radius: 4px;
+  margin-top: 8px; font-size: 13px; display: inline-block; color: #721c24;
+}
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+th {
+  text-align: left; padding: 10px 12px; background: #222; color: #fff;
+  font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px;
+}
+td { padding: 10px 12px; border-bottom: 1px solid #e0e0e0; }
+tr:last-child td { border-bottom: none; }
+
+/* Callouts */
+.callout {
+  background: #f0f8f0; border-left: 4px solid #4CAF50;
+  padding: 16px 20px; margin: 20px 0; border-radius: 0 6px 6px 0;
+}
+.callout.warning {
+  background: #fff8e1; border-left-color: #ff9800;
+}
+.callout.danger {
+  background: #fce4ec; border-left-color: #e53935;
+}
+.callout strong { display: block; margin-bottom: 4px; }
+
+/* Checklist */
+.checklist { list-style: none; margin-left: 0; }
+.checklist li { padding: 8px 0; border-bottom: 1px solid #f0f0f0; padding-left: 28px; position: relative; }
+.checklist li::before {
+  content: ''; position: absolute; left: 0; top: 12px;
+  width: 16px; height: 16px; border: 2px solid #ccc; border-radius: 3px;
+}
+
+hr { border: none; border-top: 1px solid #ddd; margin: 32px 0; }
+
+@media print {
+  body { padding: 20px; }
+  .time-block { page-break-inside: avoid; }
+  th { background: #222 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .day-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+
+<h1>Roadmap to $1,000</h1>
+<p class="subtitle">Ignite RC Hackathon | DLAB, Rapid City | April 24-26, 2026</p>
+
+<h2>How You Win</h2>
+
+<p>Judges score each team <strong>1-10 in four categories</strong>. You need to dominate all four. Here's your edge in each:</p>
+
+<div class="score-grid">
+  <div class="score-card win">
+    <div class="score-label">Technical Execution</div>
+    <div class="score-value">10</div>
+    <div class="score-note">Production app vs. weekend prototype</div>
+  </div>
+  <div class="score-card win">
+    <div class="score-label">Problem-Solution Fit</div>
+    <div class="score-value">10</div>
+    <div class="score-note">Real nonprofit + $1K grant + May 2 event</div>
+  </div>
+  <div class="score-card">
+    <div class="score-label">Innovation &amp; Feasibility</div>
+    <div class="score-value">8-9</div>
+    <div class="score-note">AI route advisor is novel but not groundbreaking</div>
+  </div>
+  <div class="score-card">
+    <div class="score-label">Demo &amp; Presentation</div>
+    <div class="score-value">8-9</div>
+    <div class="score-note">Depends on team chemistry + rehearsal</div>
+  </div>
+</div>
+
+<div class="callout">
+  <strong>Your unfair advantage:</strong> Everyone else pitches an idea. You pitch a working product. The judges will hold your app in their hands while other teams show mockups.
+</div>
+
+<hr>
+
+<h2>Pre-Event: What You Do Before Apr 24</h2>
+
+<p>These tasks determine whether you show up ready to win or scrambling.</p>
+
+<ul class="checklist">
+  <li><strong>Build StoneBC to iPhone 17 Pro</strong> — Fresh build, test all 56 routes, community feed, Rally Radio</li>
+  <li><strong>Upload TestFlight build</strong> — Get public link, generate QR code, add to one-pager</li>
+  <li><strong>Print 15 one-pagers</strong> — Color preferred, B&W works. hackathon/one-pager.html</li>
+  <li><strong>Practice pitch 3x out loud</strong> — 2 minutes, no slides, just you + phone. Time yourself.</li>
+  <li><strong>Test pitch-deck.html</strong> — Open in Chrome fullscreen, arrow through all 8 slides</li>
+  <li><strong>Pack bag night before:</strong> Laptop + charger, iPhone + charger, Apple Watch, business cards, printed one-pagers, water bottle</li>
+</ul>
+
+<div class="callout warning">
+  <strong>Apr 23 is also Eric Traub coffee (10 AM).</strong> Separate event. Don't let prep bleed into hackathon stress. Bridgewater materials are already ready.
+</div>
+
+<hr>
+
+<h2>Day 1 — Friday, April 24</h2>
+<p><strong>Goal:</strong> Get your idea selected in the top 8. Get assigned strong teammates.</p>
+
+<div class="timeline">
+  <div class="day-header green">Friday — Selection Day</div>
+
+  <div class="time-block">
+    <div class="time">10:00 AM</div>
+    <div class="action">
+      <span class="goal">Vibecoding 101 (OpenAI)</span>
+      <span class="detail">Attend. Learn what tools others will use. Note OpenAI Codex limitations. Introduce yourself to organizers and other founders — this is your first impression.</span>
+      <span class="you-do">YOU: Listen, network, hand out a few one-pagers casually</span>
+    </div>
+  </div>
+
+  <div class="time-block">
+    <div class="time">12:00-5 PM</div>
+    <div class="action">
+      <span class="goal">Free Time — Final Prep</span>
+      <span class="detail">Run through pitch one last time. Eat lunch (meals start at dinner). Make sure app is loaded and working on your phone.</span>
+      <span class="you-do">YOU: Last pitch rehearsal. Charge phone to 100%.</span>
+    </div>
+  </div>
+
+  <div class="time-block">
+    <div class="time">5:00 PM</div>
+    <div class="action">
+      <span class="goal">Check-in + Dinner</span>
+      <span class="detail">Register, get badge. Eat. Talk to people. Scope who's here — designers, developers, students, other founders. Hand out one-pagers to anyone who asks what you're working on.</span>
+      <span class="you-do">YOU: Work the room. "I built a cycling app — want to see it?" Hand them your phone.</span>
+    </div>
+  </div>
+
+  <div class="time-block">
+    <div class="time">6:00 PM</div>
+    <div class="action">
+      <span class="goal">Idea Pitches — THIS IS THE GATE</span>
+      <span class="detail">2-minute pitch. Top 8 ideas get selected. If you don't make top 8, you join someone else's team.</span>
+      <span class="critical">CRITICAL: This pitch determines everything. Nail it.</span>
+    </div>
+  </div>
+</div>
+
+<div class="callout danger">
+  <strong>The 6 PM Pitch — Your Exact Script (2 min):</strong>
+  <ol style="margin-top: 8px; margin-left: 20px;">
+    <li><strong>Problem (30 sec):</strong> "If you're new to cycling in the Black Hills, where do you go? Facebook groups are scattered. Trail maps are outdated. There's no central hub."</li>
+    <li><strong>Show the app (30 sec):</strong> Walk to the judges. Hand them your phone. Let them scroll through 56 routes, tap a map, see the community feed. Say nothing — let the product speak.</li>
+    <li><strong>Weekend plan (30 sec):</strong> "This weekend I'm adding an AI route advisor — ask it what kind of ride you want, it recommends one from 56 real routes. Plus a live weather safety overlay."</li>
+    <li><strong>The ask (30 sec):</strong> "I need designers to polish the new screens, someone interested in AI prompts, and anyone who rides bikes and wants to test this. Let's build something real for Rapid City."</li>
+  </ol>
+  <p style="margin-top: 12px;"><strong>Key move:</strong> Do NOT use slides. Hold up your phone. Hand it to a judge. Nobody else will do this.</p>
+</div>
+
+<div class="time-block" style="border: 1px solid #e0e0e0; border-radius: 6px; margin-top: 16px;">
+  <div class="time">7:00-9 PM</div>
+  <div class="action">
+    <span class="goal">Team Formation + Onboarding</span>
+    <span class="detail">If selected (you will be), organizers assign 2+ teammates. Your immediate moves:</span>
+    <ol style="margin-top: 8px; margin-left: 20px; font-size: 14px;">
+      <li>Have everyone install the app via TestFlight (QR code on one-pager)</li>
+      <li>Show them the codebase in Claude Code — "This is how we'll build this weekend"</li>
+      <li>Assign Saturday roles based on their skills</li>
+      <li>Set up group text or Discord</li>
+      <li>Agree on Saturday start time (suggest 8:30 AM)</li>
+    </ol>
+    <span class="you-do">YOU: Be the leader. Be organized. First impressions with your team matter.</span>
+  </div>
+</div>
+
+<hr>
+
+<h2>Day 2 — Saturday, April 25</h2>
+<p><strong>Goal:</strong> Build both AI features. Get them working and demo-able.</p>
+
+<div class="timeline">
+  <div class="day-header dark">Saturday — Build Day</div>
+
+  <div class="time-block">
+    <div class="time">8:00 AM</div>
+    <div class="action">
+      <span class="goal">Arrive, breakfast, sync with team</span>
+      <span class="detail">Quick standup: "Here's what we're building today." Share the plan. Make sure everyone has a task.</span>
+      <span class="you-do">YOU: 5-min standup. Assign morning tasks. Open Claude Code.</span>
+    </div>
+  </div>
+
+  <div class="time-block">
+    <div class="time">8:30-12 PM</div>
+    <div class="action">
+      <span class="goal">Build Feature 1: AI Route Advisor</span>
+      <span class="detail">This is the headline feature. Natural language input, route recommendation output from 56 real routes.</span>
+      <table>
+        <tr><th>Person</th><th>Task</th></tr>
+        <tr><td><strong>You</strong></td><td>Wire up Claude API / OpenAI Codex. Build the data pipeline: user prompt &rarr; AI matches routes.json &rarr; route card</td></tr>
+        <tr><td>Designer</td><td>UI mockup for the advisor screen — input field, route card result, "try another" button</td></tr>
+        <tr><td>Technical</td><td>Write and test prompts: "easy ride near downtown", "hard gravel", "family friendly with views"</td></tr>
+        <tr><td>Tester</td><td>Install TestFlight, run through all existing features, log bugs</td></tr>
+      </table>
+      <span class="critical">BY NOON: AI Route Advisor returns real route recommendations from natural language input</span>
+    </div>
+  </div>
+
+  <div class="time-block">
+    <div class="time">12:00-1 PM</div>
+    <div class="action">
+      <span class="goal">Lunch (provided)</span>
+      <span class="detail">Eat. Check in with team morale. Talk to other teams — learn what they're building.</span>
+    </div>
+  </div>
+
+  <div class="time-block">
+    <div class="time">1:00-5 PM</div>
+    <div class="action">
+      <span class="goal">Build Feature 2: Ride Safety &amp; Weather</span>
+      <span class="detail">Weather data on route maps. "Is it a good day to ride?" assessment.</span>
+      <table>
+        <tr><th>Person</th><th>Task</th></tr>
+        <tr><td><strong>You</strong></td><td>Integrate Open-Meteo API (free, no key). Build weather fetch for route coordinates. "Good day to ride?" logic.</td></tr>
+        <tr><td>Designer</td><td>Weather badge on route cards. Overlay on route detail map. Color coding (green/yellow/red).</td></tr>
+        <tr><td>Technical</td><td>Help with API integration. Cache weather data. Handle offline fallback.</td></tr>
+        <tr><td>Tester</td><td>Test AI advisor edge cases. Test weather for multiple routes. Screenshot everything.</td></tr>
+      </table>
+      <span class="critical">BY 5 PM: Weather overlay works on route detail. "Good day to ride?" shows on route cards.</span>
+    </div>
+  </div>
+
+  <div class="time-block">
+    <div class="time">5:00-9 PM</div>
+    <div class="action">
+      <span class="goal">Polish + Demo Prep</span>
+      <span class="detail">Both features should work. Now make them beautiful and rehearse.</span>
+      <ul style="margin-top: 8px; font-size: 14px;">
+        <li>Bug fixes from afternoon testing</li>
+        <li>Polish UI — loading states, animations, error handling</li>
+        <li>Write Sunday demo script (assign speaking parts)</li>
+        <li>Practice demo once with team</li>
+        <li>Take screen recordings as backup</li>
+      </ul>
+      <span class="you-do">YOU: Lead the demo script. Assign who presents what. Leave by 9 — rest for Sunday.</span>
+    </div>
+  </div>
+</div>
+
+<hr>
+
+<h2>Day 3 — Sunday, April 26</h2>
+<p><strong>Goal:</strong> Deliver a flawless demo. Win.</p>
+
+<div class="timeline">
+  <div class="day-header" style="background: #b71c1c;">Sunday — Win Day</div>
+
+  <div class="time-block">
+    <div class="time">8:00-12 PM</div>
+    <div class="action">
+      <span class="goal">Final Polish + Rehearsal</span>
+      <ul style="font-size: 14px;">
+        <li>Fix any remaining bugs (morning is for code, afternoon is for people)</li>
+        <li>Final UI pass — does every screen look clean?</li>
+        <li>Fresh build to iPhone 17 Pro</li>
+        <li>Practice full demo 3 times with team</li>
+        <li>Time it — must be under 5 minutes</li>
+        <li>Assign backup: if something crashes, who pulls up the screen recording?</li>
+      </ul>
+      <span class="critical">NO NEW FEATURES AFTER 11 AM. Only bug fixes and polish.</span>
+    </div>
+  </div>
+
+  <div class="time-block">
+    <div class="time">12:00-2 PM</div>
+    <div class="action">
+      <span class="goal">Lunch + Final Run-Through</span>
+      <span class="detail">Eat. One final practice. Charge iPhone to 100%. Deep breaths.</span>
+      <span class="you-do">YOU: Confirm demo order. Check that app, backup recording, and laptop are all ready.</span>
+    </div>
+  </div>
+
+  <div class="time-block">
+    <div class="time">2:00-3:30 PM</div>
+    <div class="action">
+      <span class="goal">Final Pitches &amp; Judging — THE MAIN EVENT</span>
+      <span class="critical">This is it. 3-5 minutes. Score 8+ across all four categories.</span>
+    </div>
+  </div>
+</div>
+
+<h3>The Winning Demo Script (3-5 min)</h3>
+
+<table>
+  <tr><th>Time</th><th>Who</th><th>What</th><th>Scoring</th></tr>
+  <tr>
+    <td>0:00-0:30</td>
+    <td><strong>You</strong></td>
+    <td><strong>Problem + Solution</strong> — 3 sentences. Don't repeat Friday's pitch. "You saw the app Friday. Here's what we built this weekend."</td>
+    <td>Problem-solution fit</td>
+  </tr>
+  <tr>
+    <td>0:30-1:30</td>
+    <td><strong>You</strong></td>
+    <td><strong>Existing App Tour</strong> — Live on iPhone. Hand to judge. Routes with elevation. Community feed. Quick Rally Radio flash. "This is what we walked in with."</td>
+    <td>Technical execution</td>
+  </tr>
+  <tr>
+    <td>1:30-3:00</td>
+    <td><strong>You + Teammate</strong></td>
+    <td><strong>Weekend Build Demo</strong> — AI Route Advisor: "What kind of ride?" &rarr; recommendation. Weather overlay on route map. "Good day to ride?" badge. Show it live, not screenshots.</td>
+    <td>Innovation + Technical</td>
+  </tr>
+  <tr>
+    <td>3:00-3:30</td>
+    <td><strong>You</strong></td>
+    <td><strong>Impact</strong> — "$1K AEP grant. Pedal for Empathy is May 2. This app is open source — any bike co-op can fork it."</td>
+    <td>Problem-solution fit</td>
+  </tr>
+  <tr>
+    <td>3:30-4:30</td>
+    <td><strong>Each Teammate</strong></td>
+    <td><strong>Team Reflection</strong> — Each person: one sentence on what they built or learned. Shows teamwork. Judges love this.</td>
+    <td>Demo + Presentation</td>
+  </tr>
+  <tr>
+    <td>4:30-5:00</td>
+    <td><strong>You</strong></td>
+    <td><strong>Close</strong> — "Community Moments. Built for Rapid City. Built this weekend. Thank you." Pause. Don't rush off.</td>
+    <td>All categories</td>
+  </tr>
+</table>
+
+<div class="callout">
+  <strong>The line that wins it:</strong> "Every other team started from scratch this weekend. We started from a production app and made it smarter. This isn't a prototype — this is a product that will be in people's hands at Pedal for Empathy on May 2nd."
+</div>
+
+<div class="time-block" style="border: 1px solid #e0e0e0; border-radius: 6px; margin-top: 16px;">
+  <div class="time">3:30-5 PM</div>
+  <div class="action">
+    <span class="goal">Deliberation + Winners</span>
+    <span class="detail">Breathe. Network. Collect contact info from teammates and other founders. If you win: thank team first, then organizers, then mention May 2. Win or lose: follow up with Wildfire Labs about their accelerator.</span>
+  </div>
+</div>
+
+<hr>
+
+<h2>Emergency Fallbacks</h2>
+
+<table>
+  <tr><th>If This Happens</th><th>Do This</th></tr>
+  <tr><td>App crashes during demo</td><td>Laptop has screen recording ready. "Let me show you the recording — the live version had a moment."</td></tr>
+  <tr><td>No WiFi for AI API calls</td><td>Pre-cache 5 example responses Saturday night. Demo from cache.</td></tr>
+  <tr><td>Teammate no-shows Sunday</td><td>You present solo. You built it. You can demo it.</td></tr>
+  <tr><td>Idea not selected top 8</td><td>Join the most interesting team. Network. Demo your app to everyone anyway.</td></tr>
+  <tr><td>Weather API down</td><td>Hardcode Rapid City weather for demo. "We're showing today's actual conditions."</td></tr>
+  <tr><td>Other team also has a cycling app</td><td>Yours is in TestFlight. Theirs is a weekend prototype. The comparison sells itself.</td></tr>
+</table>
+
+<hr>
+
+<h2>The $1,000 Path — Summary</h2>
+
+<table>
+  <tr><th>Phase</th><th>When</th><th>What You Must Do</th><th>Win Condition</th></tr>
+  <tr><td><strong>Prep</strong></td><td>Apr 15-23</td><td>Build to device, TestFlight QR, print handouts, practice pitch 3x</td><td>Walk in ready</td></tr>
+  <tr><td><strong>Selection</strong></td><td>Fri 6 PM</td><td>2-min pitch. Hand phone to judge. "I need teammates."</td><td>Top 8 selected</td></tr>
+  <tr><td><strong>Team</strong></td><td>Fri 7-9 PM</td><td>Install TestFlight on all phones. Assign Saturday roles.</td><td>Team aligned</td></tr>
+  <tr><td><strong>Build AM</strong></td><td>Sat 8:30-12</td><td>AI Route Advisor working</td><td>Feature 1 done</td></tr>
+  <tr><td><strong>Build PM</strong></td><td>Sat 1-5</td><td>Weather/Safety overlay working</td><td>Feature 2 done</td></tr>
+  <tr><td><strong>Polish</strong></td><td>Sat eve + Sun AM</td><td>Bug fixes, demo script, 3 rehearsals</td><td>Demo is tight</td></tr>
+  <tr><td><strong>Win</strong></td><td>Sun 2 PM</td><td>Flawless live demo. Team reflection. Impact story.</td><td>Score 36+/40</td></tr>
+</table>
+
+<div style="text-align: center; margin-top: 40px; padding: 30px; background: #f0f8f0; border-radius: 8px;">
+  <p style="font-size: 24px; font-weight: 700; color: #2d5a3d; margin-bottom: 8px;">Target Score: 36+ out of 40</p>
+  <p style="font-size: 14px; color: #666;">Technical 10 + Problem-Fit 10 + Innovation 8 + Demo 9 = 37</p>
+</div>
+
+</body>
+</html>
