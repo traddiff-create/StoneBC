@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Moments — Ignite RC Hackathon Pitch</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: #1a1a2e;
+            color: #e0e0e0;
+        }
+
+        .slide-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 60px;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+            pointer-events: none;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Slide backgrounds */
+        .slide-1 { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
+        .slide-2 { background: linear-gradient(135deg, #16213e 0%, #0f3460 100%); }
+        .slide-3 { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
+        .slide-4 { background: linear-gradient(135deg, #0f3460 0%, #1a1a2e 100%); }
+        .slide-5 { background: linear-gradient(135deg, #16213e 0%, #0f3460 100%); }
+        .slide-6 { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
+        .slide-7 { background: linear-gradient(135deg, #0f3460 0%, #1a1a2e 100%); }
+        .slide-8 { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
+
+        /* Accent lines */
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #4CAF50;
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: -2px;
+            color: #ffffff;
+        }
+
+        h2 {
+            font-size: 3.5rem;
+            font-weight: 600;
+            margin-bottom: 40px;
+            color: #4CAF50;
+        }
+
+        .subtitle {
+            font-size: 1.8rem;
+            color: #4CAF50;
+            margin-top: 30px;
+            font-weight: 300;
+        }
+
+        .meta {
+            font-size: 1.2rem;
+            color: #999;
+            margin-top: 15px;
+        }
+
+        p {
+            font-size: 2rem;
+            line-height: 1.6;
+            margin: 20px 0;
+            max-width: 1000px;
+        }
+
+        ul {
+            list-style: none;
+            margin: 30px 0;
+            text-align: left;
+            display: inline-block;
+        }
+
+        li {
+            font-size: 2rem;
+            line-height: 1.8;
+            margin: 15px 0;
+            padding-left: 40px;
+            position: relative;
+        }
+
+        li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .accent {
+            color: #4CAF50;
+            font-weight: 600;
+        }
+
+        .highlight-box {
+            background: rgba(76, 175, 80, 0.1);
+            border-left: 4px solid #4CAF50;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 4px;
+            font-size: 2.2rem;
+            font-weight: 600;
+            max-width: 900px;
+        }
+
+        .tech-stack {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 40px 0;
+            max-width: 900px;
+        }
+
+        .tech-item {
+            background: rgba(76, 175, 80, 0.05);
+            padding: 20px;
+            border-radius: 4px;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            font-size: 1.5rem;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin: 30px 0;
+            max-width: 900px;
+            text-align: left;
+        }
+
+        .feature-item {
+            background: rgba(76, 175, 80, 0.05);
+            padding: 25px;
+            border-radius: 4px;
+            border-left: 4px solid #4CAF50;
+            font-size: 1.6rem;
+        }
+
+        .feature-item strong {
+            color: #4CAF50;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.8rem;
+        }
+
+        .impact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+            max-width: 1000px;
+        }
+
+        .impact-item {
+            background: rgba(76, 175, 80, 0.08);
+            padding: 30px;
+            border-radius: 4px;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            font-size: 1.5rem;
+        }
+
+        .impact-item .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .cta {
+            font-size: 2.2rem;
+            color: #4CAF50;
+            font-weight: 600;
+            margin: 40px 0 20px 0;
+        }
+
+        .contact {
+            font-size: 1.8rem;
+            margin-top: 30px;
+            color: #e0e0e0;
+        }
+
+        .contact a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Navigation controls */
+        .nav-dots {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(224, 224, 224, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .dot.active {
+            background: #4CAF50;
+            width: 30px;
+            border-radius: 6px;
+        }
+
+        .dot:hover {
+            background: rgba(76, 175, 80, 0.7);
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 40px;
+            font-size: 1.2rem;
+            color: #666;
+            z-index: 100;
+        }
+
+        .controls-hint {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+            color: #555;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        /* Print styles */
+        @media print {
+            .nav-dots, .controls-hint, .slide-counter {
+                display: none;
+            }
+            .slide {
+                page-break-after: always;
+                opacity: 1 !important;
+                position: relative;
+                width: 100%;
+                height: 100vh;
+            }
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 1024px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            h2 {
+                font-size: 2rem;
+            }
+            p, li {
+                font-size: 1.5rem;
+            }
+            .subtitle {
+                font-size: 1.3rem;
+            }
+            .highlight-box {
+                font-size: 1.6rem;
+            }
+            .feature-item {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <!-- Slide 1: Title -->
+        <div class="slide slide-1 active">
+            <h1>COMMUNITY MOMENTS</h1>
+            <p style="font-size: 2.2rem; color: #999; margin: 20px 0;">Connecting People Through Motion and Education</p>
+            <div style="margin-top: 60px;">
+                <p style="font-size: 1.8rem;">Rory Stone</p>
+                <p style="font-size: 1.8rem; color: #4CAF50;">Stone Bicycle Coalition</p>
+                <p style="font-size: 1.6rem; color: #999;">Traditionally Different Technology</p>
+            </div>
+            <div class="meta">Ignite RC Hackathon — April 2026</div>
+        </div>
+
+        <!-- Slide 2: The Problem -->
+        <div class="slide slide-2">
+            <h2>If you're new to cycling in the Black Hills,</h2>
+            <p style="font-size: 2rem; margin-bottom: 40px;">where do you go?</p>
+            <ul>
+                <li>Facebook groups are scattered</li>
+                <li>Trail maps are outdated</li>
+                <li>Nobody knows about the Tuesday night ride</li>
+                <li>Used bikes are hard to find</li>
+                <li>There's no central hub</li>
+            </ul>
+        </div>
+
+        <!-- Slide 3: The Solution -->
+        <div class="slide slide-3">
+            <h2>Community Moments</h2>
+            <p style="margin-top: 60px; margin-bottom: 60px;">A mobile app that connects cyclists in Rapid City through:</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: 800px; font-size: 2.2rem; font-weight: 600;">
+                <div style="padding: 30px; background: rgba(76, 175, 80, 0.1); border-radius: 4px;">Routes</div>
+                <div style="padding: 30px; background: rgba(76, 175, 80, 0.1); border-radius: 4px;">Community</div>
+                <div style="padding: 30px; background: rgba(76, 175, 80, 0.1); border-radius: 4px;">Voice</div>
+                <div style="padding: 30px; background: rgba(76, 175, 80, 0.1); border-radius: 4px;">Bikes</div>
+            </div>
+        </div>
+
+        <!-- Slide 4: It Already Works -->
+        <div class="slide slide-4">
+            <div class="highlight-box" style="border: 2px solid #4CAF50; background: rgba(76, 175, 80, 0.15);">
+                This isn't an idea. It's a product.
+            </div>
+            <ul style="text-align: left; margin: 40px 0;">
+                <li>56 GPS cycling routes with elevation profiles</li>
+                <li>Community feed with events and news</li>
+                <li>Rally Radio — peer-to-peer voice chat for group rides</li>
+                <li>The Quarry — affordable bike marketplace</li>
+                <li>Apple Watch and HealthKit integration</li>
+                <li>Works offline — no server required</li>
+            </ul>
+            <p style="margin-top: 50px; color: #4CAF50; font-size: 2.2rem; font-weight: 600;">Live in TestFlight right now.</p>
+        </div>
+
+        <!-- Slide 5: Tech Stack -->
+        <div class="slide slide-5">
+            <h2>Built With AI</h2>
+            <p style="margin-top: 40px; margin-bottom: 30px; font-size: 1.9rem;">Swift/SwiftUI • MapKit • MultipeerConnectivity</p>
+            <p style="margin-bottom: 40px; font-size: 1.9rem;">Built entirely using Claude Code</p>
+            <div class="highlight-box">Config-driven — any bike co-op can fork it</div>
+            <p style="margin-top: 50px; font-size: 2rem; font-weight: 600;">One developer. One AI. Production app.</p>
+        </div>
+
+        <!-- Slide 6: What We Build This Weekend -->
+        <div class="slide slide-6">
+            <h2>Two AI-Powered Features — Live</h2>
+            <div class="feature-list" style="margin-top: 40px;">
+                <div class="feature-item">
+                    <strong>1. AI Route Advisor</strong>
+                    "What kind of ride do you want?" Personalized route recommendation based on skill, weather, time of day
+                </div>
+                <div class="feature-item">
+                    <strong>2. Ride Safety Overlay</strong>
+                    Real-time weather on route maps. "Is it a good day to ride?" Wind, temperature, precipitation assessment
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Real Impact -->
+        <div class="slide slide-7">
+            <h2>This is already happening.</h2>
+            <div class="impact-grid" style="margin-top: 50px;">
+                <div class="impact-item">
+                    <div class="icon">[AWARD]</div>
+                    <strong>$1,000 AEP Grant</strong><br>Awarded
+                </div>
+                <div class="impact-item">
+                    <div class="icon">[CALENDAR]</div>
+                    <strong>Pedal for Empathy</strong><br>May 2nd
+                </div>
+                <div class="impact-item">
+                    <div class="icon">[BIKE]</div>
+                    <strong>Free Bikes</strong><br>Already in The Quarry
+                </div>
+                <div class="impact-item">
+                    <div class="icon">[HANDSHAKE]</div>
+                    <strong>Black Hills Works</strong><br>Partnership
+                </div>
+            </div>
+            <p style="margin-top: 50px; font-size: 1.8rem; color: #999;">Stone Bicycle Coalition — Rapid City, South Dakota</p>
+        </div>
+
+        <!-- Slide 8: The Ask -->
+        <div class="slide slide-8">
+            <h2>I need teammates who want to</h2>
+            <p>build something real for Rapid City.</p>
+            <ul style="margin-top: 40px;">
+                <li>UI/UX designers — help polish the new features</li>
+                <li>Prompt engineers — tune the AI route advisor</li>
+                <li>Testers and cyclists — ride with the app and break things</li>
+                <li>Storytellers — help craft the Sunday demo</li>
+            </ul>
+            <p style="margin-top: 60px; font-size: 2.4rem; font-weight: 700; color: #4CAF50;">Let's ship it.</p>
+            <div class="contact">
+                <p>rory@traddiff.com</p>
+                <p style="font-size: 1.5rem; color: #999; margin-top: 20px;">[TestFlight QR Code]</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="slide-counter"><span id="current">1</span> / 8</div>
+    <div class="controls-hint">Arrow keys or scroll to navigate</div>
+    <div class="nav-dots" id="dots"></div>
+
+    <script>
+        const totalSlides = 8;
+        let currentSlide = 0;
+
+        // Initialize dot indicators
+        function initDots() {
+            const dotsContainer = document.getElementById('dots');
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot' + (i === 0 ? ' active' : '');
+                dot.addEventListener('click', () => goToSlide(i));
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.dot');
+
+            if (n >= totalSlides) currentSlide = totalSlides - 1;
+            if (n < 0) currentSlide = 0;
+
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
+            document.getElementById('current').textContent = currentSlide + 1;
+        }
+
+        function goToSlide(n) {
+            currentSlide = n;
+            showSlide(currentSlide);
+        }
+
+        function nextSlide() {
+            currentSlide++;
+            showSlide(currentSlide);
+        }
+
+        function prevSlide() {
+            currentSlide--;
+            showSlide(currentSlide);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            } else if (e.key === 'Escape') {
+                goToSlide(0);
+            } else if (e.key === 'f' || e.key === 'F') {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                } else {
+                    document.documentElement.requestFullscreen().catch(() => {});
+                }
+            }
+        });
+
+        // Scroll navigation
+        let lastScrollTime = 0;
+        document.addEventListener('wheel', (e) => {
+            const now = Date.now();
+            if (now - lastScrollTime < 800) return;
+
+            e.preventDefault();
+            lastScrollTime = now;
+
+            if (e.deltaY > 0) {
+                nextSlide();
+            } else {
+                prevSlide();
+            }
+        }, { passive: false });
+
+        // Touch swipe navigation
+        let touchStartX = 0;
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            if (touchStartX - touchEndX > 50) {
+                nextSlide();
+            } else if (touchEndX - touchStartX > 50) {
+                prevSlide();
+            }
+        });
+
+        // Initialize
+        initDots();
+        showSlide(0);
+    </script>
+</body>
+</html>

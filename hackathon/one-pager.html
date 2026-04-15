@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Moments — Ignite RC Hackathon</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+            line-height: 1.5;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            background: #2d5a3d;
+            color: white;
+            padding: 24px 0;
+            margin: -40px -40px 32px -40px;
+            text-align: center;
+            border-bottom: 4px solid #2d5a3d;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 12px;
+            opacity: 0.95;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .header .tagline {
+            font-size: 11px;
+            opacity: 0.85;
+            font-style: italic;
+        }
+
+        /* Two-column layout */
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 0.7fr;
+            gap: 28px;
+            margin-bottom: 32px;
+        }
+
+        .left-column h2,
+        .right-column h2 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #2d5a3d;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 8px;
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section p {
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+            text-align: justify;
+        }
+
+        .section ul {
+            font-size: 13px;
+            line-height: 1.6;
+            margin-left: 18px;
+            margin-bottom: 10px;
+        }
+
+        .section li {
+            margin-bottom: 6px;
+        }
+
+        /* Right column — numbers */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .stat {
+            background: #f8f8f8;
+            padding: 16px;
+            text-align: center;
+            border-left: 3px solid #2d5a3d;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2d5a3d;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+        }
+
+        /* Tech Stack */
+        .tech-stack {
+            background: #f8f8f8;
+            padding: 16px;
+            border-radius: 4px;
+            margin-bottom: 24px;
+        }
+
+        .tech-stack h3 {
+            font-size: 12px;
+            font-weight: 700;
+            color: #2d5a3d;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+            margin-bottom: 10px;
+        }
+
+        .tech-stack ul {
+            font-size: 12px;
+            line-height: 1.5;
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .tech-stack li {
+            margin-bottom: 4px;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .tech-stack li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #2d5a3d;
+            font-weight: bold;
+        }
+
+        /* Looking for teammates */
+        .call-to-action {
+            background: #f0f6f2;
+            border-left: 4px solid #2d5a3d;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .call-to-action h3 {
+            font-size: 12px;
+            font-weight: 700;
+            color: #2d5a3d;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+            margin-bottom: 10px;
+        }
+
+        .call-to-action ul {
+            font-size: 12px;
+            line-height: 1.5;
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .call-to-action li {
+            margin-bottom: 4px;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .call-to-action li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #2d5a3d;
+            font-weight: bold;
+        }
+
+        /* QR Code Placeholder */
+        .qr-placeholder {
+            background: #f5f5f5;
+            border: 2px dashed #999;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 11px;
+            color: #666;
+            margin: 24px 0;
+        }
+
+        /* Footer */
+        .footer {
+            border-top: 2px solid #e0e0e0;
+            padding-top: 16px;
+            text-align: center;
+            font-size: 11px;
+            color: #666;
+        }
+
+        .footer-item {
+            margin-bottom: 4px;
+        }
+
+        .footer-link {
+            color: #2d5a3d;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                max-width: 100%;
+                box-shadow: none;
+                padding: 0.5in;
+            }
+
+            .header {
+                margin: -0.5in -0.5in 0.25in -0.5in;
+                page-break-after: avoid;
+            }
+
+            .content {
+                page-break-inside: avoid;
+            }
+
+            .section,
+            .stat-grid,
+            .tech-stack,
+            .call-to-action {
+                page-break-inside: avoid;
+            }
+
+            .footer {
+                page-break-before: avoid;
+            }
+
+            /* Remove shadows and backgrounds for print */
+            .stat {
+                background: white;
+                border: 1px solid #ccc;
+            }
+
+            .tech-stack {
+                background: white;
+                border: 1px solid #ccc;
+            }
+
+            .call-to-action {
+                background: white;
+                border: 2px solid #2d5a3d;
+            }
+
+            a {
+                color: #2d5a3d;
+                text-decoration: underline;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 24px;
+            }
+
+            .header {
+                margin: -24px -24px 24px -24px;
+                padding: 16px 0;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .content {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .stat-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>COMMUNITY MOMENTS</h1>
+            <p>Stone Bicycle Coalition × Traditionally Different Technology</p>
+            <p class="tagline">Ignite RC Hackathon — April 24–26, 2026</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Left Column -->
+            <div class="left-column">
+                <div class="section">
+                    <h2>The Problem</h2>
+                    <p>Rapid City's cycling community is fragmented. No central hub for routes, rides, advocacy, or affordable bike access. New cyclists don't know where to start.</p>
+                </div>
+
+                <div class="section">
+                    <h2>The Solution</h2>
+                    <p><strong>Community Moments</strong> is a mobile app connecting people through motion and education. Already live in TestFlight with:</p>
+                    <ul>
+                        <li>56 GPS routes with elevation profiles & difficulty ratings</li>
+                        <li>Rally Radio — peer-to-peer voice chat (no cell needed)</li>
+                        <li>The Quarry — affordable bike marketplace</li>
+                        <li>Community feed with events & news</li>
+                        <li>Apple Watch haptic guidance</li>
+                        <li>Works fully offline</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2>Weekend Build Plan</h2>
+                    <ol style="margin-left: 18px; font-size: 13px; line-height: 1.6;">
+                        <li style="margin-bottom: 6px;"><strong>AI Route Advisor</strong> — "What kind of ride?" → personalized recommendation</li>
+                        <li style="margin-bottom: 6px;"><strong>Ride Safety Overlay</strong> — real-time weather on route maps</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="right-column">
+                <h2>By The Numbers</h2>
+                <div class="stat-grid">
+                    <div class="stat">
+                        <div class="stat-number">56</div>
+                        <div class="stat-label">Routes</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">4</div>
+                        <div class="stat-label">Bikes in Quarry</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">$1K</div>
+                        <div class="stat-label">AEP Grant</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">v0.7</div>
+                        <div class="stat-label">TestFlight</div>
+                    </div>
+                </div>
+
+                <div class="tech-stack">
+                    <h3>Tech Stack</h3>
+                    <ul>
+                        <li>Swift / SwiftUI</li>
+                        <li>MapKit + CoreLocation</li>
+                        <li>MultipeerConnectivity</li>
+                        <li>HealthKit + Apple Watch</li>
+                        <li>Built with Claude Code</li>
+                        <li>Config-driven (forkable)</li>
+                    </ul>
+                </div>
+
+                <div class="call-to-action">
+                    <h3>Looking For Teammates</h3>
+                    <ul>
+                        <li>UI/UX Designers</li>
+                        <li>Prompt Engineers</li>
+                        <li>Testers & Cyclists</li>
+                        <li>Storytellers</li>
+                    </ul>
+                </div>
+
+                <div class="qr-placeholder">
+                    [QR Code — TestFlight Link]
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-item">
+                <strong>Rory Stone</strong> | <a href="mailto:rory@traddiff.com" class="footer-link">rory@traddiff.com</a> | (605) 923-8799
+            </div>
+            <div class="footer-item">
+                <a href="https://stonebicyclecoalition.com" class="footer-link">stonebicyclecoalition.com</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
