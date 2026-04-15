@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scoring Rubric — Ignite RC Hackathon</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: #1a1a1a; line-height: 1.6;
+  max-width: 960px; margin: 0 auto; padding: 40px 32px; background: #fff;
+}
+h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+.subtitle { font-size: 15px; color: #666; margin-bottom: 32px; }
+h2 {
+  font-size: 17px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.5px; color: #fff; padding: 10px 16px;
+  margin-top: 36px; margin-bottom: 0; border-radius: 6px 6px 0 0;
+}
+h2.cat1 { background: #1565c0; }
+h2.cat2 { background: #2e7d32; }
+h2.cat3 { background: #e65100; }
+h2.cat4 { background: #6a1b9a; }
+h3 { font-size: 15px; font-weight: 600; margin-top: 20px; margin-bottom: 8px; }
+p { margin-bottom: 12px; font-size: 14px; }
+
+.rubric {
+  width: 100%; border-collapse: collapse; margin-bottom: 32px;
+  font-size: 13px; border: 1px solid #e0e0e0;
+}
+.rubric th {
+  text-align: left; padding: 8px 12px; background: #f5f5f5;
+  font-weight: 600; font-size: 12px; text-transform: uppercase;
+  letter-spacing: 0.3px; color: #555; border-bottom: 2px solid #ddd;
+}
+.rubric td {
+  padding: 10px 12px; border-bottom: 1px solid #eee; vertical-align: top;
+}
+.rubric tr:last-child td { border-bottom: none; }
+.rubric .score { font-weight: 700; font-size: 18px; text-align: center; width: 50px; }
+.rubric .score.low { color: #c62828; }
+.rubric .score.mid { color: #ef6c00; }
+.rubric .score.good { color: #2e7d32; }
+.rubric .score.great { color: #1565c0; }
+
+.you-row { background: #e8f5e9 !important; }
+.you-row td { font-weight: 500; }
+.you-badge {
+  display: inline-block; background: #2e7d32; color: #fff;
+  padding: 1px 8px; border-radius: 10px; font-size: 11px;
+  font-weight: 600; margin-left: 6px; vertical-align: middle;
+}
+
+.risk {
+  background: #fff3e0; border-left: 3px solid #ff9800;
+  padding: 10px 14px; margin: 8px 0 20px 0; border-radius: 0 4px 4px 0;
+  font-size: 13px;
+}
+.risk strong { color: #e65100; }
+
+.boost {
+  background: #e8f5e9; border-left: 3px solid #4CAF50;
+  padding: 10px 14px; margin: 8px 0 20px 0; border-radius: 0 4px 4px 0;
+  font-size: 13px;
+}
+.boost strong { color: #2e7d32; }
+
+.summary-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  margin: 24px 0;
+}
+.summary-card {
+  border: 2px solid #e0e0e0; border-radius: 8px; padding: 16px;
+  text-align: center;
+}
+.summary-card .cat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+.summary-card .cat-score { font-size: 42px; font-weight: 700; margin: 4px 0; }
+.summary-card .cat-max { font-size: 13px; color: #888; }
+.summary-card.c1 { border-color: #1565c0; }
+.summary-card.c1 .cat-score { color: #1565c0; }
+.summary-card.c2 { border-color: #2e7d32; }
+.summary-card.c2 .cat-score { color: #2e7d32; }
+.summary-card.c3 { border-color: #e65100; }
+.summary-card.c3 .cat-score { color: #e65100; }
+.summary-card.c4 { border-color: #6a1b9a; }
+.summary-card.c4 .cat-score { color: #6a1b9a; }
+
+.total-box {
+  text-align: center; padding: 24px; background: #f5f5f5;
+  border-radius: 8px; margin: 24px 0;
+}
+.total-score { font-size: 56px; font-weight: 700; color: #222; }
+.total-label { font-size: 14px; color: #666; }
+
+.scenario { margin: 16px 0; padding: 16px; border: 1px solid #e0e0e0; border-radius: 6px; }
+.scenario-title { font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+.scenario-bar { display: flex; gap: 4px; margin: 8px 0; }
+.scenario-bar .seg {
+  height: 24px; border-radius: 3px; display: flex;
+  align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: #fff;
+}
+
+hr { border: none; border-top: 1px solid #ddd; margin: 32px 0; }
+
+@media print {
+  body { padding: 20px; }
+  h2 { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .you-row { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+
+<h1>What Does 36/40 Look Like?</h1>
+<p class="subtitle">Scoring rubric for Ignite RC Hackathon judging — 4 categories, 1-10 each, max 40</p>
+
+<div class="summary-grid">
+  <div class="summary-card c1">
+    <div class="cat-label">Technical</div>
+    <div class="cat-score">10</div>
+    <div class="cat-max">Your target</div>
+  </div>
+  <div class="summary-card c2">
+    <div class="cat-label">Problem-Fit</div>
+    <div class="cat-score">10</div>
+    <div class="cat-max">Your target</div>
+  </div>
+  <div class="summary-card c3">
+    <div class="cat-label">Innovation</div>
+    <div class="cat-score">8</div>
+    <div class="cat-max">Your target</div>
+  </div>
+  <div class="summary-card c4">
+    <div class="cat-label">Presentation</div>
+    <div class="cat-score">9</div>
+    <div class="cat-max">Your target</div>
+  </div>
+</div>
+
+<div class="total-box">
+  <div class="total-score">37</div>
+  <div class="total-label">Projected Score (out of 40)</div>
+</div>
+
+<hr>
+
+<!-- CATEGORY 1: TECHNICAL EXECUTION -->
+<h2 class="cat1">Category 1: Technical Execution (Does the product work?)</h2>
+
+<table class="rubric">
+  <tr>
+    <th>Score</th>
+    <th>What It Looks Like</th>
+    <th>Example at This Hackathon</th>
+  </tr>
+  <tr>
+    <td class="score low">1-3</td>
+    <td>Nothing runs. Slides only. "We ran out of time." App crashes on launch. Just a landing page.</td>
+    <td>Team that spent all weekend on idea/design but never got code working</td>
+  </tr>
+  <tr>
+    <td class="score mid">4-5</td>
+    <td>Something runs but it's a skeleton. One screen works. Hardcoded data. Visible bugs during demo.</td>
+    <td>Lovable-generated app with default styling, partially working</td>
+  </tr>
+  <tr>
+    <td class="score mid">6-7</td>
+    <td>App works end-to-end for the demo path. A few rough edges. Data is real but limited. Crashes if you go off-script.</td>
+    <td>Weekend prototype that works for the happy path only</td>
+  </tr>
+  <tr>
+    <td class="score good">8-9</td>
+    <td>Polished, multi-screen app. Real data. Multiple features work. Handles edge cases. Feels like a real product.</td>
+    <td>Team with a strong developer who built something solid</td>
+  </tr>
+  <tr class="you-row">
+    <td class="score great">10 <span class="you-badge">YOU</span></td>
+    <td>Production-quality app. Live in TestFlight. Multiple complex features (maps, voice, marketplace). Works offline. On a real device, not a simulator.</td>
+    <td><strong>Community Moments: 56 routes, Rally Radio, The Quarry, community feed, Apple Watch — on iPhone 17 Pro</strong></td>
+  </tr>
+</table>
+
+<div class="boost">
+  <strong>Why you score 10:</strong> No weekend prototype competes with a TestFlight app that has 40+ Swift files, peer-to-peer voice chat, and 56 GPS routes with elevation profiles. Hand the judge your phone — that's the proof.
+</div>
+
+<div class="risk">
+  <strong>Risk that drops you to 8:</strong> App crashes during demo. New AI features are buggy. Judge can't install TestFlight because of Apple ID issues. <em>Mitigation:</em> Screen recording backup. Test AI features exhaustively Saturday night. Have app running before you present.
+</div>
+
+<hr>
+
+<!-- CATEGORY 2: PROBLEM-SOLUTION FIT -->
+<h2 class="cat2">Category 2: Problem-Solution Fit (Does it solve a real problem?)</h2>
+
+<table class="rubric">
+  <tr>
+    <th>Score</th>
+    <th>What It Looks Like</th>
+    <th>Example at This Hackathon</th>
+  </tr>
+  <tr>
+    <td class="score low">1-3</td>
+    <td>Solution looking for a problem. "We thought it would be cool." No evidence anyone needs this. Vague target audience.</td>
+    <td>"AI-powered recipe app" — who asked for this?</td>
+  </tr>
+  <tr>
+    <td class="score mid">4-5</td>
+    <td>Problem is real but generic. Solution exists elsewhere. No local angle. No validation beyond "we think people want this."</td>
+    <td>"Uber for dog walking" — real problem, existing solutions</td>
+  </tr>
+  <tr>
+    <td class="score mid">6-7</td>
+    <td>Clear problem, decent solution, but hypothetical users. "We surveyed 5 friends." No traction. No proof of demand.</td>
+    <td>Good idea with a plan but no users or validation yet</td>
+  </tr>
+  <tr>
+    <td class="score good">8-9</td>
+    <td>Real problem with evidence. Some users or letters of intent. Clear target. Local relevance. Makes sense for Rapid City.</td>
+    <td>Team that interviewed local businesses and has data</td>
+  </tr>
+  <tr class="you-row">
+    <td class="score great">10 <span class="you-badge">YOU</span></td>
+    <td>Problem validated by a real organization. Grant money awarded. Event scheduled. Users exist. Nonprofit backing. The problem isn't hypothetical — it's being solved right now.</td>
+    <td><strong>Stone Bicycle Coalition: $1K AEP grant, Pedal for Empathy May 2, partnership with Black Hills Works, bikes already in The Quarry</strong></td>
+  </tr>
+</table>
+
+<div class="boost">
+  <strong>Why you score 10:</strong> You have a registered LLC, a $1K grant, a scheduled community event 6 days after the hackathon, real bike inventory, and a nonprofit mission. This isn't "I think cyclists need this" — it's "we already received grant funding because cyclists need this."
+</div>
+
+<div class="risk">
+  <strong>Risk that drops you to 8:</strong> You focus too much on the tech and not enough on the human story. Judges don't understand why cycling in RC needs an app. <em>Mitigation:</em> Lead with the problem. "Where do you go if you're new to cycling here?" Make it personal.
+</div>
+
+<hr>
+
+<!-- CATEGORY 3: INNOVATION & FEASIBILITY -->
+<h2 class="cat3">Category 3: Innovation & Feasibility (Creative and achievable?)</h2>
+
+<table class="rubric">
+  <tr>
+    <th>Score</th>
+    <th>What It Looks Like</th>
+    <th>Example at This Hackathon</th>
+  </tr>
+  <tr>
+    <td class="score low">1-3</td>
+    <td>Clone of existing app. Nothing new. Or wildly infeasible — "we'll use blockchain to solve homelessness."</td>
+    <td>Another to-do app or weather app with no twist</td>
+  </tr>
+  <tr>
+    <td class="score mid">4-5</td>
+    <td>Somewhat novel but the AI angle feels bolted on. "We added a chatbot." Feasible but boring. Or creative but clearly can't ship.</td>
+    <td>Interesting concept that doesn't feel like it'll work beyond the demo</td>
+  </tr>
+  <tr>
+    <td class="score mid">6-7</td>
+    <td>Good use of AI. Novel combination of existing tech. Clearly feasible. But similar things exist in other domains.</td>
+    <td>AI trip planner — creative but not new category</td>
+  </tr>
+  <tr class="you-row">
+    <td class="score good">8 <span class="you-badge">YOU</span></td>
+    <td>Novel application of AI to a specific local problem. Peer-to-peer voice for cycling is unusual. AI route advisor from real GPS data is creative. Config-driven = any co-op can fork. Clearly achievable because it already exists.</td>
+    <td><strong>AI route advisor matching natural language to 56 real GPS routes. Rally Radio P2P voice. Open-source co-op toolkit. All proven feasible.</strong></td>
+  </tr>
+  <tr>
+    <td class="score great">9-10</td>
+    <td>Category-defining. "I've never seen this before." Completely new approach. Makes judges say "why doesn't this exist already?"</td>
+    <td>Something truly novel — hard to predict, you'll know it when you see it</td>
+  </tr>
+</table>
+
+<div class="risk">
+  <strong>Why 8 not 10:</strong> This is your weakest category. A cycling app with AI recommendations is smart but not revolutionary. Route recommendation exists (Strava, Komoot). Your edge is the <em>local specificity</em> + <em>open-source co-op model</em> + <em>P2P voice</em>, not the AI itself.
+</div>
+
+<div class="boost">
+  <strong>How to push to 9:</strong> Emphasize what's truly novel:
+  <ul style="margin: 8px 0 0 20px; font-size: 13px;">
+    <li><strong>Rally Radio</strong> — no other cycling app has peer-to-peer voice that works without cell service. This is genuinely new.</li>
+    <li><strong>Config-driven fork model</strong> — "Any bike co-op in America can fork this in a day." That's infrastructure, not just an app.</li>
+    <li><strong>"Built entirely with AI"</strong> — Frame the development process itself as innovation. One person + Claude Code = production app. That's the vibecoding story they want to hear.</li>
+    <li><strong>Weather-aware safety</strong> — "The app tells you NOT to ride." An app that sometimes says no is more trustworthy than one that always says yes.</li>
+  </ul>
+</div>
+
+<hr>
+
+<!-- CATEGORY 4: DEMO & PRESENTATION -->
+<h2 class="cat4">Category 4: Demo & Presentation Quality (Can the team communicate?)</h2>
+
+<table class="rubric">
+  <tr>
+    <th>Score</th>
+    <th>What It Looks Like</th>
+    <th>Example at This Hackathon</th>
+  </tr>
+  <tr>
+    <td class="score low">1-3</td>
+    <td>Mumbling. Reading from notes. No demo, just slides. Over time. Team clearly didn't rehearse. Confusing narrative.</td>
+    <td>Team where one person talks and others stand silently</td>
+  </tr>
+  <tr>
+    <td class="score mid">4-5</td>
+    <td>Decent slides but no live demo. Or live demo that goes sideways. Team is nervous. Story doesn't connect problem to solution clearly.</td>
+    <td>Good idea, mediocre delivery. Judges have to ask "so what does it actually do?"</td>
+  </tr>
+  <tr>
+    <td class="score mid">6-7</td>
+    <td>Clear narrative. Live demo works. On time. But generic — could be any pitch competition. Team roles unclear. No emotional hook.</td>
+    <td>Competent presentation that doesn't stick in your memory</td>
+  </tr>
+  <tr>
+    <td class="score good">8</td>
+    <td>Strong narrative arc. Live demo on device. Confident delivery. Team members each contribute. Emotional connection to the problem. On time.</td>
+    <td>Well-rehearsed team that clearly practiced together</td>
+  </tr>
+  <tr class="you-row">
+    <td class="score great">9-10 <span class="you-badge">TARGET</span></td>
+    <td>Unforgettable. Judge holds the product in their hands. Story has a beginning, middle, and end. Team reflects on what they built and learned. Closes with real impact (upcoming event, grant, users). Judges nod at each other.</td>
+    <td><strong>Hand phone to judge. 56 routes on their screen. "This is live. Pedal for Empathy is May 2. We're ready." Team each shares one thing they built.</strong></td>
+  </tr>
+</table>
+
+<div class="risk">
+  <strong>Risk that drops you to 7:</strong> You talk too fast. You fill the whole 5 minutes yourself and teammates stand silently. Demo path hits a bug. You run over time. <em>Mitigation:</em> Practice 3x Sunday morning. Give each teammate a speaking part. Time it. Have the demo flow written down as a checklist.
+</div>
+
+<div class="boost">
+  <strong>How to guarantee 9+:</strong>
+  <ul style="margin: 8px 0 0 20px; font-size: 13px;">
+    <li><strong>Hand the phone to a judge.</strong> Physical product in their hands = unforgettable. Nobody else will do this.</li>
+    <li><strong>Team reflection round.</strong> Each teammate says one sentence about what they built or learned. Judges eat this up — it shows real collaboration.</li>
+    <li><strong>End on impact, not features.</strong> "Pedal for Empathy is May 2. This app will be in people's hands that day." Future tense = momentum.</li>
+    <li><strong>Pause at the end.</strong> Don't rush off. Say "Thank you" and stand still for 2 seconds. Confidence reads as quality.</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 style="background: #222; color: #fff; padding: 10px 16px; border-radius: 6px 6px 0 0; margin-top: 36px;">Score Scenarios</h2>
+
+<div class="scenario" style="border-top: none; border-radius: 0 0 6px 6px;">
+  <div class="scenario-title">Scenario A: Everything Goes Right (37/40)</div>
+  <div class="scenario-bar">
+    <div class="seg" style="flex: 10; background: #1565c0;">Tech 10</div>
+    <div class="seg" style="flex: 10; background: #2e7d32;">Fit 10</div>
+    <div class="seg" style="flex: 8; background: #e65100;">Innov 8</div>
+    <div class="seg" style="flex: 9; background: #6a1b9a;">Demo 9</div>
+  </div>
+  <p style="font-size: 13px; color: #555; margin-top: 8px;">App runs perfectly. AI features work live. Story lands. Team contributes. Judge holds the phone. <strong>This wins.</strong></p>
+
+  <div class="scenario-title" style="margin-top: 20px;">Scenario B: AI Feature is Rough (34/40)</div>
+  <div class="scenario-bar">
+    <div class="seg" style="flex: 9; background: #1565c0;">Tech 9</div>
+    <div class="seg" style="flex: 10; background: #2e7d32;">Fit 10</div>
+    <div class="seg" style="flex: 7; background: #e65100;">Innov 7</div>
+    <div class="seg" style="flex: 8; background: #6a1b9a;">Demo 8</div>
+  </div>
+  <p style="font-size: 13px; color: #555; margin-top: 8px;">AI route advisor works but gives weird results sometimes. Weather overlay is basic. Demo still works, but the "wow" is the existing app, not the new features. <strong>Still competitive — likely top 3.</strong></p>
+
+  <div class="scenario-title" style="margin-top: 20px;">Scenario C: Demo Goes Sideways (30/40)</div>
+  <div class="scenario-bar">
+    <div class="seg" style="flex: 8; background: #1565c0;">Tech 8</div>
+    <div class="seg" style="flex: 9; background: #2e7d32;">Fit 9</div>
+    <div class="seg" style="flex: 7; background: #e65100;">Innov 7</div>
+    <div class="seg" style="flex: 6; background: #6a1b9a;">Demo 6</div>
+  </div>
+  <p style="font-size: 13px; color: #555; margin-top: 8px;">App crashes during demo. Fall to screen recording. Team is nervous. Ran over time. <strong>Still in the running — 30+ is strong.</strong></p>
+
+  <div class="scenario-title" style="margin-top: 20px;">Scenario D: Not Selected Top 8 (0/40)</div>
+  <div class="scenario-bar">
+    <div class="seg" style="flex: 40; background: #bdbdbd;">N/A</div>
+  </div>
+  <p style="font-size: 13px; color: #555; margin-top: 8px;">Friday pitch doesn't land. Join another team. Network. Show your app to everyone anyway. Not a loss — just a different win. <strong>Unlikely given you have a live product.</strong></p>
+</div>
+
+<hr>
+
+<h2 style="background: #222; color: #fff; padding: 10px 16px; border-radius: 6px;">Where Your Points Come From vs. Where They Leak</h2>
+
+<table class="rubric">
+  <tr>
+    <th style="background: #2e7d32;">Points You Bank (guaranteed)</th>
+    <th style="background: #c62828;">Points at Risk (work to protect)</th>
+  </tr>
+  <tr>
+    <td>
+      <ul style="margin-left: 16px; font-size: 13px;">
+        <li>Production app on real device (+3 vs. any prototype)</li>
+        <li>56 real GPS routes with elevation (+2 vs. dummy data)</li>
+        <li>Rally Radio P2P voice (+2 — nobody else has this)</li>
+        <li>$1K AEP grant + May 2 event (+2 — proven demand)</li>
+        <li>TestFlight link judges can install (+1 — tangible)</li>
+        <li>Open-source co-op model (+1 — bigger than RC)</li>
+      </ul>
+    </td>
+    <td>
+      <ul style="margin-left: 16px; font-size: 13px;">
+        <li>AI features crash or give bad results (-2 tech, -1 innov)</li>
+        <li>Demo runs over time (-2 presentation)</li>
+        <li>Teammates stand silent, no team chemistry (-2 presentation)</li>
+        <li>You talk about tech instead of people (-1 problem-fit)</li>
+        <li>App crashes on judge's phone (-2 tech)</li>
+        <li>Innovation feels incremental, not novel (-1 innovation)</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+<div style="text-align: center; margin-top: 32px; padding: 24px; background: #f5f5f5; border-radius: 8px;">
+  <p style="font-size: 15px; font-weight: 600; color: #222; margin-bottom: 8px;">Bottom Line</p>
+  <p style="font-size: 14px; color: #555; max-width: 600px; margin: 0 auto;">You walk in with 28-30 points banked before the weekend starts. The build weekend adds 4-7 more from AI features and presentation polish. Your job Saturday and Sunday is to protect what you have and add what you can.</p>
+</div>
+
+</body>
+</html>
