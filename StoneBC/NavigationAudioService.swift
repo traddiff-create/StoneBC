@@ -108,6 +108,18 @@ class NavigationAudioService {
         speak("Ride complete. \(String(format: "%.1f", distance)) miles in \(time).")
     }
 
+    /// Called when the recording auto-pauses because the rider has been stationary.
+    func announcePaused() {
+        guard isEnabled else { return }
+        speak("Recording paused.")
+    }
+
+    /// Called when the recording auto-resumes as the rider starts moving again.
+    func announceResumed() {
+        guard isEnabled else { return }
+        speak("Recording resumed.")
+    }
+
     // MARK: - Turn Detection
 
     /// Analyze trackpoints ahead to detect upcoming turns

@@ -29,19 +29,25 @@ struct TabContainerView: View {
                 .tag(1)
             }
 
+            RecordTabView()
+                .tabItem {
+                    Label("Record", systemImage: "record.circle.fill")
+                }
+                .tag(2)
+
             if appState.config.features.enableMarketplace {
                 MarketplaceView()
                     .tabItem {
                         Label("Bikes", systemImage: "bicycle")
                     }
-                    .tag(2)
+                    .tag(3)
             }
 
             MoreView()
                 .tabItem {
                     Label("More", systemImage: "ellipsis")
                 }
-                .tag(3)
+                .tag(4)
         }
         .tint(BCColors.brandBlue)
     }
