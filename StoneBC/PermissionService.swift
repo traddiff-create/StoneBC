@@ -6,6 +6,7 @@
 //
 
 import CoreLocation
+import CoreMotion
 import HealthKit
 import AVFoundation
 
@@ -17,9 +18,15 @@ class PermissionService: NSObject, CLLocationManagerDelegate {
     var healthKitAvailable: Bool { HKHealthStore.isHealthDataAvailable() }
     var healthKitAuthorized = false
     var microphoneGranted = false
+    // Recomputed on each read so the onboarding page picks up granted state
+    // immediately after the system sheet closes.
+    var motionGranted: Bool {
+        CMMotionActivityManager.authorizationStatus() == .authorized
+    }
 
     private let locationManager = CLLocationManager()
     private let healthStore = HKHealthStore()
+    private let altimeter = CMAltimeter()
 
     override init() {
         super.init()
@@ -49,6 +56,19 @@ class PermissionService: NSObject, CLLocationManagerDelegate {
             DispatchQueue.main.async {
                 self.microphoneGranted = granted
             }
+        }
+    }
+
+    // MARK: - Motion
+
+    /// Triggers the iOS Motion & Fitness permission sheet. Starts relative
+    /// altitude updates briefly (iOS gates this behind the NSMotionUsageDescription
+    /// prompt) and stops immediately on the first callback so there's no
+    /// sustained sensor cost.
+    func requestMotion() {
+        guard CMAltimeter.isRelativeAltitudeAvailable() else { return }
+        altimeter.startRelativeAltitudeUpdates(to: .main) { [weak altimeter] _, _ in
+            altimeter?.stopRelativeAltitudeUpdates()
         }
     }
 

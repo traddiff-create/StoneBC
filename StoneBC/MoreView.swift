@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MoreView: View {
     @Environment(AppState.self) var appState
+    @State private var showTour = false
 
     var body: some View {
         NavigationStack {
@@ -109,6 +110,20 @@ struct MoreView: View {
                         }
                     }
 
+                    // Take the Tour
+                    moreSection(title: "LEARN", icon: "graduationcap") {
+                        Button {
+                            showTour = true
+                        } label: {
+                            moreRow(
+                                title: "Take the Tour",
+                                subtitle: "Walk through every feature",
+                                icon: "graduationcap.fill"
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+
                     // About
                     aboutSection
                 }
@@ -122,6 +137,11 @@ struct MoreView: View {
                     Text("MORE")
                         .font(.bcSectionTitle)
                         .tracking(2)
+                }
+            }
+            .sheet(isPresented: $showTour) {
+                OnboardingView {
+                    showTour = false
                 }
             }
         }
