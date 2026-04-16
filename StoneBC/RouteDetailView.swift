@@ -14,6 +14,11 @@ struct RouteDetailView: View {
     @State private var showFullMap = false
     @State private var gpxFileURL: URL?
     @State private var showShareCard = false
+    @State private var isPreparing = false
+    @State private var isCachedOffline = false
+    @State private var stravaSegments: [StravaSegment] = []
+    @State private var trailClosures: [TrailClosure] = []
+    @State private var isFavorite = false
 
     var body: some View {
         ScrollView {
@@ -30,8 +35,36 @@ struct RouteDetailView: View {
                 // Weather
                 RouteWeatherSection(route: route)
 
+                // Trail Conditions + Closures
+                trailIntelligenceSection
+
+                // Strava Segments
+                if StravaService.shared.isConfigured {
+                    stravaSection
+                }
+
                 // Map Preview
                 mapPreview
+
+                // gpx.studio interactive map
+                if let gpxURL = route.gpxURL {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("INTERACTIVE MAP")
+                            .font(.system(size: 10, weight: .semibold))
+                            .tracking(1)
+                            .foregroundColor(.secondary)
+
+                        GPXStudioMapView(
+                            gpxURL: gpxURL,
+                            centerLat: route.startCoordinate.latitude,
+                            centerLon: route.startCoordinate.longitude
+                        )
+                        .frame(height: 400)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+
+                    gpxStudioLink
+                }
 
                 // Offline & Coverage tools
                 offlineToolsSection
@@ -52,6 +85,16 @@ struct RouteDetailView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 HStack(spacing: 16) {
+                    Button {
+                        EventNotificationService.shared.toggleFavorite(routeId: route.id)
+                        isFavorite.toggle()
+                    } label: {
+                        Image(systemName: isFavorite ? "heart.fill" : "heart")
+                            .font(.system(size: 14))
+                            .foregroundColor(isFavorite ? .red : .primary)
+                    }
+                    .accessibilityLabel(isFavorite ? "Remove from favorites" : "Add to favorites")
+
                     Menu {
                         if let gpxFileURL {
                             ShareLink(item: gpxFileURL) {
@@ -80,6 +123,19 @@ struct RouteDetailView: View {
         .task {
             let gpx = GPXService.exportGPX(route)
             gpxFileURL = GPXService.writeToTempFile(gpx, name: route.name)
+            isCachedOffline = await OfflineRouteStorage.shared.isCached(routeId: route.id)
+            isFavorite = EventNotificationService.shared.isFavorite(routeId: route.id)
+
+            // Load USFS closures
+            trailClosures = await USFSService.shared.closuresAffecting(route: route)
+
+            // Load Strava segments if authenticated
+            if StravaService.shared.isAuthenticated {
+                stravaSegments = await StravaService.shared.segments(
+                    near: route.clStartCoordinate,
+                    routeId: route.id
+                )
+            }
         }
         .sheet(isPresented: $showShareCard) {
             ShareCardSheet(route: route)
@@ -270,37 +326,199 @@ struct RouteDetailView: View {
 
             // Prepare for Offline button
             Button {
+                isPreparing = true
                 Task {
+                    // Cache route data + snapshot + tile warming in parallel
+                    await OfflineRouteStorage.shared.cacheRoute(route)
                     await OfflineMapService.shared.warmTiles(for: route)
-                    await OfflineMapService.shared.generateSnapshot(for: route)
+                    _ = await OfflineMapService.shared.generateSnapshot(for: route)
+
+                    // Cache current weather if available
+                    if let weather = await WeatherService.shared.weather(for: route.clStartCoordinate) {
+                        await OfflineRouteStorage.shared.cacheWeather(weather, routeId: route.id)
+                    }
+
+                    isPreparing = false
+                    isCachedOffline = true
                 }
             } label: {
                 HStack(spacing: 8) {
-                    Image(systemName: "arrow.down.circle")
-                        .font(.system(size: 12))
-                        .foregroundColor(BCColors.brandBlue)
+                    if isPreparing {
+                        ProgressView()
+                            .scaleEffect(0.7)
+                            .frame(width: 12, height: 12)
+                    } else {
+                        Image(systemName: isCachedOffline ? "checkmark.circle.fill" : "arrow.down.circle")
+                            .font(.system(size: 12))
+                            .foregroundColor(isCachedOffline ? BCColors.brandGreen : BCColors.brandBlue)
+                    }
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Prepare for Offline")
+                        Text(isCachedOffline ? "Saved for Offline" : "Prepare for Offline")
                             .font(.system(size: 12, weight: .medium))
                             .foregroundColor(.primary)
-                        Text("Cache map tiles for this route")
+                        Text(isCachedOffline ? "Route, map, and weather cached" : "Cache route data and map tiles")
                             .font(.system(size: 10))
                             .foregroundColor(.secondary)
                     }
                     Spacer()
-                    Image(systemName: "icloud.and.arrow.down")
-                        .font(.system(size: 10))
-                        .foregroundColor(.secondary)
+                    if !isPreparing {
+                        Image(systemName: "icloud.and.arrow.down")
+                            .font(.system(size: 10))
+                            .foregroundColor(.secondary)
+                    }
                 }
                 .padding(BCSpacing.sm)
                 .background(BCColors.cardBackground.opacity(0.5))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
             .buttonStyle(.plain)
+            .disabled(isPreparing)
         }
         .padding(BCSpacing.md)
         .background(BCColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    // MARK: - gpx.studio Link
+    @Environment(\.openURL) private var openURL
+
+    private var gpxStudioLink: some View {
+        Button {
+            let gpxFileURL = route.gpxURL ?? ""
+            if let url = URL(string: "https://gpx.studio?state=%7B%22urls%22%3A%5B%22\(gpxFileURL.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? gpxFileURL)%22%5D%7D") {
+                openURL(url)
+            }
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: "map.circle.fill")
+                    .font(.system(size: 16))
+                    .foregroundColor(BCColors.brandBlue)
+                Text("Open in gpx.studio")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(BCColors.brandBlue)
+                Spacer()
+                Text("Interactive map, elevation, slope analysis")
+                    .font(.system(size: 10))
+                    .foregroundColor(.secondary)
+                Image(systemName: "arrow.up.right")
+                    .font(.system(size: 10))
+                    .foregroundColor(BCColors.tertiaryText)
+            }
+            .padding(BCSpacing.md)
+            .background(BCColors.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Trail Intelligence
+
+    private var trailIntelligenceSection: some View {
+        VStack(alignment: .leading, spacing: BCSpacing.sm) {
+            // Closures banner
+            if !trailClosures.isEmpty {
+                HStack(spacing: 8) {
+                    Image(systemName: "xmark.octagon.fill")
+                        .foregroundColor(.red)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("TRAIL CLOSURE")
+                            .font(.system(size: 9, weight: .bold))
+                            .tracking(1)
+                            .foregroundColor(.red)
+                        ForEach(trailClosures) { closure in
+                            Text("\(closure.trailName): \(closure.status)")
+                                .font(.system(size: 11))
+                                .foregroundColor(.primary)
+                        }
+                    }
+                    Spacer()
+                    Text("USFS")
+                        .font(.system(size: 8, weight: .bold))
+                        .foregroundColor(.secondary)
+                }
+                .padding(BCSpacing.sm)
+                .background(Color.red.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+
+            // Crowdsourced condition
+            if let condition = RouteConditionReporter.shared.latestCondition(for: route.id) {
+                HStack(spacing: 8) {
+                    Image(systemName: condition.icon)
+                        .foregroundColor(condition.badgeColor == "green" ? .green : condition.badgeColor == "red" ? .red : .orange)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("TRAIL CONDITION")
+                            .font(.system(size: 9, weight: .bold))
+                            .tracking(1)
+                            .foregroundColor(.secondary)
+                        Text(condition.displayLabel)
+                            .font(.system(size: 13, weight: .medium))
+                        if let date = condition.lastReportDate {
+                            Text("\(condition.reportCount) reports · last \(date, style: .relative) ago")
+                                .font(.system(size: 10))
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    Spacer()
+                }
+                .padding(BCSpacing.sm)
+                .background(BCColors.cardBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+        }
+    }
+
+    // MARK: - Strava Segments
+
+    private var stravaSection: some View {
+        VStack(alignment: .leading, spacing: BCSpacing.sm) {
+            HStack {
+                Text("STRAVA SEGMENTS")
+                    .font(.system(size: 10, weight: .semibold))
+                    .tracking(1)
+                    .foregroundColor(.secondary)
+                Spacer()
+                if StravaService.shared.isAuthenticated {
+                    Text(StravaService.shared.athleteName ?? "Connected")
+                        .font(.system(size: 9))
+                        .foregroundColor(BCColors.brandGreen)
+                }
+            }
+
+            if stravaSegments.isEmpty {
+                Text("Connect Strava to see nearby segments")
+                    .font(.system(size: 12))
+                    .foregroundColor(.secondary)
+                    .padding(BCSpacing.sm)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(BCColors.cardBackground)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            } else {
+                ForEach(stravaSegments.prefix(5)) { segment in
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(segment.name)
+                                .font(.system(size: 12, weight: .medium))
+                                .lineLimit(1)
+                            HStack(spacing: 8) {
+                                Text(segment.formattedDistance)
+                                Text(segment.formattedGrade)
+                                if !segment.climbCategoryLabel.isEmpty {
+                                    Text(segment.climbCategoryLabel)
+                                        .foregroundColor(.orange)
+                                }
+                            }
+                            .font(.system(size: 10))
+                            .foregroundColor(.secondary)
+                        }
+                        Spacer()
+                    }
+                    .padding(BCSpacing.sm)
+                    .background(BCColors.cardBackground)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+            }
+        }
     }
 
     // MARK: - Description

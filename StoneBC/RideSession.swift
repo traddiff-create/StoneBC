@@ -30,8 +30,12 @@ class RideSession {
     // Off-route
     var distanceFromRouteMeters: Double = 0
     var isOffRoute: Bool { distanceFromRouteMeters > 50 }
+    var isCriticallyOffRoute: Bool { distanceFromRouteMeters > 150 }
 
     private var timer: Timer?
+
+    // Spatial search window — avoid scanning all trackpoints every update
+    private let searchWindow = 100 // search ±100 trackpoints from last known position
 
     init(route: Route) {
         self.route = route
@@ -60,6 +64,9 @@ class RideSession {
     }
 
     func updateLocation(_ coordinate: CLLocationCoordinate2D, speed: Double) {
+        let trackpoints = route.clTrackpoints
+        guard !trackpoints.isEmpty else { return }
+
         // Accumulate distance
         if let last = lastLocation {
             let from = CLLocation(latitude: last.latitude, longitude: last.longitude)
@@ -78,14 +85,20 @@ class RideSession {
         }
         lastLocation = coordinate
 
-        // Find closest point on route
+        // Find closest point on route using windowed search.
+        // For routes with 10K+ trackpoints, scanning all every 5m kills performance.
+        // Search ±searchWindow around last known index, with full scan fallback if off-route.
         let userCL = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
         var minDist = Double.greatestFiniteMagnitude
-        var minIdx = 0
+        var minIdx = closestTrackpointIndex
 
-        for (i, pt) in route.clTrackpoints.enumerated() {
-            let ptCL = CLLocation(latitude: pt.latitude, longitude: pt.longitude)
-            let d = userCL.distance(from: ptCL)
+        let needsFullScan = isOffRoute || closestTrackpointIndex == 0
+        let lo = needsFullScan ? 0 : max(0, closestTrackpointIndex - searchWindow)
+        let hi = needsFullScan ? trackpoints.count - 1 : min(trackpoints.count - 1, closestTrackpointIndex + searchWindow)
+
+        for i in lo...hi {
+            let pt = trackpoints[i]
+            let d = userCL.distance(from: CLLocation(latitude: pt.latitude, longitude: pt.longitude))
             if d < minDist {
                 minDist = d
                 minIdx = i
@@ -95,11 +108,10 @@ class RideSession {
         closestTrackpointIndex = minIdx
         distanceFromRouteMeters = minDist
 
-        if !route.clTrackpoints.isEmpty {
-            progressPercent = Double(minIdx) / Double(max(route.clTrackpoints.count - 1, 1))
-        }
+        progressPercent = Double(minIdx) / Double(max(trackpoints.count - 1, 1))
 
         // Distance remaining from closest point to end
+        guard minIdx < route.trackpoints.count else { return }
         let remaining = Array(route.trackpoints[minIdx...])
         distanceRemainingMiles = Route.haversineDistance(remaining)
     }

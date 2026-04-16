@@ -40,6 +40,30 @@ struct MoreView: View {
                         }
                     }
 
+                    // Expedition Journals
+                    moreSection(title: "EXPEDITIONS", icon: "book") {
+                        NavigationLink(destination: ExpeditionListView()) {
+                            moreRow(
+                                title: "My Expeditions",
+                                subtitle: appState.activeExpedition != nil ? "Active" : "Document your rides",
+                                icon: "book.pages"
+                            )
+                        }
+                    }
+
+                    // Tour Guides
+                    if !appState.guides.isEmpty {
+                        moreSection(title: "TOUR GUIDES", icon: "map") {
+                            NavigationLink(destination: TourGuideListView()) {
+                                moreRow(
+                                    title: "Tour Guides",
+                                    subtitle: "\(appState.guides.count) guides",
+                                    icon: "map"
+                                )
+                            }
+                        }
+                    }
+
                     // Gallery section
                     if appState.config.features.enableGallery {
                         moreSection(title: "GALLERY", icon: "photo") {

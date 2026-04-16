@@ -1,6 +1,6 @@
 # American Empathy Project Grant — Stone Bicycle Coalition
 
-**Status:** AWARDED — $1,000
+**Status:** FUNDED — $1,000 (transferring to bank as of 2026-04-14)
 **Grantor:** American Humanist Association (American Empathy Project)
 **Recipient:** Stone Bicycle Coalition L.L.C.
 **Applied:** 2026-03-10 | **Notified:** 2026-03-23 | **Awarded:** 2026-03-31
@@ -58,6 +58,7 @@
 - Recipient: Rory Stone → BHCB account 765058
 - Process: SendGrant emails Rory → link bank account → funds transfer
 - AHA prefers 501(c)(3) but LLC accepted
+- **2026-04-14: Funds transferring to bank**
 
 ### April — Event Planning
 - [x] **Contact City Parks & Rec** — Melissa Petersen confirmed, volunteer waiver provided
@@ -155,4 +156,24 @@ Community ride + street cleanup combo addressing three empathy angles:
 
 ---
 
-*Created: 2026-03-23 | Updated: 2026-04-03*
+## Apr 16, 2026 — Danielle's Update Status Check
+
+Danielle (AEP team) sent an all-grantee update 2 weeks out from event. Status vs. her 7 items:
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | Expense tracker form (JotForm) | ✅ Bookmarked: https://form.jotform.com/261046485449161 — use in real time |
+| 2 | Funds transfer (4–6 biz days) | ✅ Bank info (BHCB 765058) submitted; funds landing ~Apr 20–22 |
+| 3 | AHA swag package | ✅ Onboarding done Apr 3 (before deadline) — package incoming |
+| 4 | Mobilize event page | ✅ Live: https://mobilize.us/s/JFgFN6 |
+| 5 | Promo video (optional) | ⚪ Skip or 5-min iPhone take if time allows |
+| 6 | Media release waiver QR code | ⏳ AEP sending ~Apr 24–25 — plan to use QR at registration |
+| 7 | Host support Zoom | ✅ Apr 9 Zoom attended; 2 extra sessions optional (Apr 21 1pm CT / Apr 23 9pm CT) |
+
+**Organizer Resource Kit:** https://docs.google.com/document/d/1qilKWheIv6ullSIoRoPWua00ZQ35tPPZ8xp5KD5k4o0/edit — AEP logos/branding for any Pedal for Empathy flyers.
+
+**Net:** All required items done. Only passive waits (funds land, package arrives, waiver QR code arrives) and optional extras (promo video, extra Zooms) remain from Danielle's list.
+
+---
+
+*Created: 2026-03-23 | Updated: 2026-04-16*

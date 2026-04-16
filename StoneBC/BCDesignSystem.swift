@@ -171,6 +171,40 @@ struct CategoryBadge: View {
     }
 }
 
+// MARK: - Trail Condition Badge
+struct TrailConditionBadge: View {
+    let condition: TrailCondition
+
+    private var color: Color {
+        switch condition.badgeColor {
+        case "green": .green
+        case "red": .red
+        case "orange": .orange
+        default: .gray
+        }
+    }
+
+    var body: some View {
+        HStack(spacing: 3) {
+            Image(systemName: condition.icon)
+                .font(.system(size: 8))
+            Text(condition.displayLabel)
+                .font(.system(size: 8, weight: .semibold))
+                .tracking(0.3)
+            if condition.reportCount > 1 {
+                Text("(\(condition.reportCount))")
+                    .font(.system(size: 7))
+            }
+        }
+        .padding(.horizontal, 6)
+        .padding(.vertical, 3)
+        .background(color.opacity(0.15))
+        .foregroundColor(color)
+        .clipShape(Capsule())
+        .accessibilityLabel("Trail condition: \(condition.displayLabel)")
+    }
+}
+
 // MARK: - Route Stat Row
 struct RouteStatRow: View {
     let icon: String

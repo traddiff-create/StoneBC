@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="http://ridewithgps.com/">
+  <metadata>
+    <name>Fat Pursuit 60k 2022 FINAL</name>
+    <link href="https://ridewithgps.com/routes/38214641">
+      <text>Fat Pursuit 60k 2022 FINAL</text>
+    </link>
+    <time>2021-12-20T11:26:06Z</time>
+  </metadata>
+  <rte>
+    <name>Fat Pursuit 60k 2022 FINAL</name>
+    <rtept lat="44.523203" lon="-111.330922">
+      <name>Start</name>
+      <cmt>Start of route</cmt>
+    </rtept>
+    <rtept lat="44.53834" lon="-111.33634">
+      <name>Right</name>
+      <cmt>Turn right onto Old U.S. Hwy 191</cmt>
+    </rtept>
+    <rtept lat="44.52321" lon="-111.33092">
+      <name>End</name>
+      <cmt>End of route</cmt>
+    </rtept>
+  </rte>
+</gpx>

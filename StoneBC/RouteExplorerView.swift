@@ -19,6 +19,9 @@ struct RouteExplorerView: View {
     @State private var mapStyle: ExplorerMapStyle = .hybrid
     @State private var showConnections = true
     @State private var showLabels = true
+    @State private var searchText = ""
+    @State private var searchResults: [RouteSearchResult] = []
+    @State private var showSearch = false
 
     private var routes: [Route] { appState.allRoutes }
 
@@ -164,6 +167,19 @@ struct RouteExplorerView: View {
                             .clipShape(Circle())
                     }
 
+                    // Search
+                    Button {
+                        withAnimation { showSearch.toggle() }
+                    } label: {
+                        Image(systemName: "magnifyingglass")
+                            .font(.system(size: 14, weight: .medium))
+                            .padding(10)
+                            .background(showSearch ? BCColors.brandBlue.opacity(0.8) : Color.clear)
+                            .background(.ultraThinMaterial)
+                            .foregroundColor(showSearch ? .white : .primary)
+                            .clipShape(Circle())
+                    }
+
                     Spacer()
 
                     // Reset view
@@ -179,6 +195,85 @@ struct RouteExplorerView: View {
                 }
                 .padding(.horizontal, BCSpacing.md)
                 .padding(.top, BCSpacing.sm)
+
+                // Search overlay
+                if showSearch {
+                    VStack(spacing: 6) {
+                        HStack {
+                            Image(systemName: "magnifyingglass")
+                                .font(.system(size: 12))
+                                .foregroundColor(.secondary)
+                            TextField("Search routes...", text: $searchText)
+                                .font(.system(size: 13))
+                                .textFieldStyle(.plain)
+                                .onChange(of: searchText) {
+                                    Task {
+                                        if searchText.count >= 2 {
+                                            searchResults = await RouteIndexService.shared.search(query: searchText)
+                                        } else {
+                                            searchResults = []
+                                        }
+                                    }
+                                }
+                            if !searchText.isEmpty {
+                                Button {
+                                    searchText = ""
+                                    searchResults = []
+                                } label: {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .font(.system(size: 14))
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                        }
+                        .padding(10)
+                        .background(.ultraThinMaterial)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+
+                        if !searchResults.isEmpty {
+                            ScrollView {
+                                VStack(spacing: 2) {
+                                    ForEach(searchResults) { result in
+                                        Button {
+                                            // Find and select the matching route
+                                            if let route = routes.first(where: { $0.id == result.routeId }) {
+                                                selectedRoute = route
+                                                showSearch = false
+                                                searchText = ""
+                                                searchResults = []
+                                                // Zoom to route
+                                                if let first = route.clTrackpoints.first {
+                                                    withAnimation {
+                                                        position = .camera(MapCamera(centerCoordinate: first, distance: 50000))
+                                                    }
+                                                }
+                                            }
+                                        } label: {
+                                            HStack {
+                                                VStack(alignment: .leading, spacing: 2) {
+                                                    Text(result.name)
+                                                        .font(.system(size: 12, weight: .medium))
+                                                        .foregroundColor(.primary)
+                                                    Text("\(result.category) · \(result.formattedDistance) · \(result.difficulty)")
+                                                        .font(.system(size: 10))
+                                                        .foregroundColor(.secondary)
+                                                }
+                                                Spacer()
+                                            }
+                                            .padding(8)
+                                        }
+                                        .buttonStyle(.plain)
+                                    }
+                                }
+                            }
+                            .frame(maxHeight: 200)
+                            .background(.ultraThinMaterial)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                        }
+                    }
+                    .padding(.horizontal, BCSpacing.md)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                }
 
                 Spacer()
 
@@ -222,6 +317,10 @@ struct RouteExplorerView: View {
                         .foregroundColor(.secondary)
                 }
             }
+        }
+        .task {
+            // Build search index on first load
+            await RouteIndexService.shared.buildIndex(from: routes)
         }
     }
 

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [[ \"$CLAUDE_FILE_PATH\" == *.swift ]]; then echo '[Hook] Swift edit: no force unwraps, use [weak self] in closures' >&2; fi"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [[ \"$CLAUDE_FILE_PATH\" == *.swift ]] && [ -f \"$CLAUDE_FILE_PATH\" ]; then grep -n 'print(' \"$CLAUDE_FILE_PATH\" 2>/dev/null | grep -v '//' | head -5 | while read line; do echo \"[Hook] print() found: $line\" >&2; done; fi"
+          }
+        ]
+      }
+    ]
+  }
+}

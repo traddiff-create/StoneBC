@@ -23,9 +23,11 @@ struct RouteNavigationView: View {
     @State private var isFollowingUser = true
     @State private var mapStyle: MapStyleOption = .standard
     @State private var showEndConfirm = false
+    @State private var showConditionReport = false
     @State private var wasOffRoute = false
     @State private var breadcrumbs: [CLLocationCoordinate2D] = []
     @State private var showAudioToggle = false
+    @State private var precomputedTurns: [TurnPoint] = []
     @Environment(\.dismiss) var dismiss
 
     init(route: Route) {
@@ -88,8 +90,9 @@ struct RouteNavigationView: View {
             .onChange(of: locationService.userLocation?.latitude) {
                 guard let loc = locationService.userLocation else { return }
 
-                // Update session
+                // Update session + emergency location
                 session.updateLocation(loc, speed: locationService.speedMPS)
+                EmergencySafetyService.shared.updateLocation(loc)
 
                 // Add breadcrumb (every ~10m to avoid excessive points)
                 if let last = breadcrumbs.last {
@@ -102,9 +105,9 @@ struct RouteNavigationView: View {
                     breadcrumbs.append(loc)
                 }
 
-                // Audio: off-route detection
+                // Audio: off-route detection (warn at 50m, critical at 150m)
                 if session.isOffRoute {
-                    if !wasOffRoute {
+                    if !wasOffRoute || session.isCriticallyOffRoute {
                         audioService.announceOffRoute(distanceMeters: session.distanceFromRouteMeters)
                         wasOffRoute = true
                     }
@@ -136,12 +139,19 @@ struct RouteNavigationView: View {
                     workoutService.addRouteData(recent)
                 }
 
-                // Audio: turn detection
-                if let turn = NavigationAudioService.detectTurn(
-                    trackpoints: route.clTrackpoints,
-                    currentIndex: session.closestTrackpointIndex
-                ), turn.distanceMeters < 200 {
-                    audioService.announceTurn(direction: turn.direction, distanceAhead: turn.distanceMeters)
+                // Audio: turn detection (uses pre-computed turns for O(1) lookup)
+                if let nextTurn = RouteAnalysisService.nextTurn(
+                    from: session.closestTrackpointIndex,
+                    in: precomputedTurns
+                ) {
+                    let dist = RouteAnalysisService.distanceToTurn(
+                        from: session.closestTrackpointIndex,
+                        to: nextTurn,
+                        trackpoints: route.clTrackpoints
+                    )
+                    if dist < 200 && dist > 10 { // announce 200m out, stop once past
+                        audioService.announceTurn(direction: nextTurn.direction, distanceAhead: dist)
+                    }
                 }
 
                 // Follow user
@@ -242,11 +252,23 @@ struct RouteNavigationView: View {
             }
         }
         .onAppear {
+            guard route.isNavigable else {
+                dismiss()
+                return
+            }
             locationService.requestPermission()
             locationService.startTracking()
             altimeterService.start()
             audioService.reset()
             session.start()
+
+            // Wire GPS → barometer altitude fusion calibration
+            locationService.onFirstAltitude = { [altimeterService] gpsAltitude in
+                altimeterService.calibrateWithGPS(altitudeMeters: gpsAltitude)
+            }
+
+            // Pre-compute turn points for efficient navigation
+            precomputedTurns = RouteAnalysisService.analyzeTurns(for: route)
             activityManager.startActivity(
                 routeName: route.name,
                 distanceMiles: route.distanceMiles,
@@ -282,14 +304,35 @@ struct RouteNavigationView: View {
                         duration: session.elapsedSeconds
                     )
                 }
+                // Record ride to history
+                RideHistoryService.shared.recordRide(
+                    routeId: route.id,
+                    routeName: route.name,
+                    category: route.category,
+                    distanceMiles: session.distanceTraveledMiles,
+                    elapsedSeconds: session.elapsedSeconds,
+                    movingSeconds: session.movingSeconds,
+                    elevationGainFeet: Double(altimeterService.totalAscentFeet),
+                    avgSpeedMPH: locationService.averageSpeedMPH,
+                    maxSpeedMPH: locationService.maxSpeedMPH
+                )
+
+                // Feed last GPS to emergency service
+                EmergencySafetyService.shared.lastKnownLocation = nil
+
                 locationService.stopTracking()
                 altimeterService.stop()
                 session.stop()
-                dismiss()
+                showConditionReport = true
             }
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("\(session.formattedDistance) ridden in \(session.formattedElapsedTime)")
+        }
+        .sheet(isPresented: $showConditionReport) {
+            ConditionReportSheet(routeId: route.id, routeName: route.name) {
+                dismiss()
+            }
         }
     }
 }
@@ -319,6 +362,95 @@ enum MapStyleOption: CaseIterable {
         let all = MapStyleOption.allCases
         let idx = all.firstIndex(of: self) ?? 0
         return all[(idx + 1) % all.count]
+    }
+}
+
+// MARK: - Condition Report Sheet
+
+struct ConditionReportSheet: View {
+    let routeId: String
+    let routeName: String
+    let onDismiss: () -> Void
+
+    @State private var selectedCondition: RideCondition?
+    @State private var note = ""
+    @Environment(\.dismiss) var sheetDismiss
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 20) {
+                Text("How was the trail?")
+                    .font(.system(size: 18, weight: .semibold))
+
+                Text(routeName)
+                    .font(.system(size: 13))
+                    .foregroundColor(.secondary)
+
+                // Condition quick-tap grid
+                LazyVGrid(columns: [
+                    GridItem(.flexible()), GridItem(.flexible()),
+                    GridItem(.flexible()), GridItem(.flexible())
+                ], spacing: 12) {
+                    ForEach(RideCondition.allCases, id: \.self) { condition in
+                        Button {
+                            selectedCondition = condition
+                        } label: {
+                            VStack(spacing: 6) {
+                                Image(systemName: condition.icon)
+                                    .font(.system(size: 20))
+                                Text(condition.label)
+                                    .font(.system(size: 10, weight: .medium))
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(selectedCondition == condition
+                                        ? Color.accentColor.opacity(0.2)
+                                        : Color(UIColor.tertiarySystemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(selectedCondition == condition ? Color.accentColor : .clear, lineWidth: 2)
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+
+                // Optional note
+                TextField("Add a note (optional)", text: $note)
+                    .textFieldStyle(.roundedBorder)
+                    .font(.system(size: 13))
+
+                Spacer()
+            }
+            .padding()
+            .navigationTitle("Trail Report")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Skip") {
+                        sheetDismiss()
+                        onDismiss()
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Submit") {
+                        if let condition = selectedCondition {
+                            RouteConditionReporter.shared.submitReport(
+                                routeId: routeId,
+                                condition: condition,
+                                note: note.isEmpty ? nil : note
+                            )
+                        }
+                        sheetDismiss()
+                        onDismiss()
+                    }
+                    .disabled(selectedCondition == nil)
+                    .fontWeight(.semibold)
+                }
+            }
+        }
+        .presentationDetents([.medium])
     }
 }
 

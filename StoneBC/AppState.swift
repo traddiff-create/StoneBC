@@ -15,9 +15,13 @@ class AppState {
     var events: [Event] = []
     var routes: [Route] = []
     var importedRoutes: [Route] = []
+    var guides: [TourGuide] = []
     var config: AppConfig = .load()
 
     var allRoutes: [Route] { routes + importedRoutes }
+
+    // Expedition
+    var activeExpedition: ExpeditionJournal?
 
     // Sync state
     var isSyncing = false
@@ -36,12 +40,29 @@ class AppState {
 
     private static let importedRoutesKey = "importedRoutes"
 
+    var loadErrors: [String] = []
+
     func loadData() {
+        loadErrors = []
         bikes = Bike.loadFromBundle()
         posts = Post.loadFromBundle()
         events = Event.loadFromBundle()
-        routes = Route.loadFromBundle()
+        guides = TourGuide.loadFromBundle()
         loadImportedRoutes()
+
+        // Routes get extra validation — filter out any with bad data
+        let allRoutes = Route.loadFromBundle()
+        let (valid, invalid) = allRoutes.reduce(into: ([Route](), [Route]())) { result, route in
+            if route.isNavigable {
+                result.0.append(route)
+            } else {
+                result.1.append(route)
+            }
+        }
+        routes = valid
+        if !invalid.isEmpty {
+            loadErrors.append("\(invalid.count) routes skipped (insufficient trackpoints): \(invalid.map(\.name).joined(separator: ", "))")
+        }
     }
 
     // MARK: - Imported Routes

@@ -16,6 +16,8 @@ class RadioViewModel: NSObject {
     var connectedPeers: [RadioPeer] = []
     var isOpenMic: Bool = false
     var currentSpeaker: String?
+    var lastReceivedMessage: (from: String, text: String)?
+    var showPresetPicker = false
 
     // Reconnection tracking
     private var recentlyDisconnected: [String: Date] = [:]
@@ -132,6 +134,17 @@ extension RadioViewModel: RadioServiceDelegate {
             connectedPeers[idx].isTransmitting = transmitting
         }
         currentSpeaker = transmitting ? peer.displayName : nil
+    }
+
+    func radioService(_ service: RadioService, didReceiveMessage message: String, from peer: MCPeerID) {
+        lastReceivedMessage = (from: peer.displayName, text: message)
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+    }
+
+    // MARK: - Preset Messages
+
+    func sendPreset(_ message: RadioPresetMessage) {
+        radioService.sendPresetMessage(message)
     }
 }
 

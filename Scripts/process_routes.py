@@ -147,6 +147,14 @@ ROUTE_METADATA = {
         "description": "Dirt variant of the 8-Over-7 route — rugged singletrack threading through high-country Black Hills terrain with sustained climbing.",
         "max_points": None,
     },
+    "8over7v2.2021.gpx": {
+        "id": "8over7-v2-2021",
+        "name": "8 Over 7 v2 (2021)",
+        "category": "trail",
+        "region": "Black Hills",
+        "description": "2021 variant of the 8-Over-7 singletrack link-up. 100+ mile epic from Keystone to Deadwood through high-country Black Hills terrain with nearly 10,000 feet of climbing.",
+        "max_points": None,
+    },
     "Black_Hills_Pay_Dirt.gpx": {
         "id": "black-hills-pay-dirt",
         "name": "Black Hills Pay Dirt",
@@ -314,6 +322,172 @@ ROUTE_METADATA = {
         "category": "gravel",
         "region": "Black Hills",
         "description": "Gravel ride from Woodle Gulch area into Rapid City."
+    },
+
+    # === RAPID CITY TOURS ===
+    "rc-bike-path-tour.gpx": {
+        "name": "RC Bike Path Tour",
+        "category": "road",
+        "region": "Rapid City",
+        "description": "Ride the Leonard Swanson Memorial Pathway — Rapid Creek bike path from Canyon Lake to Fish Hatchery. Hits Founders Park, Memorial Park, Sioux Park. Paved, flat, family-friendly."
+    },
+    "rc-brewery-crawl.gpx": {
+        "name": "RC Brewery Crawl",
+        "category": "road",
+        "region": "Rapid City",
+        "description": "Bike-path brewery tour through downtown Rapid City. Dakota Point, Hay Camp, Firehouse, Knuckle, Lost Cabin. Start at Hanson-Larsen Memorial Park."
+    },
+    "rc-full-city-loop.gpx": {
+        "name": "RC Full City Loop",
+        "category": "road",
+        "region": "Rapid City",
+        "description": "Big loop hitting Rapid City highlights — Skyline Drive, Dinosaur Park, M Hill, downtown, creek path, Canyon Lake, and neighborhoods. The grand tour."
+    },
+
+    # === NEW ROUTES (iCloud import) ===
+    "-17_Custer_Blue_course.fit": {
+        "name": "Custer Blue (2017)",
+        "category": "gravel",
+        "region": "Custer",
+        "description": "2017 Custer Blue gravel course through rolling Black Hills terrain."
+    },
+    "-17_Lead_Blue_course.fit": {
+        "name": "Lead Blue (2017)",
+        "category": "gravel",
+        "region": "Lead",
+        "description": "2017 Lead Blue course through historic mining country."
+    },
+    "-19_Hill-City_B_course.fit": {
+        "name": "Hill City Blue (2019)",
+        "category": "gravel",
+        "region": "Hill City",
+        "description": "2019 Hill City Blue course — gravel and forest roads near Hill City."
+    },
+    "65 mile Limber Excursion.gpx": {
+        "name": "Limber Excursion 65",
+        "category": "gravel",
+        "region": "Black Hills",
+        "description": "65-mile gravel excursion through limber pine country in the Black Hills."
+    },
+    "CP_Loop.gpx": {
+        "name": "Centennial Prairie Loop",
+        "category": "gravel",
+        "region": "Black Hills",
+        "description": "Long gravel loop through prairie and forest on the eastern Black Hills edge."
+    },
+    "CSP_Lolly.gpx": {
+        "name": "Custer State Park Lollipop",
+        "category": "road",
+        "region": "Custer",
+        "description": "Lollipop loop through Custer State Park — scenic roads, wildlife, and Black Hills views."
+    },
+    "Custer_Blue_2020.gpx": {
+        "name": "Custer Blue (2020)",
+        "category": "gravel",
+        "region": "Custer",
+        "description": "2020 Custer Blue gravel course — updated route through the southern Hills."
+    },
+    "Custer_Blue_2020_course.fit": {
+        "name": "Custer Blue FIT (2020)",
+        "category": "gravel",
+        "region": "Custer",
+        "description": "2020 Custer Blue course — FIT format."
+    },
+    "Custer_Blue_201_course.fit": {
+        "name": "Custer Blue (2018)",
+        "category": "gravel",
+        "region": "Custer",
+        "description": "2018 Custer Blue gravel course."
+    },
+    "Deadwood_Black__21_.gpx": {
+        "name": "Deadwood Black (2021)",
+        "category": "gravel",
+        "region": "Deadwood",
+        "description": "Deadwood Black course — the harder variant through Lead and Deadwood mining roads."
+    },
+    "Headlands one way.gpx": {
+        "name": "Headlands One Way",
+        "category": "trail",
+        "region": "California",
+        "description": "Point-to-point trail ride through the Marin Headlands. West coast singletrack."
+    },
+    "Nic42.gpx": {
+        "name": "Nicole's 42",
+        "category": "gravel",
+        "region": "Black Hills",
+        "description": "42-mile gravel route — Nicole's favorite Black Hills loop."
+    },
+    "100_mile_route_2025.fit": {
+        "name": "Century Route (2025)",
+        "category": "gravel",
+        "region": "Black Hills",
+        "description": "100-mile Black Hills century route for 2025."
+    },
+    "briarwood-collier-hillcrest-stafford-blue-creek-94845.gpx": {
+        "name": "Briarwood-Blue Creek Loop",
+        "category": "gravel",
+        "region": "Black Hills",
+        "description": "Gravel loop through Briarwood, Collier, Hillcrest, Stafford, and Blue Creek."
+    },
+    "Thunderhawk Lemmon_course.fit": {
+        "name": "Thunderhawk Lemmon",
+        "category": "gravel",
+        "region": "Lemmon",
+        "description": "Gravel ride out of Lemmon, SD — open prairie and big sky country."
+    },
+    "The official Dakota Five-o course, _course.fit": {
+        "name": "Dakota Five-O Official",
+        "category": "gravel",
+        "region": "Black Hills",
+        "description": "The official Dakota Five-O 50-mile course — mixed terrain through the heart of the Hills."
+    },
+    "Gold-Rush-2019_course.fit": {
+        "name": "Gold Rush (2019)",
+        "category": "gravel",
+        "region": "Black Hills",
+        "description": "2019 Gold Rush gravel race course through historic mining country."
+    },
+    "Chadron State Park Lookout Loop_course.fit": {
+        "name": "Chadron Lookout Loop",
+        "category": "trail",
+        "region": "Chadron",
+        "description": "Trail loop through Chadron State Park in the Nebraska Pine Ridge."
+    },
+    "route2572500958.gpx": {
+        "name": "RC Urban Loop",
+        "category": "road",
+        "region": "Rapid City",
+        "description": "Urban road loop around Rapid City."
+    },
+    "0001 Backpacking bro_course.fit": {
+        "name": "Backpacking Bro Route",
+        "category": "trail",
+        "region": "Black Hills",
+        "description": "Bikepacking route through the backcountry Black Hills."
+    },
+    "1 HP to WRS_course.fit": {
+        "name": "Hill Park to WRS",
+        "category": "road",
+        "region": "Black Hills",
+        "description": "Road route from Hill Park to Western Range."
+    },
+    "1 WRC to HP_course.fit": {
+        "name": "WRS to Hill Park",
+        "category": "road",
+        "region": "Black Hills",
+        "description": "Return route from Western Range to Hill Park."
+    },
+    "28 Below Course_course.fit": {
+        "name": "28 Below FIT",
+        "category": "fatbike",
+        "region": "Black Hills",
+        "description": "28 Below fat bike course — FIT format."
+    },
+    "Ponderosa Escapade 2024 .gpx": {
+        "name": "Ponderosa Escapade (2024)",
+        "category": "trail",
+        "region": "Black Hills",
+        "description": "2024 updated Ponderosa Escapade course through pine forest singletrack."
     },
 }
 
@@ -511,6 +685,7 @@ def main():
             "description": meta.get("description", f"Cycling route in the Black Hills region."),
             "startCoordinate": start_coord,
             "trackpoints": compact_trackpoints,
+            "gpxURL": f"https://stone-bicycle-coalition.netlify.app/gpx/{filename}",
         }
 
         routes.append(route)

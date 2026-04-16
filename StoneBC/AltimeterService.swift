@@ -76,6 +76,37 @@ class AltimeterService {
         isRunning = false
     }
 
+    // MARK: - Altitude Fusion (GPS baseline + barometer deltas)
+
+    private var gpsBaseline: Double?       // first GPS altitude reading (meters)
+    private var baroBaselineOffset: Double? // difference between GPS baseline and baro at calibration
+
+    /// Call once with the first GPS altitude to calibrate the fused altitude
+    func calibrateWithGPS(altitudeMeters: Double) {
+        if gpsBaseline == nil {
+            gpsBaseline = altitudeMeters
+            baroBaselineOffset = altitudeMeters // baro starts at 0 relative
+        }
+    }
+
+    /// Fused altitude: GPS baseline + barometer relative changes (meters)
+    var fusedAltitudeMeters: Double {
+        guard let baseline = gpsBaseline else { return 0 }
+        return baseline + relativeAltitudeMeters
+    }
+
+    /// Fused altitude in feet
+    var fusedAltitudeFeet: Double {
+        fusedAltitudeMeters * 3.28084
+    }
+
+    var formattedFusedAltitude: String {
+        let ft = Int(fusedAltitudeFeet)
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return (formatter.string(from: NSNumber(value: ft)) ?? "\(ft)") + " ft"
+    }
+
     var formattedPressure: String {
         String(format: "%.1f hPa", pressureHPa)
     }

@@ -28,6 +28,7 @@
 		A10013000000000000000013 /* toolkit.json in Resources */ = {isa = PBXBuildFile; fileRef = A20013000000000000000013 /* toolkit.json */; };
 		A10014000000000000000014 /* photos.json in Resources */ = {isa = PBXBuildFile; fileRef = A20014000000000000000014 /* photos.json */; };
 		A10015000000000000000015 /* Thumbnails in Resources */ = {isa = PBXBuildFile; fileRef = A20015000000000000000015 /* Thumbnails */; };
+		L00001000000000000000001 /* GalleryPhotos in Resources */ = {isa = PBXBuildFile; fileRef = L10001000000000000000001 /* GalleryPhotos */; };
 		A10016000000000000000016 /* Toolkit in Resources */ = {isa = PBXBuildFile; fileRef = A20016000000000000000016 /* Toolkit */; };
 		C10001000000000000000001 /* Bike.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20001000000000000000001 /* Bike.swift */; };
 		C10002000000000000000002 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20002000000000000000002 /* Post.swift */; };
@@ -80,6 +81,36 @@
 		H00006000000000000000006 /* RideActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = H10006000000000000000006 /* RideActivityManager.swift */; };
 		J00001000000000000000001 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = J10001000000000000000001 /* OnboardingView.swift */; };
 		J00002000000000000000002 /* PermissionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = J10002000000000000000002 /* PermissionService.swift */; };
+		K00001000000000000000001 /* VolunteerFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = K10001000000000000000001 /* VolunteerFormView.swift */; };
+		K00002000000000000000002 /* DonateFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = K10002000000000000000002 /* DonateFormView.swift */; };
+		K00003000000000000000003 /* TourGuide.swift in Sources */ = {isa = PBXBuildFile; fileRef = K10003000000000000000003 /* TourGuide.swift */; };
+		K00004000000000000000004 /* TourGuideListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = K10004000000000000000004 /* TourGuideListView.swift */; };
+		K00005000000000000000005 /* TourGuideDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = K10005000000000000000005 /* TourGuideDetailView.swift */; };
+		K00006000000000000000006 /* guides.json in Resources */ = {isa = PBXBuildFile; fileRef = K10006000000000000000006 /* guides.json */; };
+		K00007000000000000000007 /* RideChecklist.swift in Sources */ = {isa = PBXBuildFile; fileRef = K10007000000000000000007 /* RideChecklist.swift */; };
+		K00008000000000000000008 /* GPXStudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = K10008000000000000000008 /* GPXStudioView.swift */; };
+		M00001000000000000000001 /* OfflineRouteStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10001000000000000000001 /* OfflineRouteStorage.swift */; };
+		M00002000000000000000002 /* RouteAnalysisService.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10002000000000000000002 /* RouteAnalysisService.swift */; };
+		M00003000000000000000003 /* TrailforksService.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10003000000000000000003 /* TrailforksService.swift */; };
+		M00004000000000000000004 /* USFSService.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10004000000000000000004 /* USFSService.swift */; };
+		M00005000000000000000005 /* StravaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10005000000000000000005 /* StravaService.swift */; };
+		M00006000000000000000006 /* RouteConditionReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10006000000000000000006 /* RouteConditionReporter.swift */; };
+		M00007000000000000000007 /* EmergencySafetyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10007000000000000000007 /* EmergencySafetyService.swift */; };
+		M00008000000000000000008 /* RideExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10008000000000000000008 /* RideExportService.swift */; };
+		M00009000000000000000009 /* RideHistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10009000000000000000009 /* RideHistoryService.swift */; };
+		M00010000000000000000010 /* RouteIndexService.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10010000000000000000010 /* RouteIndexService.swift */; };
+		M00011000000000000000011 /* EventNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10011000000000000000011 /* EventNotificationService.swift */; };
+		M00012000000000000000012 /* MapboxOfflineService.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10012000000000000000012 /* MapboxOfflineService.swift */; };
+		N00001000000000000000001 /* ExpeditionJournal.swift in Sources */ = {isa = PBXBuildFile; fileRef = N10001000000000000000001 /* ExpeditionJournal.swift */; };
+		N00002000000000000000002 /* ExpeditionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = N10002000000000000000002 /* ExpeditionStorage.swift */; };
+		N00003000000000000000003 /* MediaCaptureService.swift in Sources */ = {isa = PBXBuildFile; fileRef = N10003000000000000000003 /* MediaCaptureService.swift */; };
+		N00004000000000000000004 /* ExpeditionCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = N10004000000000000000004 /* ExpeditionCaptureView.swift */; };
+		N00005000000000000000005 /* PhotoGeotaggingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = N10005000000000000000005 /* PhotoGeotaggingService.swift */; };
+		N00006000000000000000006 /* ExpeditionTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = N10006000000000000000006 /* ExpeditionTimelineView.swift */; };
+		N00007000000000000000007 /* ExpeditionMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = N10007000000000000000007 /* ExpeditionMapView.swift */; };
+		N00008000000000000000008 /* ExpeditionExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = N10008000000000000000008 /* ExpeditionExporter.swift */; };
+		N00009000000000000000009 /* ExpeditionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = N10009000000000000000009 /* ExpeditionListView.swift */; };
+		N00010000000000000000010 /* PackingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = N10010000000000000000010 /* PackingListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -104,6 +135,7 @@
 		A20013000000000000000013 /* toolkit.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = toolkit.json; sourceTree = "<group>"; };
 		A20014000000000000000014 /* photos.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = photos.json; sourceTree = "<group>"; };
 		A20015000000000000000015 /* Thumbnails */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Thumbnails; sourceTree = "<group>"; };
+		L10001000000000000000001 /* GalleryPhotos */ = {isa = PBXFileReference; lastKnownFileType = folder; path = GalleryPhotos; sourceTree = "<group>"; };
 		A20016000000000000000016 /* Toolkit */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Toolkit; sourceTree = "<group>"; };
 		A30000000000000000000001 /* StoneBC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StoneBC.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C20001000000000000000001 /* Bike.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bike.swift; sourceTree = "<group>"; };
@@ -157,7 +189,37 @@
 		H10006000000000000000006 /* RideActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideActivityManager.swift; sourceTree = "<group>"; };
 		J10001000000000000000001 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		J10002000000000000000002 /* PermissionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionService.swift; sourceTree = "<group>"; };
+		K10001000000000000000001 /* VolunteerFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolunteerFormView.swift; sourceTree = "<group>"; };
+		K10002000000000000000002 /* DonateFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonateFormView.swift; sourceTree = "<group>"; };
+		K10003000000000000000003 /* TourGuide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TourGuide.swift; sourceTree = "<group>"; };
+		K10004000000000000000004 /* TourGuideListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TourGuideListView.swift; sourceTree = "<group>"; };
+		K10005000000000000000005 /* TourGuideDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TourGuideDetailView.swift; sourceTree = "<group>"; };
+		K10006000000000000000006 /* guides.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = guides.json; sourceTree = "<group>"; };
+		K10007000000000000000007 /* RideChecklist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideChecklist.swift; sourceTree = "<group>"; };
+		K10008000000000000000008 /* GPXStudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPXStudioView.swift; sourceTree = "<group>"; };
 		J10003000000000000000003 /* StoneBC.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StoneBC.entitlements; sourceTree = "<group>"; };
+		M10001000000000000000001 /* OfflineRouteStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineRouteStorage.swift; sourceTree = "<group>"; };
+		M10002000000000000000002 /* RouteAnalysisService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteAnalysisService.swift; sourceTree = "<group>"; };
+		M10003000000000000000003 /* TrailforksService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailforksService.swift; sourceTree = "<group>"; };
+		M10004000000000000000004 /* USFSService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USFSService.swift; sourceTree = "<group>"; };
+		M10005000000000000000005 /* StravaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StravaService.swift; sourceTree = "<group>"; };
+		M10006000000000000000006 /* RouteConditionReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteConditionReporter.swift; sourceTree = "<group>"; };
+		M10007000000000000000007 /* EmergencySafetyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmergencySafetyService.swift; sourceTree = "<group>"; };
+		M10008000000000000000008 /* RideExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideExportService.swift; sourceTree = "<group>"; };
+		M10009000000000000000009 /* RideHistoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideHistoryService.swift; sourceTree = "<group>"; };
+		M10010000000000000000010 /* RouteIndexService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteIndexService.swift; sourceTree = "<group>"; };
+		M10011000000000000000011 /* EventNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventNotificationService.swift; sourceTree = "<group>"; };
+		M10012000000000000000012 /* MapboxOfflineService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxOfflineService.swift; sourceTree = "<group>"; };
+		N10001000000000000000001 /* ExpeditionJournal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpeditionJournal.swift; sourceTree = "<group>"; };
+		N10002000000000000000002 /* ExpeditionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpeditionStorage.swift; sourceTree = "<group>"; };
+		N10003000000000000000003 /* MediaCaptureService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaCaptureService.swift; sourceTree = "<group>"; };
+		N10004000000000000000004 /* ExpeditionCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpeditionCaptureView.swift; sourceTree = "<group>"; };
+		N10005000000000000000005 /* PhotoGeotaggingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoGeotaggingService.swift; sourceTree = "<group>"; };
+		N10006000000000000000006 /* ExpeditionTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpeditionTimelineView.swift; sourceTree = "<group>"; };
+		N10007000000000000000007 /* ExpeditionMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpeditionMapView.swift; sourceTree = "<group>"; };
+		N10008000000000000000008 /* ExpeditionExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpeditionExporter.swift; sourceTree = "<group>"; };
+		N10009000000000000000009 /* ExpeditionListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpeditionListView.swift; sourceTree = "<group>"; };
+		N10010000000000000000010 /* PackingListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -203,6 +265,7 @@
 				A20013000000000000000013 /* toolkit.json */,
 				A20014000000000000000014 /* photos.json */,
 				A20015000000000000000015 /* Thumbnails */,
+				L10001000000000000000001 /* GalleryPhotos */,
 				A20016000000000000000016 /* Toolkit */,
 				C20001000000000000000001 /* Bike.swift */,
 				C20002000000000000000002 /* Post.swift */,
@@ -229,6 +292,28 @@
 				G10003000000000000000003 /* RideDashboardView.swift */,
 				G10004000000000000000004 /* ConnectivityService.swift */,
 				G10005000000000000000005 /* OfflineMapService.swift */,
+				M10001000000000000000001 /* OfflineRouteStorage.swift */,
+				M10002000000000000000002 /* RouteAnalysisService.swift */,
+				M10003000000000000000003 /* TrailforksService.swift */,
+				M10004000000000000000004 /* USFSService.swift */,
+				M10005000000000000000005 /* StravaService.swift */,
+				M10006000000000000000006 /* RouteConditionReporter.swift */,
+				M10007000000000000000007 /* EmergencySafetyService.swift */,
+				M10008000000000000000008 /* RideExportService.swift */,
+				M10009000000000000000009 /* RideHistoryService.swift */,
+				M10010000000000000000010 /* RouteIndexService.swift */,
+				M10011000000000000000011 /* EventNotificationService.swift */,
+				M10012000000000000000012 /* MapboxOfflineService.swift */,
+				N10001000000000000000001 /* ExpeditionJournal.swift */,
+				N10002000000000000000002 /* ExpeditionStorage.swift */,
+				N10003000000000000000003 /* MediaCaptureService.swift */,
+				N10004000000000000000004 /* ExpeditionCaptureView.swift */,
+				N10005000000000000000005 /* PhotoGeotaggingService.swift */,
+				N10006000000000000000006 /* ExpeditionTimelineView.swift */,
+				N10007000000000000000007 /* ExpeditionMapView.swift */,
+				N10008000000000000000008 /* ExpeditionExporter.swift */,
+				N10009000000000000000009 /* ExpeditionListView.swift */,
+				N10010000000000000000010 /* PackingListView.swift */,
 				G10006000000000000000006 /* CellCoverageView.swift */,
 				G10007000000000000000007 /* OfflineBannerView.swift */,
 				G10008000000000000000008 /* cell_towers.json */,
@@ -240,6 +325,14 @@
 				H10006000000000000000006 /* RideActivityManager.swift */,
 				J10001000000000000000001 /* OnboardingView.swift */,
 				J10002000000000000000002 /* PermissionService.swift */,
+				K10001000000000000000001 /* VolunteerFormView.swift */,
+				K10002000000000000000002 /* DonateFormView.swift */,
+				K10003000000000000000003 /* TourGuide.swift */,
+				K10004000000000000000004 /* TourGuideListView.swift */,
+				K10005000000000000000005 /* TourGuideDetailView.swift */,
+				K10006000000000000000006 /* guides.json */,
+				K10007000000000000000007 /* RideChecklist.swift */,
+				K10008000000000000000008 /* GPXStudioView.swift */,
 				J10003000000000000000003 /* StoneBC.entitlements */,
 				D30000000000000000000001 /* Radio */,
 				E20001000000000000000001 /* Assets.xcassets */,
@@ -340,12 +433,14 @@
 				A10013000000000000000013 /* toolkit.json in Resources */,
 				A10014000000000000000014 /* photos.json in Resources */,
 				A10015000000000000000015 /* Thumbnails in Resources */,
+				L00001000000000000000001 /* GalleryPhotos in Resources */,
 				A10016000000000000000016 /* Toolkit in Resources */,
 				C10010000000000000000010 /* bikes.json in Resources */,
 				C10011000000000000000011 /* posts.json in Resources */,
 				C10012000000000000000012 /* config.json in Resources */,
 				E10001000000000000000001 /* Assets.xcassets in Resources */,
 				G00008000000000000000008 /* cell_towers.json in Resources */,
+				K00006000000000000000006 /* guides.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -407,6 +502,28 @@
 				G00003000000000000000003 /* RideDashboardView.swift in Sources */,
 				G00004000000000000000004 /* ConnectivityService.swift in Sources */,
 				G00005000000000000000005 /* OfflineMapService.swift in Sources */,
+				M00001000000000000000001 /* OfflineRouteStorage.swift in Sources */,
+				M00002000000000000000002 /* RouteAnalysisService.swift in Sources */,
+				M00003000000000000000003 /* TrailforksService.swift in Sources */,
+				M00004000000000000000004 /* USFSService.swift in Sources */,
+				M00005000000000000000005 /* StravaService.swift in Sources */,
+				M00006000000000000000006 /* RouteConditionReporter.swift in Sources */,
+				M00007000000000000000007 /* EmergencySafetyService.swift in Sources */,
+				M00008000000000000000008 /* RideExportService.swift in Sources */,
+				M00009000000000000000009 /* RideHistoryService.swift in Sources */,
+				M00010000000000000000010 /* RouteIndexService.swift in Sources */,
+				M00011000000000000000011 /* EventNotificationService.swift in Sources */,
+				M00012000000000000000012 /* MapboxOfflineService.swift in Sources */,
+				N00001000000000000000001 /* ExpeditionJournal.swift in Sources */,
+				N00002000000000000000002 /* ExpeditionStorage.swift in Sources */,
+				N00003000000000000000003 /* MediaCaptureService.swift in Sources */,
+				N00004000000000000000004 /* ExpeditionCaptureView.swift in Sources */,
+				N00005000000000000000005 /* PhotoGeotaggingService.swift in Sources */,
+				N00006000000000000000006 /* ExpeditionTimelineView.swift in Sources */,
+				N00007000000000000000007 /* ExpeditionMapView.swift in Sources */,
+				N00008000000000000000008 /* ExpeditionExporter.swift in Sources */,
+				N00009000000000000000009 /* ExpeditionListView.swift in Sources */,
+				N00010000000000000000010 /* PackingListView.swift in Sources */,
 				G00006000000000000000006 /* CellCoverageView.swift in Sources */,
 				G00007000000000000000007 /* OfflineBannerView.swift in Sources */,
 				H00001000000000000000001 /* WeatherService.swift in Sources */,
@@ -417,6 +534,13 @@
 				H00006000000000000000006 /* RideActivityManager.swift in Sources */,
 				J00001000000000000000001 /* OnboardingView.swift in Sources */,
 				J00002000000000000000002 /* PermissionService.swift in Sources */,
+				K00001000000000000000001 /* VolunteerFormView.swift in Sources */,
+				K00002000000000000000002 /* DonateFormView.swift in Sources */,
+				K00003000000000000000003 /* TourGuide.swift in Sources */,
+				K00004000000000000000004 /* TourGuideListView.swift in Sources */,
+				K00005000000000000000005 /* TourGuideDetailView.swift in Sources */,
+				K00007000000000000000007 /* RideChecklist.swift in Sources */,
+				K00008000000000000000008 /* GPXStudioView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -549,16 +673,19 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = StoneBC/StoneBC.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = SP854VZ979;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 					INFOPLIST_FILE = StoneBC/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "StoneBC uses the camera to capture photos during expedition rides.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "StoneBC reads your cycling workouts to show ride history.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "StoneBC saves your rides as cycling workouts in Apple Health.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Rally Radio discovers nearby riders on your local network.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "StoneBC uses your location to track your position on cycling routes.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Rally Radio uses your microphone for group voice chat during rides.";
+				INFOPLIST_KEY_NSMotionUsageDescription = "StoneBC uses your iPhone's barometer to show altitude, climb rate, and elevation gain during rides.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "StoneBC saves expedition photos to your Photo Library so you can keep ride memories after the trip.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -569,7 +696,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.6;
+				MARKETING_VERSION = 0.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.traddiff.StoneBC;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -587,16 +714,19 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = StoneBC/StoneBC.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = SP854VZ979;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 					INFOPLIST_FILE = StoneBC/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "StoneBC uses the camera to capture photos during expedition rides.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "StoneBC reads your cycling workouts to show ride history.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "StoneBC saves your rides as cycling workouts in Apple Health.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Rally Radio discovers nearby riders on your local network.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "StoneBC uses your location to track your position on cycling routes.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Rally Radio uses your microphone for group voice chat during rides.";
+				INFOPLIST_KEY_NSMotionUsageDescription = "StoneBC uses your iPhone's barometer to show altitude, climb rate, and elevation gain during rides.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "StoneBC saves expedition photos to your Photo Library so you can keep ride memories after the trip.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -607,7 +737,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.6;
+				MARKETING_VERSION = 0.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.traddiff.StoneBC;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

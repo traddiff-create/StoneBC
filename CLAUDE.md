@@ -5,7 +5,7 @@
 **Type:** Hybrid (iOS App + Website + Open-Source Toolkit)
 **Owners:** Rory & Nicole Stone
 **Status:** Active Development
-**Bundle ID:** `com.traddiff.StoneBC` | **Version:** 0.6
+**Bundle ID:** `com.traddiff.StoneBC` | **Version:** 0.8
 **Deployment Target:** iOS 17.0
 
 ---
@@ -13,7 +13,7 @@
 ## Overview
 
 Stone Bicycle Coalition is a community bike co-op in Rapid City, SD with three components:
-1. **iOS App** (SwiftUI) — marketplace, community feed, routes, Rally Radio, events
+1. **iOS App** (SwiftUI) — marketplace, community feed, routes, Rally Radio, events, expedition journals
 2. **Website** (Eleventy + Netlify) — stonebicyclecoalition.com
 3. **Open-Source Toolkit** — replicable co-op formation guide (CC BY-SA 4.0)
 
@@ -25,7 +25,7 @@ The app is **config-driven** so other bike co-ops can fork and customize it.
 
 | Component | Technology |
 |-----------|-----------|
-| iOS App | Swift 5, SwiftUI, MapKit, CoreLocation, CoreMotion, WeatherKit, HealthKit, ActivityKit, AVFoundation, MultipeerConnectivity |
+| iOS App | Swift 5, SwiftUI, MapKit, CoreLocation, CoreMotion, WeatherKit, HealthKit, ActivityKit, AVFoundation, MultipeerConnectivity, SQLite3, ImageIO, PhotosUI |
 | Architecture | MVVM with @Observable AppState |
 | Data | Bundled JSON (local-first) + optional WordPress REST API sync |
 | Voice Chat | MultipeerConnectivity (peer-to-peer, no backend) |
@@ -39,7 +39,7 @@ The app is **config-driven** so other bike co-ops can fork and customize it.
 
 ```
 StoneBC/
-├── StoneBC/                     # iOS app source (40 Swift files)
+├── StoneBC/                     # iOS app source (65 Swift files)
 │   ├── StoneBCApp.swift         # Entry point
 │   ├── ContentView.swift        # Root → TabContainerView + AppState
 │   ├── TabContainerView.swift   # 5-tab navigation
@@ -127,11 +127,82 @@ StoneBC/
 | Tab | View | Content |
 |-----|------|---------|
 | Home | HomeView | Dashboard: featured bikes, recent posts, Rally Radio card, quick links |
-| Routes | RoutesView | 42 Black Hills routes with filters |
+| Routes | RoutesView | Black Hills routes with filters (currently 1: 8 Over 7 v2) |
 | Bikes | MarketplaceView | The Quarry inventory with status/type filters |
-| More | MoreView | Community feed, events, programs, gallery, contact |
+| More | MoreView | Community feed, events, tour guides, gallery, contact |
 
 **Rally Radio** is accessed via a NavigationLink card on the Home tab (not a tab — iOS 26 Liquid Glass hides 5th tabs).
+
+---
+
+## Swiss Army Knife Services (v0.8)
+
+| Service | File | What |
+|---------|------|------|
+| Altitude Fusion | AltimeterService + LocationService | GPS baseline + barometer deltas |
+| Route Analysis | RouteAnalysisService | Pre-computed turns for O(1) navigation |
+| Offline Cache | OfflineRouteStorage | Persistent route + snapshot + weather |
+| Trail Conditions | TrailforksService | Trailforks API (needs key in config.json) |
+| USFS Closures | USFSService | ArcGIS Black Hills NF queries (free) |
+| Strava | StravaService | OAuth2, segments, leaderboards |
+| Conditions | RouteConditionReporter | Crowdsourced reports + quick-tap UI |
+| Emergency | EmergencySafetyService | Satellite SOS, emergency contacts, 911 |
+| Ride Export | RideExportService | GPX 1.1 with timestamps/elevation |
+| Ride History | RideHistoryService | Persistent log + season summary |
+| Route Search | RouteIndexService | SQLite FTS5 full-text search |
+| Notifications | EventNotificationService | Local notifications for events + ride windows |
+| Offline Maps | MapboxOfflineService | Scaffold (needs Mapbox SPM + token) |
+
+---
+
+## Expedition Journal System (v0.8)
+
+Lewis & Clark-style ride documentation. One leader curates, all riders contribute.
+
+| File | Purpose |
+|------|---------|
+| ExpeditionJournal.swift | Core models: Journal, Day, Entry, Contribution |
+| ExpeditionStorage.swift | Documents dir + iCloud `8o7/` shared drop zone |
+| ExpeditionCaptureView.swift | During-ride: text, photo, audio, video + GPS |
+| PhotoGeotaggingService.swift | EXIF GPS + Garmin timestamp matching |
+| ExpeditionTimelineView.swift | Day-by-day editor with media cards |
+| ExpeditionMapView.swift | GPS track + media pins on satellite map |
+| ExpeditionExporter.swift | HTML report generation |
+| ExpeditionListView.swift | Browse/create journals from tour guides |
+| MediaCaptureService.swift | Camera, voice memo, video wrappers |
+
+**Flow:** More tab → My Expeditions → Create from tour guide → Capture during ride → Curate after → Export HTML.
+
+**Collaboration:** iCloud Drive `8o7/` folder for media drops. Rally Radio `0x50` prefix for P2P photo sharing.
+
+---
+
+## Tour Guide System
+
+Multi-day ride guides with day picker, stops timeline, and ride recording checklist.
+
+| File | Purpose |
+|------|---------|
+| TourGuide.swift | Data model: TourGuide, TourDay, TourStop |
+| TourGuideListView.swift | Browse guides with stats and difficulty badges |
+| TourGuideDetailView.swift | Day picker, overview, stops timeline, notes |
+| RideChecklist.swift | Persistent checklist for recording while riding |
+| guides.json | Guide data (bundled) |
+
+**Current Guides:**
+- **Brewvet** — 3-day brewery bike tour (Sept 25-27), sag stops with beer pairings
+- **8 Over 7** — 3-day bikepacking trip (May 15-17), Spearfish → Sylvan → Custer → Deerfield → Spearfish
+
+**Data pipeline:** Routes in GPX/ → process_routes.py → routes.json (for Routes tab). Guides in guides.json (separate, richer data model with stops/checklist).
+
+---
+
+## Get Involved (ContactView)
+
+- **Volunteer** → VolunteerFormView (TTT: Time/Talent/Treasure, mailto submission)
+- **Donate** → DonateFormView (Bicycle/Parts/Monetary, mailto submission)
+- **Spread the Word** → opens stonebicyclecoalition.com
+- **Trad Diff links** → TD Technology, Rory Stone Photography, BTYBD (external URLs)
 
 ---
 
@@ -174,5 +245,5 @@ StoneBC/
 
 ---
 
-**Last Updated:** 2026-04-09
+**Last Updated:** 2026-04-10
 **Maintained By:** Rory Stone

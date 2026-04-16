@@ -113,27 +113,48 @@ struct GalleryView: View {
     }
 }
 
-// MARK: - Photo Placeholder (until ImageCache is ported)
+// MARK: - Photo Cell
 struct PhotoPlaceholder: View {
     let photo: BCPhoto
 
     var body: some View {
-        Rectangle()
-            .fill(BCColors.overlayMedium)
-            .aspectRatio(1, contentMode: .fit)
-            .overlay {
-                VStack(spacing: 4) {
-                    Image(systemName: "photo")
-                        .font(.system(size: 20))
-                        .foregroundColor(.secondary)
-                    Text(photo.title)
-                        .font(.system(size: 9, weight: .medium))
-                        .foregroundColor(.secondary)
-                        .lineLimit(1)
-                }
+        Group {
+            if let path = Bundle.main.path(forResource: photo.filename.replacingOccurrences(of: ".jpg", with: ""), ofType: "jpg", inDirectory: "GalleryPhotos"),
+               let uiImage = UIImage(contentsOfFile: path) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(minHeight: 150, maxHeight: 200)
+                    .clipped()
+                    .overlay(alignment: .bottomLeading) {
+                        Text(photo.title)
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 3)
+                            .background(.ultraThinMaterial)
+                            .clipShape(RoundedRectangle(cornerRadius: 4))
+                            .padding(6)
+                    }
+            } else {
+                Rectangle()
+                    .fill(BCColors.overlayMedium)
+                    .aspectRatio(1, contentMode: .fit)
+                    .overlay {
+                        VStack(spacing: 4) {
+                            Image(systemName: "photo")
+                                .font(.system(size: 20))
+                                .foregroundColor(.secondary)
+                            Text(photo.title)
+                                .font(.system(size: 9, weight: .medium))
+                                .foregroundColor(.secondary)
+                                .lineLimit(1)
+                        }
+                    }
             }
-            .clipShape(RoundedRectangle(cornerRadius: 4))
-            .accessibilityLabel(photo.title)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .accessibilityLabel(photo.title)
     }
 }
 

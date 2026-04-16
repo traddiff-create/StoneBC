@@ -18,6 +18,9 @@ struct HomeView: View {
                     // Hero
                     heroSection
 
+                    // Season Summary
+                    seasonSummarySection
+
                     // Featured Bikes
                     if !appState.featuredBikes.isEmpty {
                         featuredBikesSection
@@ -240,6 +243,76 @@ struct HomeView: View {
         .padding(.vertical, 12)
     }
 
+    // MARK: - Season Summary
+
+    private var seasonSummarySection: some View {
+        let summary = RideHistoryService.shared.seasonSummary
+
+        return VStack(alignment: .leading, spacing: BCSpacing.sm) {
+            sectionHeader("\(summary.year) SEASON", icon: "chart.bar")
+
+            if summary.rideCount > 0 {
+                HStack(spacing: 1) {
+                    seasonStat(value: "\(summary.rideCount)", label: "RIDES", icon: "figure.outdoor.cycle")
+                    seasonStat(value: summary.formattedMiles, label: "MILES", icon: "road.lanes")
+                    seasonStat(value: summary.formattedElevation.replacingOccurrences(of: " ft", with: ""), label: "ELEVATION", icon: "arrow.up")
+                    seasonStat(value: summary.formattedTime, label: "MOVING", icon: "clock")
+                }
+                .padding(BCSpacing.sm)
+                .background(BCColors.cardBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                if let favorite = summary.favoriteRoute {
+                    HStack(spacing: 6) {
+                        Image(systemName: "star.fill")
+                            .font(.system(size: 9))
+                            .foregroundColor(BCColors.brandAmber)
+                        Text("Favorite: \(favorite)")
+                            .font(.system(size: 10))
+                            .foregroundColor(.secondary)
+                    }
+                }
+            } else {
+                HStack(spacing: 10) {
+                    Image(systemName: "figure.outdoor.cycle")
+                        .font(.system(size: 18))
+                        .foregroundColor(BCColors.brandBlue.opacity(0.5))
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("No rides yet this season")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundColor(.primary)
+                        Text("Navigate a route to start tracking")
+                            .font(.system(size: 11))
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .padding(BCSpacing.md)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(BCColors.cardBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+        }
+        .padding(.horizontal, BCSpacing.md)
+    }
+
+    private func seasonStat(value: String, label: String, icon: String) -> some View {
+        VStack(spacing: 4) {
+            Image(systemName: icon)
+                .font(.system(size: 10))
+                .foregroundColor(BCColors.brandBlue)
+            Text(value)
+                .font(.system(size: 16, weight: .bold, design: .monospaced))
+                .foregroundColor(.primary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+            Text(label)
+                .font(.system(size: 7, weight: .bold))
+                .tracking(0.5)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
     // MARK: - Footer
 
     private var footerSection: some View {
@@ -249,7 +322,7 @@ struct HomeView: View {
                     .font(.system(size: 10))
                     .foregroundColor(.secondary)
             }
-            Text("v0.6")
+            Text("v0.8")
                 .font(.system(size: 10))
                 .foregroundColor(BCColors.tertiaryText)
         }

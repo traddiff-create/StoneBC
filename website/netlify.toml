@@ -51,6 +51,7 @@
   [headers.values]
     Cache-Control = "public, max-age=604800"
     Content-Type = "application/gpx+xml"
+    Access-Control-Allow-Origin = "*"
 
 # Form notifications
 [build.processing]

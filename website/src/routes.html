@@ -45,6 +45,26 @@
             <div class="container">
                 <p style="max-width: 800px; margin: 0 auto 2rem; text-align: center;">We maintain a library of GPX files for cycling routes throughout the Black Hills. Download them to your GPS device or cycling app and explore!</p>
 
+                <!-- Interactive Route Viewer -->
+                <div style="margin-bottom: 3rem;">
+                    <h2 class="section-title">Interactive Route Viewer</h2>
+                    <p style="margin-bottom: 1rem; color: var(--color-gray-600); font-size: 0.95rem;">Select a route to explore interactively — topo map, elevation profile with slope coloring, and distance markers. Powered by <a href="https://gpx.studio" target="_blank" style="color: var(--color-primary);">gpx.studio</a>.</p>
+
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                        <button class="route-tab active" onclick="switchRoute('8over7')" id="tab-8over7" style="padding: 0.5rem 1rem; border: 1px solid var(--color-gray-200); border-radius: var(--radius-md); background: var(--color-primary); color: white; cursor: pointer; font-size: 0.85rem; font-weight: 500;">8 Over 7 (102mi)</button>
+                        <button class="route-tab" onclick="switchRoute('brewvet-south')" id="tab-brewvet-south" style="padding: 0.5rem 1rem; border: 1px solid var(--color-gray-200); border-radius: var(--radius-md); background: white; color: var(--color-dark); cursor: pointer; font-size: 0.85rem; font-weight: 500;">Brewvet Southern (43mi)</button>
+                        <button class="route-tab" onclick="switchRoute('brewvet-north')" id="tab-brewvet-north" style="padding: 0.5rem 1rem; border: 1px solid var(--color-gray-200); border-radius: var(--radius-md); background: white; color: var(--color-dark); cursor: pointer; font-size: 0.85rem; font-weight: 500;">Brewvet Northern (44mi)</button>
+                    </div>
+
+                    <div id="route-embed" style="width: 100%; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-lg);">
+                        <iframe id="gpxstudio-iframe" src="" width="100%" height="550" style="border: none; display: block;" allowfullscreen></iframe>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 0.75rem;">
+                        <a id="gpxstudio-open-link" href="#" target="_blank" style="color: var(--color-primary); font-size: 0.85rem; text-decoration: none;">Open full route in gpx.studio &rarr;</a>
+                    </div>
+                </div>
+
                 <h2 class="section-title">Major Events & Epic Rides</h2>
                 <div class="routes-grid">
                     <div class="route-card">
@@ -308,5 +328,47 @@
     </footer>
 
     <script src="js/main.js"></script>
+    <script>
+    var BASE = 'https://stone-bicycle-coalition.netlify.app/gpx/';
+    var routes = {
+        '8over7': { file: '8over7v2.2021.gpx', lat: 44.05, lon: -103.7, zoom: 9 },
+        'brewvet-south': { file: 'Brewvet_Southern.tcx', lat: 43.9, lon: -103.65, zoom: 10 },
+        'brewvet-north': { file: 'Brewvet_Northern.tcx', lat: 44.4, lon: -103.85, zoom: 10 }
+    };
+
+    function buildEmbedURL(route) {
+        var opts = JSON.stringify({
+            files: [BASE + route.file],
+            basemap: 'openTopoMap',
+            elevation: { show: true, fill: 'slope' },
+            distanceMarkers: true,
+            directionMarkers: true,
+            theme: 'light',
+            distanceUnits: 'imperial'
+        });
+        return 'https://gpx.studio/embed?options=' + encodeURIComponent(opts) + '#' + route.zoom + '/' + route.lat + '/' + route.lon;
+    }
+
+    function buildOpenURL(route) {
+        var state = JSON.stringify({ urls: [BASE + route.file] });
+        return 'https://gpx.studio?state=' + encodeURIComponent(state);
+    }
+
+    function switchRoute(key) {
+        var route = routes[key];
+        document.getElementById('gpxstudio-iframe').src = buildEmbedURL(route);
+        document.getElementById('gpxstudio-open-link').href = buildOpenURL(route);
+        document.querySelectorAll('.route-tab').forEach(function(t) {
+            t.style.background = 'white';
+            t.style.color = 'var(--color-dark)';
+        });
+        var tab = document.getElementById('tab-' + key);
+        tab.style.background = 'var(--color-primary)';
+        tab.style.color = 'white';
+    }
+
+    // Load default route on page load
+    switchRoute('8over7');
+    </script>
 </body>
 </html>

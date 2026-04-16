@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>8 Over 7 — 3-Day Bikepacking Guide</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #0a0a0a; color: #e5e5e5; line-height: 1.6; }
+  .hero { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); padding: 40px 20px; text-align: center; border-bottom: 2px solid #2563eb; }
+  .hero h1 { font-size: 2.5em; font-weight: 800; letter-spacing: -1px; color: #fff; }
+  .hero .subtitle { font-size: 1.1em; color: #93c5fd; margin-top: 4px; }
+  .hero .date { display: inline-block; background: #2563eb; color: #fff; padding: 6px 16px; border-radius: 20px; font-size: 0.9em; font-weight: 600; margin-top: 12px; }
+  .hero .weather-note { font-size: 0.8em; color: #94a3b8; margin-top: 8px; }
+  .stats-bar { display: flex; justify-content: center; gap: 24px; padding: 20px; background: #111; border-bottom: 1px solid #222; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat .value { font-size: 1.6em; font-weight: 700; color: #fff; }
+  .stat .label { font-size: 0.65em; text-transform: uppercase; letter-spacing: 2px; color: #64748b; }
+  .map-embed { width: 100%; background: #111; }
+  .map-embed iframe { width: 100%; height: 550px; border: none; display: block; }
+  .open-gpxstudio { display: block; text-align: center; padding: 10px; background: #161616; border-bottom: 1px solid #222; }
+  .open-gpxstudio a { color: #60a5fa; font-size: 0.85em; text-decoration: none; }
+  .open-gpxstudio a:hover { text-decoration: underline; }
+  .container { max-width: 700px; margin: 0 auto; padding: 20px; }
+  .section-title { font-size: 0.7em; text-transform: uppercase; letter-spacing: 3px; color: #64748b; margin-bottom: 12px; margin-top: 32px; }
+  .day-card { background: #161616; border: 1px solid #262626; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+  .day-card h3 { font-size: 1.3em; color: #fff; margin-bottom: 2px; }
+  .day-card .day-label { font-size: 0.75em; text-transform: uppercase; letter-spacing: 2px; color: #2563eb; font-weight: 600; margin-bottom: 4px; }
+  .day-card .meta { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px; font-size: 0.85em; color: #94a3b8; }
+  .day-card .desc { margin-top: 10px; font-size: 0.9em; color: #cbd5e1; }
+  .stops { margin-top: 16px; }
+  .stop { display: flex; gap: 12px; margin-bottom: 12px; }
+  .stop-dot { width: 12px; height: 12px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .stop-dot.start { background: #22c55e; }
+  .stop-dot.finish { background: #ef4444; }
+  .stop-dot.poi { background: #3b82f6; }
+  .stop-content .name { font-weight: 600; font-size: 0.95em; color: #e2e8f0; }
+  .stop-content .detail { font-size: 0.8em; color: #94a3b8; margin-top: 2px; }
+  .note-card { background: #161616; border-left: 3px solid #2563eb; padding: 12px 16px; margin-bottom: 8px; border-radius: 0 8px 8px 0; }
+  .note-card p { font-size: 0.9em; color: #cbd5e1; }
+  .late-join { background: #1e1b4b; border: 1px solid #3730a3; border-radius: 12px; padding: 16px; margin-top: 16px; }
+  .late-join h4 { color: #a78bfa; margin-bottom: 6px; }
+  .late-join p { font-size: 0.85em; color: #c4b5fd; }
+  .checklist { background: #161616; border: 1px solid #262626; border-radius: 12px; padding: 20px; margin-top: 16px; }
+  .checklist-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; }
+  .checklist-item .box { width: 18px; height: 18px; border: 2px solid #444; border-radius: 4px; flex-shrink: 0; margin-top: 2px; }
+  .checklist-item .text { font-size: 0.85em; }
+  .checklist-item .text strong { color: #e2e8f0; }
+  .checklist-item .text span { color: #94a3b8; display: block; font-size: 0.9em; }
+  .cat-label { font-size: 0.65em; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-top: 14px; margin-bottom: 8px; }
+  .cat-label.capture { color: #3b82f6; }
+  .cat-label.note { color: #f59e0b; }
+  .cat-label.safety { color: #ef4444; }
+  .packing { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.85em; }
+  .footer { text-align: center; padding: 40px 20px; color: #475569; font-size: 0.8em; border-top: 1px solid #222; margin-top: 40px; }
+  .footer a { color: #2563eb; text-decoration: none; }
+  @media (max-width: 600px) { .hero h1 { font-size: 1.8em; } .stats-bar { gap: 16px; } .stat .value { font-size: 1.3em; } .map-embed iframe { height: 400px; } .packing { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>8 Over 7</h1>
+  <div class="subtitle">3-Day Black Hills Singletrack Bikepacking</div>
+  <div class="date">May 15 – 17, 2026</div>
+  <div class="weather-note">Weather backup: May 22–24 if conditions are terrible</div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat"><div class="value">3</div><div class="label">Days</div></div>
+  <div class="stat"><div class="value">102.8</div><div class="label">Miles</div></div>
+  <div class="stat"><div class="value">10.6k</div><div class="label">Ft Gain</div></div>
+  <div class="stat"><div class="value">Expert</div><div class="label">Difficulty</div></div>
+</div>
+
+<div class="map-embed">
+  <iframe src="https://gpx.studio/embed?options=%7B%22files%22%3A%5B%22https%3A%2F%2Fstone-bicycle-coalition.netlify.app%2Fgpx%2F8over7v2.2021.gpx%22%5D%2C%22basemap%22%3A%22openTopoMap%22%2C%22elevation%22%3A%7B%22show%22%3Atrue%2C%22fill%22%3A%22slope%22%7D%2C%22distanceMarkers%22%3Atrue%2C%22directionMarkers%22%3Atrue%2C%22theme%22%3A%22dark%22%2C%22distanceUnits%22%3A%22imperial%22%7D#9/44.05/-103.7" allowfullscreen></iframe>
+</div>
+<div class="open-gpxstudio">
+  <a href="https://gpx.studio?state=%7B%22urls%22%3A%5B%22https%3A%2F%2Fstone-bicycle-coalition.netlify.app%2Fgpx%2F8over7v2.2021.gpx%22%5D%7D" target="_blank">Open full route in gpx.studio &rarr;</a>
+</div>
+
+<div class="container">
+  <div class="section-title">Overview</div>
+  <p style="font-size:0.95em; color:#cbd5e1; margin-bottom:16px;">
+    The legendary 8 Over 7 as a 3-day bikepacking trip. Depart Spearfish Friday, ride Mickelson Trail to Sylvan Lake to camp. Saturday and Sunday cover the full 100+ mile singletrack link-up through pine forest, high-country ridgelines, and technical terrain — with resupply stops in Custer and Deerfield. Back in Spearfish by Sunday evening.
+  </p>
+
+  <div class="late-join">
+    <h4>Late Join Option</h4>
+    <p>Can't make Friday? Get dropped off at Sylvan Lake Friday afternoon/evening to meet the group. Easy to catch up for the main event on Saturday.</p>
+  </div>
+
+  <div class="section-title">The Route</div>
+
+  <div class="day-card">
+    <div class="day-label">Day 1 — Friday, May 15</div>
+    <h3>Spearfish → Sylvan Lake</h3>
+    <div class="meta"><span>Spearfish</span><span>Afternoon</span><span>~30 mi</span><span>~2,000 ft</span></div>
+    <div class="desc">Ride Mickelson Trail south from Spearfish toward Sylvan Peak. Crushed gravel, gentle grade, well-marked. Camp at Sylvan Lake for the night.</div>
+    <div class="stops">
+      <div class="stop"><div class="stop-dot start"></div><div class="stop-content"><div class="name">Spearfish</div><div class="detail">Depart afternoon. Ride Mickelson Trail south.</div></div></div>
+      <div class="stop"><div class="stop-dot poi"></div><div class="stop-content"><div class="name">Mickelson Trail</div><div class="detail">Crushed gravel, gentle grade, well-marked.</div></div></div>
+      <div class="stop"><div class="stop-dot finish"></div><div class="stop-content"><div class="name">Sylvan Lake (Camp)</div><div class="detail">Set up camp. Late joiners dropped off here Friday evening.</div></div></div>
+    </div>
+  </div>
+
+  <div class="day-card">
+    <div class="day-label">Day 2 — Saturday, May 16</div>
+    <h3>Southern Section</h3>
+    <div class="meta"><span>Sylvan Lake</span><span>Early AM</span><span>~50 mi</span><span>~5,000 ft</span><span>Full day</span></div>
+    <div class="desc">Break camp and roll out. Big day through the southern Black Hills. Resupply in Custer Saturday morning.</div>
+    <div class="stops">
+      <div class="stop"><div class="stop-dot start"></div><div class="stop-content"><div class="name">Sylvan Lake</div><div class="detail">Break camp. Big day ahead.</div></div></div>
+      <div class="stop"><div class="stop-dot poi"></div><div class="stop-content"><div class="name">Custer Resupply</div><div class="detail">Saturday morning. Top off water, food, and calories.</div></div></div>
+      <div class="stop"><div class="stop-dot poi"></div><div class="stop-content"><div class="name">High Country Ridge</div><div class="detail">Highest terrain. Sustained climbing through pine forest.</div></div></div>
+      <div class="stop"><div class="stop-dot finish"></div><div class="stop-content"><div class="name">Camp — End of Day 2</div><div class="detail">Rest up for the final push.</div></div></div>
+    </div>
+  </div>
+
+  <div class="day-card">
+    <div class="day-label">Day 3 — Sunday, May 17</div>
+    <h3>Northern Section → Spearfish</h3>
+    <div class="meta"><span>Camp</span><span>Early AM</span><span>~45 mi</span><span>~3,500 ft</span><span>Arrive Spearfish ~5-6 PM</span></div>
+    <div class="desc">Final day. Head north toward Spearfish. Resupply at Deerfield Sunday morning.</div>
+    <div class="stops">
+      <div class="stop"><div class="stop-dot start"></div><div class="stop-content"><div class="name">Camp</div><div class="detail">Final day. Break camp and head north.</div></div></div>
+      <div class="stop"><div class="stop-dot poi"></div><div class="stop-content"><div class="name">Deerfield Resupply</div><div class="detail">Sunday morning. Last chance to stock up.</div></div></div>
+      <div class="stop"><div class="stop-dot poi"></div><div class="stop-content"><div class="name">Deadwood Descent</div><div class="detail">Final descent begins. The end is in sight.</div></div></div>
+      <div class="stop"><div class="stop-dot finish"></div><div class="stop-content"><div class="name">Spearfish</div><div class="detail">3 days, 100+ miles, ~10,000 feet of climbing. Legend.</div></div></div>
+    </div>
+  </div>
+
+  <div class="section-title">Tour Notes</div>
+  <div class="note-card"><p>If weather looks terrible, postpone to May 22–24.</p></div>
+  <div class="note-card"><p>This is bikepacking — pack overnight gear for Sylvan Lake.</p></div>
+  <div class="note-card"><p>Carry enough water and food between resupply points. Cell service is spotty.</p></div>
+  <div class="note-card"><p>The full route climbs nearly 10,000 feet across 3 days. Pace yourself.</p></div>
+  <div class="note-card"><p>Trail conditions vary — check recent reports for deadfall and washouts.</p></div>
+
+  <div class="section-title">Packing Essentials</div>
+  <div class="day-card">
+    <div class="packing">
+      <div>✅ Bikepacking bags</div><div>✅ Sleeping system (bivy/pad)</div>
+      <div>✅ Water filter or purification</div><div>✅ 2+ water bottles / bladder</div>
+      <div>✅ Multi-tool + spare tube</div><div>✅ Tire plugs / patch kit</div>
+      <div>✅ Headlamp + spare battery</div><div>✅ First aid kit</div>
+      <div>✅ Food for 2 days</div><div>✅ Rain layer</div>
+      <div>✅ Warm layer (cold May nights)</div><div>✅ Phone + portable charger</div>
+      <div>✅ GPS device (Garmin)</div><div>✅ Cash (small towns)</div>
+    </div>
+  </div>
+
+  <div class="section-title">Ride Recording Checklist</div>
+  <p style="font-size:0.85em; color:#94a3b8; margin-bottom:12px;">Help build a better guide. Check these off while riding.</p>
+  <div class="checklist">
+    <div class="cat-label capture">Capture</div>
+    <div class="checklist-item"><div class="box"></div><div class="text"><strong>Photo: Spearfish departure</strong><span>Group shot before rolling out</span></div></div>
+    <div class="checklist-item"><div class="box"></div><div class="text"><strong>Photo: Mickelson Trail entry</strong><span>Trailhead sign</span></div></div>
+    <div class="checklist-item"><div class="box"></div><div class="text"><strong>Photo: Sylvan Lake camp</strong><span>Document the overnight setup</span></div></div>
+    <div class="checklist-item"><div class="box"></div><div class="text"><strong>Photos: Confusing trail junctions</strong><span>Note which way to go</span></div></div>
+    <div class="checklist-item"><div class="box"></div><div class="text"><strong>Photo: High country ridge</strong><span>Best viewpoint on the route</span></div></div>
+    <div class="checklist-item"><div class="box"></div><div class="text"><strong>Voice memos: Tricky navigation</strong><span>"Turn left at the big rock"</span></div></div>
+    <div class="checklist-item"><div class="box"></div><div class="text"><strong>Photo: Back in Spearfish</strong><span>Finish line</span></div></div>
+    <div class="cat-label note">Notes</div>
+    <div class="checklist-item"><div class="box"></div><div class="text"><strong>Custer resupply: What's open Sat AM?</strong><span>Store name, hours, stock</span></div></div>
+    <div class="checklist-item"><div class="box"></div><div class="text"><strong>Deerfield resupply: What's available Sun AM?</strong></div></div>
+    <div class="checklist-item"><div class="box"></div><div class="text"><strong>Water sources between resupply</strong><span>Creek, spigot, seasonal?</span></div></div>
+    <div class="checklist-item"><div class="box"></div><div class="text"><strong>Trail surface changes</strong><span>Technical sections, rock gardens</span></div></div>
+    <div class="checklist-item"><div class="box"></div><div class="text"><strong>Time splits at landmarks</strong><span>Screenshot Garmin at each key point</span></div></div>
+    <div class="cat-label safety">Safety</div>
+    <div class="checklist-item"><div class="box"></div><div class="text"><strong>Cell service zones</strong><span>Where does signal drop/return?</span></div></div>
+    <div class="checklist-item"><div class="box"></div><div class="text"><strong>Bail-out points</strong><span>Exits to pavement</span></div></div>
+  </div>
+</div>
+
+<div class="footer">
+  <p><strong>Stone Bicycle Coalition</strong> — Rapid City, SD</p>
+  <p><a href="https://stonebicyclecoalition.com">stonebicyclecoalition.com</a></p>
+</div>
+
+</body>
+</html>

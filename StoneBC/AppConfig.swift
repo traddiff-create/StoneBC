@@ -50,6 +50,15 @@ struct AppConfig: Codable {
         let posts: String?
     }
 
+    struct APIKeys: Codable {
+        let trailforksAppId: String?
+        let trailforksAppSecret: String?
+        let stravaClientId: String?
+        let stravaClientSecret: String?
+    }
+
+    let apiKeys: APIKeys?
+
     static func load() -> AppConfig {
         guard let url = Bundle.main.url(forResource: "config", withExtension: "json"),
               let data = try? Data(contentsOf: url),
@@ -64,7 +73,7 @@ struct AppConfig: Codable {
         shortName: "SBC",
         tagline: "Building Community Through Cycling",
         websiteURL: "https://stonebicyclecoalition.com",
-        email: "stonebicyclecoalition@gmail.com",
+        email: "info@stonebicyclecoalition.com",
         phone: nil,
         instagramHandle: "stone_bicycle_coalition",
         location: LocationInfo(
@@ -87,6 +96,7 @@ struct AppConfig: Codable {
             enableGallery: true,
             enableRadio: true
         ),
-        dataURLs: nil
+        dataURLs: nil,
+        apiKeys: nil
     )
 }

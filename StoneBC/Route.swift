@@ -19,6 +19,7 @@ struct Route: Identifiable, Codable {
     let description: String
     let startCoordinate: Coordinate
     let trackpoints: [[Double]]     // [[lat, lon, ele], ...]
+    let gpxURL: String?             // Public URL for gpx.studio embed
     var isImported: Bool
 
     struct Coordinate: Codable {
@@ -38,13 +39,14 @@ struct Route: Identifiable, Codable {
         description = try container.decode(String.self, forKey: .description)
         startCoordinate = try container.decode(Coordinate.self, forKey: .startCoordinate)
         trackpoints = try container.decode([[Double]].self, forKey: .trackpoints)
+        gpxURL = try container.decodeIfPresent(String.self, forKey: .gpxURL)
         isImported = try container.decodeIfPresent(Bool.self, forKey: .isImported) ?? false
     }
 
     init(id: String, name: String, difficulty: String, category: String,
          distanceMiles: Double, elevationGainFeet: Int, region: String,
          description: String, startCoordinate: Coordinate, trackpoints: [[Double]],
-         isImported: Bool = false) {
+         gpxURL: String? = nil, isImported: Bool = false) {
         self.id = id
         self.name = name
         self.difficulty = difficulty
@@ -55,6 +57,7 @@ struct Route: Identifiable, Codable {
         self.description = description
         self.startCoordinate = startCoordinate
         self.trackpoints = trackpoints
+        self.gpxURL = gpxURL
         self.isImported = isImported
     }
 }
@@ -69,11 +72,21 @@ extension Route {
     }
 
     var clTrackpoints: [CLLocationCoordinate2D] {
-        trackpoints.map { CLLocationCoordinate2D(latitude: $0[0], longitude: $0[1]) }
+        trackpoints.compactMap { pt in
+            guard pt.count >= 2 else { return nil }
+            let lat = pt[0], lon = pt[1]
+            guard (-90...90).contains(lat), (-180...180).contains(lon) else { return nil }
+            return CLLocationCoordinate2D(latitude: lat, longitude: lon)
+        }
     }
 
     var elevations: [Double] {
         trackpoints.compactMap { $0.count > 2 ? $0[2] : nil }
+    }
+
+    /// Whether this route has enough data for navigation
+    var isNavigable: Bool {
+        clTrackpoints.count >= 2
     }
 
     var formattedDistance: String {

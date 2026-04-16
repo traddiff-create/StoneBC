@@ -65,5 +65,5 @@ Demo content is pre-loaded (4 bikes, 5 community posts, 8 events, 42 cycling rou
 ## App Review Contact
 
 - Name: Rory Stone
-- Email: stonebicyclecoalition@gmail.com
+- Email: info@stonebicyclecoalition.com
 - Phone: (to be added)

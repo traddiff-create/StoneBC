@@ -8,6 +8,10 @@
 import SwiftUI
 
 struct ContactView: View {
+    @Environment(\.openURL) private var openURL
+    @State private var showVolunteerForm = false
+    @State private var showDonateForm = false
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: BCSpacing.lg) {
@@ -32,6 +36,12 @@ struct ContactView: View {
                     .tracking(2)
             }
         }
+        .sheet(isPresented: $showVolunteerForm) {
+            VolunteerFormView()
+        }
+        .sheet(isPresented: $showDonateForm) {
+            DonateFormView()
+        }
     }
 
     // MARK: - Get Involved
@@ -42,30 +52,69 @@ struct ContactView: View {
                 .tracking(1)
                 .foregroundColor(.secondary)
 
-            ForEach(involveOptions, id: \.title) { option in
-                HStack(spacing: 12) {
-                    Image(systemName: option.icon)
-                        .font(.system(size: 16))
-                        .foregroundColor(BCColors.brandBlue)
-                        .frame(width: 32, height: 32)
-                        .background(BCColors.brandBlue.opacity(0.1))
-                        .clipShape(Circle())
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(option.title)
-                            .font(.system(size: 14, weight: .medium))
-                        Text(option.description)
-                            .font(.system(size: 11))
-                            .foregroundColor(.secondary)
-                    }
-
-                    Spacer()
-                }
-                .padding(BCSpacing.md)
-                .background(BCColors.cardBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+            // Volunteer
+            Button { showVolunteerForm = true } label: {
+                involveCard(
+                    title: "Volunteer",
+                    description: "Give your time, skills, or expertise",
+                    icon: "hand.raised"
+                )
             }
+            .buttonStyle(.plain)
+
+            // Donate
+            Button { showDonateForm = true } label: {
+                involveCard(
+                    title: "Donate",
+                    description: "Bikes, parts, tools, or funds",
+                    icon: "heart"
+                )
+            }
+            .buttonStyle(.plain)
+
+            // Spread the Word
+            Button {
+                if let url = URL(string: "https://stonebicyclecoalition.com") {
+                    openURL(url)
+                }
+            } label: {
+                involveCard(
+                    title: "Spread the Word",
+                    description: "Share our site with your community",
+                    icon: "megaphone"
+                )
+            }
+            .buttonStyle(.plain)
         }
+    }
+
+    private func involveCard(title: String, description: String, icon: String) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 16))
+                .foregroundColor(BCColors.brandBlue)
+                .frame(width: 32, height: 32)
+                .background(BCColors.brandBlue.opacity(0.1))
+                .clipShape(Circle())
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.primary)
+                Text(description)
+                    .font(.system(size: 11))
+                    .foregroundColor(.secondary)
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 10))
+                .foregroundColor(BCColors.tertiaryText)
+        }
+        .padding(BCSpacing.md)
+        .background(BCColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
     // MARK: - Contact Info
@@ -77,9 +126,23 @@ struct ContactView: View {
                 .foregroundColor(.secondary)
 
             VStack(alignment: .leading, spacing: 12) {
-                contactRow(icon: "mappin", text: "925 9th Street #3\nRapid City, SD 57701")
-                contactRow(icon: "envelope", text: "stonebicyclecoalition@gmail.com")
-                contactRow(icon: "globe", text: "stonebicyclecoalition.com")
+                Button {
+                    if let url = URL(string: "mailto:info@stonebicyclecoalition.com") {
+                        openURL(url)
+                    }
+                } label: {
+                    contactRow(icon: "envelope", text: "info@stonebicyclecoalition.com")
+                }
+                .buttonStyle(.plain)
+
+                Button {
+                    if let url = URL(string: "https://stonebicyclecoalition.com") {
+                        openURL(url)
+                    }
+                } label: {
+                    contactRow(icon: "globe", text: "stonebicyclecoalition.com")
+                }
+                .buttonStyle(.plain)
             }
             .padding(BCSpacing.md)
             .background(BCColors.cardBackground)
@@ -96,9 +159,26 @@ struct ContactView: View {
                 .foregroundColor(.secondary)
 
             VStack(spacing: 8) {
-                linkRow(title: "TD Technology", subtitle: "IT Services", icon: "desktopcomputer")
-                linkRow(title: "Rory Stone Photography", subtitle: "Portfolio", icon: "camera")
-                linkRow(title: "Brought To You By Drugs", subtitle: "Podcast", icon: "mic")
+                Button {
+                    if let url = URL(string: "https://traddiff.com") { openURL(url) }
+                } label: {
+                    linkRow(title: "TD Technology", subtitle: "IT Services", icon: "desktopcomputer")
+                }
+                .buttonStyle(.plain)
+
+                Button {
+                    if let url = URL(string: "https://rorystonephotography.com") { openURL(url) }
+                } label: {
+                    linkRow(title: "Rory Stone Photography", subtitle: "Portfolio", icon: "camera")
+                }
+                .buttonStyle(.plain)
+
+                Button {
+                    if let url = URL(string: "https://broughttoyoubydrugs.com") { openURL(url) }
+                } label: {
+                    linkRow(title: "Brought To You By Drugs", subtitle: "Podcast", icon: "mic")
+                }
+                .buttonStyle(.plain)
             }
             .padding(BCSpacing.md)
             .background(BCColors.cardBackground)
@@ -128,6 +208,7 @@ struct ContactView: View {
             VStack(alignment: .leading, spacing: 1) {
                 Text(title)
                     .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(.primary)
                 Text(subtitle.uppercased())
                     .font(.system(size: 8, weight: .medium))
                     .tracking(1)
@@ -140,15 +221,6 @@ struct ContactView: View {
                 .font(.system(size: 10))
                 .foregroundColor(BCColors.tertiaryText)
         }
-    }
-
-    private var involveOptions: [(title: String, description: String, icon: String)] {
-        [
-            ("Volunteer", "Help in the shop, lead rides, or teach classes", "hand.raised"),
-            ("Donate", "Support our mission with a financial contribution", "heart"),
-            ("Donate a Bike", "We accept bike donations of all conditions", "bicycle"),
-            ("Spread the Word", "Follow us and share with your community", "megaphone")
-        ]
     }
 }
 

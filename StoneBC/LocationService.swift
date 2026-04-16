@@ -30,6 +30,10 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     // Full CLLocation stream for workout route recording
     var locationHistory: [CLLocation] = []
 
+    // Altitude fusion callback — set by RouteNavigationView to feed GPS altitude to AltimeterService
+    var onFirstAltitude: ((Double) -> Void)?
+    private var hasCalibrated = false
+
     private let manager = CLLocationManager()
 
     override init() {
@@ -77,6 +81,12 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         guard let location = locations.last else { return }
         userLocation = location.coordinate
         gpsAltitudeMeters = location.altitude
+
+        // Calibrate altitude fusion on first accurate reading
+        if !hasCalibrated && location.verticalAccuracy >= 0 && location.verticalAccuracy < 30 {
+            hasCalibrated = true
+            onFirstAltitude?(location.altitude)
+        }
 
         // Speed (CLLocation.speed is -1 when unavailable)
         if location.speed >= 0 {

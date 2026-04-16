@@ -14,6 +14,7 @@ protocol RadioServiceDelegate: AnyObject {
     func radioService(_ service: RadioService, peerDidConnect peer: MCPeerID)
     func radioService(_ service: RadioService, peerDidDisconnect peer: MCPeerID)
     func radioService(_ service: RadioService, peerIsTransmitting peer: MCPeerID, transmitting: Bool)
+    func radioService(_ service: RadioService, didReceiveMessage message: String, from peer: MCPeerID)
 }
 
 class RadioService: NSObject {
@@ -111,6 +112,55 @@ class RadioService: NSObject {
             Self.logger.error("Send transmit state error: \(error.localizedDescription)")
         }
     }
+
+    /// Send a preset text message to all peers (prefixed with 0x4D = "M")
+    func sendPresetMessage(_ message: RadioPresetMessage) {
+        guard let session, !session.connectedPeers.isEmpty else { return }
+
+        var data = Data([0x4D]) // M for message
+        if let msgData = message.text.data(using: .utf8) {
+            data.append(msgData)
+        }
+
+        do {
+            try session.send(data, toPeers: session.connectedPeers, with: .reliable)
+        } catch {
+            Self.logger.error("Send preset message error: \(error.localizedDescription)")
+        }
+    }
+}
+
+// MARK: - Preset Messages
+
+enum RadioPresetMessage: String, CaseIterable, Identifiable {
+    case trailMuddy = "Trail muddy ahead"
+    case trailClear = "Trail is clear"
+    case mechanical = "Mechanical issue — need help"
+    case flatTire = "Flat tire — stopping"
+    case regrouping = "Regrouping — wait up"
+    case allGood = "All good — keep rolling"
+    case waterStop = "Water stop ahead"
+    case turnAhead = "Sharp turn ahead"
+    case wildlifeAlert = "Wildlife on trail"
+    case ridersBack = "Riders coming from behind"
+
+    var id: String { rawValue }
+    var text: String { rawValue }
+
+    var icon: String {
+        switch self {
+        case .trailMuddy: "drop.fill"
+        case .trailClear: "checkmark.circle"
+        case .mechanical: "wrench.and.screwdriver"
+        case .flatTire: "circle.slash"
+        case .regrouping: "person.3"
+        case .allGood: "hand.thumbsup"
+        case .waterStop: "cup.and.saucer"
+        case .turnAhead: "arrow.turn.up.right"
+        case .wildlifeAlert: "pawprint"
+        case .ridersBack: "arrow.backward"
+        }
+    }
 }
 
 // MARK: - MCSessionDelegate
@@ -156,6 +206,10 @@ extension RadioService: MCSessionDelegate {
             case 0x54: // "T" — transmit state
                 let isTransmitting = payload.first == 1
                 self.delegate?.radioService(self, peerIsTransmitting: peerID, transmitting: isTransmitting)
+            case 0x4D: // "M" — preset message
+                if let message = String(data: Data(payload), encoding: .utf8) {
+                    self.delegate?.radioService(self, didReceiveMessage: message, from: peerID)
+                }
             default:
                 break
             }

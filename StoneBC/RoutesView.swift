@@ -11,13 +11,22 @@ struct RoutesView: View {
     @Environment(AppState.self) var appState
     @State private var selectedDifficulty: String?
     @State private var selectedCategory: String?
+    @State private var sortOption: RouteSortOption = .distance
     @State private var appeared = false
     @State private var showImport = false
+
+    enum RouteSortOption: String, CaseIterable {
+        case distance = "Distance"
+        case location = "Nearest"
+        case elevation = "Elevation"
+        case difficulty = "Difficulty"
+        case name = "A–Z"
+    }
 
     private var routes: [Route] { appState.allRoutes }
 
     private var filteredRoutes: [Route] {
-        routes.filter { route in
+        let filtered = routes.filter { route in
             if let diff = selectedDifficulty, route.difficulty != diff {
                 return false
             }
@@ -25,6 +34,20 @@ struct RoutesView: View {
                 return false
             }
             return true
+        }
+
+        switch sortOption {
+        case .distance:
+            return filtered.sorted { $0.distanceMiles < $1.distanceMiles }
+        case .location:
+            return filtered // already sorted by distance from RC in routes.json
+        case .elevation:
+            return filtered.sorted { $0.elevationGainFeet > $1.elevationGainFeet }
+        case .difficulty:
+            let order = ["easy": 0, "moderate": 1, "hard": 2, "expert": 3]
+            return filtered.sorted { (order[$0.difficulty] ?? 0) < (order[$1.difficulty] ?? 0) }
+        case .name:
+            return filtered.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
         }
     }
 
@@ -83,6 +106,34 @@ struct RoutesView: View {
             }
             .background(BCColors.cardBackground)
             .accessibilityIdentifier("routesCategoryFilter")
+
+            // Sort bar
+            HStack(spacing: 6) {
+                Image(systemName: "arrow.up.arrow.down")
+                    .font(.system(size: 9))
+                    .foregroundColor(.secondary)
+                ForEach(RouteSortOption.allCases, id: \.self) { option in
+                    Button {
+                        withAnimation(.spring(response: 0.3)) { sortOption = option }
+                    } label: {
+                        Text(option.rawValue)
+                            .font(.system(size: 10, weight: sortOption == option ? .bold : .medium))
+                            .foregroundColor(sortOption == option ? .white : .secondary)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(sortOption == option ? BCColors.brandBlue : BCColors.cardBackground)
+                            .clipShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
+                }
+                Spacer()
+                Text("\(filteredRoutes.count) routes")
+                    .font(.system(size: 9))
+                    .foregroundColor(.secondary)
+            }
+            .padding(.horizontal, BCSpacing.md)
+            .padding(.vertical, 6)
+            .background(BCColors.background)
 
             // Route list
             ScrollView {
@@ -245,7 +296,7 @@ struct RouteCard: View {
                 .foregroundColor(.secondary)
                 .lineLimit(2)
 
-            // Stats
+            // Stats + condition badge
             HStack(spacing: 16) {
                 HStack(spacing: 4) {
                     Image(systemName: "arrow.left.arrow.right")
@@ -262,6 +313,11 @@ struct RouteCard: View {
                         .font(.bcCaption)
                 }
                 .foregroundColor(.secondary)
+
+                // Trail condition badge (crowdsourced)
+                if let condition = RouteConditionReporter.shared.latestCondition(for: route.id) {
+                    TrailConditionBadge(condition: condition)
+                }
 
                 Spacer()
 

@@ -4,6 +4,94 @@ All notable changes to the Stone Bicycle Coalition project will be documented in
 
 ---
 
+## [0.8.1] - 2026-04-16
+
+### Fixed
+- **Route navigation crash** — `CMAltimeter.startRelativeAltitudeUpdates()` was killing the app on iOS 17+ because `NSMotionUsageDescription` was not declared. Added to `INFOPLIST_KEY_*` in both Debug and Release build configs.
+- **Missing permission prompts** — added `NSCameraUsageDescription` (ExpeditionCaptureView) and `NSPhotoLibraryAddUsageDescription` (expedition photo saves) so those features will surface system prompts on first use.
+- **Route navigation hardening** — `RouteNavigationView.onAppear` now guards on `route.isNavigable` and dismisses cleanly for empty/invalid routes.
+
+---
+
+## [0.8.0] - 2026-04-15
+
+### Swiss Army Knife Upgrade + Expedition Journal
+
+#### Foundation Hardening (Phase 1)
+- **Route validation** — defensive guards for empty/invalid trackpoints, coordinate bounds checking. All 56 routes load without crash
+- **Performance** — windowed search in RideSession (O(100) vs O(13K) for Great Plains Gravel's 13,718 trackpoints)
+- **Altitude fusion** — GPS baseline + CMAltimeter barometer for accurate fused elevation display
+- **Off-route detection** — warn at 50m, critical alert at 150m with differentiated UI and audio
+- **Persistent route cache** — OfflineRouteStorage saves route data + snapshots + weather to disk
+- **Turn analysis** — RouteAnalysisService pre-computes all turn points for O(1) lookup during navigation
+
+#### Trail Intelligence (Phase 2)
+- **TrailforksService** — trail conditions API client with 4-hour cache (free tier, needs API key in config.json)
+- **USFSService** — USFS ArcGIS Black Hills NF closure queries (free, no key needed)
+- **StravaService** — OAuth2 flow, segment exploration, leaderboards with 7-day cache (free tier)
+- **RouteConditionReporter** — local-first crowdsourced condition reports with quick-tap UI
+- **TrailConditionBadge** — condition badges on route cards (green/orange/red)
+
+#### Safety & Community (Phases 3-4)
+- **EmergencySafetyService** — satellite SOS detection (iPhone 14+), emergency contacts, 911 deep link
+- **RideExportService** — GPX 1.1 export with timestamps/elevation for sharing and Strava upload
+- **Rally Radio presets** — 10 voice-free safety messages (trail muddy, mechanical, regrouping, etc.)
+- **RideHistoryService** — persistent ride log with season summary (total miles/elevation/rides)
+- **Season summary card** — ride stats on Home tab dashboard
+
+#### Infrastructure
+- **RouteIndexService** — SQLite FTS5 full-text search with prefix matching across all routes
+- **EventNotificationService** — local notifications for favorited route events + weekly best ride window
+- **MapboxOfflineService** — scaffold for offline vector tiles with setup guide (needs SPM package)
+
+#### Expedition Journal (New Feature)
+- **Lewis & Clark-style ride documentation** for multi-day bikepacking trips
+- **ExpeditionJournal** — data models for journal, days, entries, media, contributions
+- **ExpeditionStorage** — Documents directory persistence + iCloud Drive `8o7/` shared drop zone
+- **ExpeditionCaptureView** — during-ride quick-log: text, photo (camera + library), voice memo, video. Auto-attaches GPS + timestamp. Works fully offline
+- **PhotoGeotaggingService** — EXIF GPS extraction via ImageIO, timestamp-to-Garmin-track matching for Fuji photos, batch geotagging with confidence scoring
+- **ExpeditionTimelineView** — day picker, entry cards with media, day summary editor, Garmin GPX import, floating action button
+- **ExpeditionMapView** — GPS track polyline + media pins (blue=leader, green=contribution, amber=featured) on hybrid satellite map
+- **ExpeditionExporter** — self-contained dark-theme HTML report with photo gallery, day narratives, contributor credits
+- **ExpeditionListView** — browse journals, create new from tour guides
+- **Collaboration model** — one leader curates, all riders contribute via iCloud folder or Rally Radio
+
+#### Stats
+- 25 new Swift files
+- ~7,800 lines added
+- $0-400/year API costs (most APIs have free tiers)
+
+---
+
+## [0.7.0] - 2026-04-10
+
+### Tour Guide System & Get Involved
+
+#### Tour Guides (New Feature)
+- **Multi-day tour guide system** — data model for guides with days, stops, and ride recording checklists
+- **Brewvet guide** — 3-day brewery bike tour (Sept 25-27) with sag stops, beer pairings, and tour notes
+- **8 Over 7 guide** — 3-day bikepacking trip (May 15-17) Spearfish → Sylvan Lake → Custer → Deerfield → Spearfish. Based on Zach's route intel
+- **Ride recording checklist** — persistent tappable checklist for capturing photos, notes, and safety info while riding. Categories: capture (blue), note (orange), safety (red)
+- **TourGuideListView** — browse guides with stats, difficulty badges, and event dates
+- **TourGuideDetailView** — day picker, day overview, stops timeline with colored dots and mileage markers
+
+#### Get Involved (ContactView Overhaul)
+- **Volunteer form** — TTT model (Time/Talent/Treasure) adapted for bike co-op with mailto submission
+- **Donate form** — Bicycle/Parts & Tools/Monetary with condition picker and drop-off logistics
+- **Spread the Word** — links to stonebicyclecoalition.com
+- **Trad Diff links** — TD Technology, Rory Stone Photography, BTYBD with real URLs
+- **Address removed** — dropped hardcoded address from contact section
+
+#### Routes
+- **8 Over 7 v2 (2021)** — imported 102.9mi, 10,563ft gain, 1,292 trackpoints
+- **Routes trimmed** — app ships with single imported route (8 Over 7 v2)
+- **Brewvet route files** — Northern and Southern TCX/FIT files added for future map rendering
+
+#### Events
+- **Events cleaned up** — removed placeholder events, kept only real Pedal for Empathy (May 2, 2026)
+
+---
+
 ## [0.6.0] - 2026-04-09
 
 ### Rally Radio — Security, Reliability & UX Overhaul

@@ -74,4 +74,4 @@ Posts support these categories:
 ## Need Help?
 - Original project: https://github.com/traddiff-create/TradDiff
 - Stone Bicycle Coalition: https://stonebicyclecoalition.com
-- Email: stonebicyclecoalition@gmail.com
+- Email: info@stonebicyclecoalition.com

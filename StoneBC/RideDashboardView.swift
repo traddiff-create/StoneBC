@@ -287,14 +287,14 @@ struct RideDashboardView: View {
 
     private var statsGrid: some View {
         HStack(spacing: 1) {
-            // Altitude change (barometer)
+            // Fused altitude (GPS baseline + barometer)
             DashStatTile(
-                label: "Alt",
+                label: "Elev",
                 value: altimeterService.isAvailable
-                    ? String(format: "%+.0f", altimeterService.relativeAltitudeFeet)
+                    ? altimeterService.formattedFusedAltitude.replacingOccurrences(of: " ft", with: "")
                     : "--",
                 unit: "ft",
-                icon: "arrow.up.and.down"
+                icon: "mountain.2"
             )
 
             // Climb rate
@@ -332,17 +332,21 @@ struct RideDashboardView: View {
     // MARK: - Off-Route Warning
 
     private var offRouteWarning: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundColor(.orange)
-            Text("Off route — \(Int(session.distanceFromRouteMeters))m away")
+        let isCritical = session.isCriticallyOffRoute
+        let color: Color = isCritical ? .red : .orange
+        return HStack(spacing: 8) {
+            Image(systemName: isCritical ? "xmark.octagon.fill" : "exclamationmark.triangle.fill")
+                .foregroundColor(color)
+            Text(isCritical
+                 ? "Far off route — \(Int(session.distanceFromRouteMeters))m away"
+                 : "Off route — \(Int(session.distanceFromRouteMeters))m away")
                 .font(.system(size: 12, weight: .medium))
-                .foregroundColor(.orange)
+                .foregroundColor(color)
             Spacer()
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
-        .background(Color.orange.opacity(0.15))
+        .background(color.opacity(0.15))
     }
 
     // MARK: - Expanded Stats
@@ -369,12 +373,54 @@ struct RideDashboardView: View {
                     icon: "arrow.down"
                 )
                 DashStatTile(
-                    label: "GPS Alt",
-                    value: String(format: "%.0f", locationService.gpsAltitudeMeters * 3.28084),
+                    label: "Alt Chg",
+                    value: altimeterService.isAvailable
+                        ? String(format: "%+.0f", altimeterService.relativeAltitudeFeet)
+                        : "--",
                     unit: "ft",
-                    icon: "mountain.2"
+                    icon: "arrow.up.and.down"
                 )
             }
+
+            // Emergency SOS row
+            HStack(spacing: 12) {
+                if EmergencySafetyService.shared.supportsSatelliteSOS {
+                    HStack(spacing: 4) {
+                        Image(systemName: "satellite.fill")
+                            .font(.system(size: 9))
+                        Text("Satellite SOS")
+                            .font(.system(size: 9, weight: .medium))
+                    }
+                    .foregroundColor(.green)
+                }
+
+                Spacer()
+
+                if let contact = EmergencySafetyService.shared.emergencyContact {
+                    HStack(spacing: 4) {
+                        Image(systemName: "person.badge.shield.checkmark")
+                            .font(.system(size: 9))
+                        Text("ICE: \(contact.name)")
+                            .font(.system(size: 9, weight: .medium))
+                    }
+                    .foregroundColor(.white.opacity(0.6))
+                }
+
+                // SOS button
+                if let smsURL = EmergencySafetyService.shared.emergencySMSURL {
+                    Link(destination: smsURL) {
+                        Text("SOS")
+                            .font(.system(size: 9, weight: .bold))
+                            .tracking(1)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 4)
+                            .background(Color.red.opacity(0.8))
+                            .foregroundColor(.white)
+                            .clipShape(Capsule())
+                    }
+                }
+            }
+            .padding(.horizontal, 8)
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 10)
