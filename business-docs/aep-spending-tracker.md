@@ -1,8 +1,14 @@
 # AEP Grant — Spending Tracker
 
 **Grant:** $1,000 | **Status:** Funds transferring to BHCB account 765058
-**Event:** May 2, 2026 | **Today:** April 14 — 18 days out
+**Event:** May 2, 2026 | **Today:** April 16 — 16 days out
 **Primary Source:** Sam's Club (Rapid City)
+
+## Event Schedule (Updated Apr 16)
+- **10:30 AM** — Coffee & donuts at Hanson-Larsen Memorial Park (HLMP)
+- **Late morning** — Community ride + trail cleanup along bike path
+- **~1:00 PM** — Rendezvous at Acme Bikes
+- **Partners:** Parks & Rec, Acme Bikes, Minneluzahan Senior Citizen Center, AEP
 
 ---
 
@@ -31,7 +37,7 @@
 
 ---
 
-### 2. Event Materials — $150
+### 2. Marketing & Promotion — $200
 
 | Item | Qty | Est. Cost | Source | Purchased |
 |------|-----|-----------|--------|-----------|
@@ -40,54 +46,55 @@
 | Route maps (double-sided) | 50 | $25 | Minuteman Press / Staples | [ ] |
 | Custom vinyl banner (3'x6') | 1 | $40 | Amazon (needs design first) | [ ] |
 | Thank-you cards (blank) | 1 pack | $8 | Sam's Club | [ ] |
-| **Subtotal** | | **~$143** | | |
+| Instagram boosted post (announcement) | — | $40 | Meta Ads | [ ] |
+| Instagram boosted post (countdown) | — | $30 | Meta Ads | [ ] |
+| Facebook event boost | — | $30 | Meta Ads | [ ] |
+| **Subtotal** | | **~$243** | | |
 
 **Buffer: $7**
 **Design flyers/banner by: April 18** — needs to be done THIS WEEK for print turnaround
 **Print by: April 21** — allows 10 days to distribute flyers
+**Start ad boosts: April 18** — run through May 1
 
 ---
 
-### 3. Food & Snacks — $200
+### 3. Food & Snacks — $250
+
+**10:30 AM — Coffee & Donuts at HLMP**
+
+| Item | Qty | Est. Cost | Source | Purchased |
+|------|-----|-----------|--------|-----------|
+| Donuts (assorted dozen) | 4 dozen | $56 | Jerry's Cakes & Donuts ($14/doz) | [ ] |
+| Coffee (TBD source) | bulk | $25 | TBD | [ ] |
+| Cups, lids, stirrers, cream, sugar | — | $15 | Sam's Club | [ ] |
+
+**~1:00 PM — Pizza at Acme (post-ride)**
+
+| Item | Qty | Est. Cost | Source | Purchased |
+|------|-----|-----------|--------|-----------|
+| Large pizzas | 6-8 | $70-80 | Papa John's (Rushmore Rd) | [ ] |
+
+**Drinks & Extras**
 
 | Item | Qty | Est. Cost | Source | Purchased |
 |------|-----|-----------|--------|-----------|
 | Water bottles (bulk case) | 2 cases | $12 | Sam's Club | [ ] |
 | Gatorade / sports drinks | 1 case | $15 | Sam's Club | [ ] |
-| Granola bars (variety box) | 2 boxes | $20 | Sam's Club | [ ] |
-| Fruit (bananas, oranges) | bulk | $25 | Sam's Club | [ ] |
-| Chips / pretzels (variety) | 2 bags | $15 | Sam's Club | [ ] |
-| Cookies / brownies (bakery tray) | 2 trays | $25 | Sam's Club | [ ] |
-| Paper plates | 1 pack | $8 | Sam's Club | [ ] |
-| Napkins | 1 pack | $6 | Sam's Club | [ ] |
-| Cups (if not using bottles) | 1 pack | $8 | Sam's Club | [ ] |
-| Ice + cooler bags | — | $10 | Sam's Club | [ ] |
-| **Subtotal** | | **~$144** | | |
+| Paper plates, napkins | 1 pack ea | $14 | Sam's Club | [ ] |
+| **Subtotal** | | **~$217** | | |
 
-**Buffer: $56** — use for extra food if turnout is higher than expected
-**Buy: May 1** (day before event — perishables)
+**Buffer: $33**
+**Order donuts: Call Jerry's by Apr 30** — (605) 342-2545, order 4 dozen assorted for May 2 pickup
+**Order pizza: Call Papa John's day-of** — Rushmore Rd location, 6-8 larges for ~1 PM pickup
+**Buy drinks/supplies: May 1** (Sam's Club)
 
 ---
 
-### 4. Social Media Promotion — $100
-
-| Item | Est. Cost | Platform | Status |
-|------|-----------|----------|--------|
-| Instagram boosted post (event announcement) | $40 | Meta Ads | [ ] |
-| Instagram boosted post (1-week countdown) | $30 | Meta Ads | [ ] |
-| Facebook event boost | $30 | Meta Ads | [ ] |
-| **Subtotal** | **$100** | | |
-
-**Start: April 18** (after flyer design is done — use flyer as ad creative)
-**Run through: May 1**
-
----
-
-### 5. Feeding South Dakota Donation — $350
+### 4. Feeding South Dakota Donation — $333
 
 | Item | Amount | Platform | Status |
 |------|--------|----------|--------|
-| Post-event donation | $350 | feedingsouthdakota.org | [ ] |
+| Post-event donation | $333 | feedingsouthdakota.org (online or in-person at 1111 N Creek Dr, RC) | [ ] |
 
 **Location:** 1111 N Creek Dr, Rapid City, SD 57703
 **Donate by: May 10** (after event, part of impact report)
@@ -99,13 +106,12 @@
 | Category | Budget | Estimated Spend | Buffer |
 |----------|--------|----------------|--------|
 | Cleanup supplies | $200 | $180 | $20 |
-| Event materials | $150 | $143 | $7 |
-| Food & snacks | $200 | $144 | $56 |
-| Social media | $100 | $100 | $0 |
-| Feeding SD donation | $350 | $350 | $0 |
-| **TOTAL** | **$1,000** | **$917** | **$83** |
+| Marketing & promotion | $200 | $193 | $7 |
+| Food & snacks | $250 | $217 | $33 |
+| Feeding SD donation | $333 | $333 | $0 |
+| **TOTAL** | **$983** | **$923** | **$60** |
 
-**Remaining buffer: $83** — reallocate to food (bigger turnout) or supplies as needed
+**Remaining buffer: $60 + $17 grant cushion = $77 total flex**
 
 ---
 
@@ -140,7 +146,7 @@
 - **Food total: ~$144**
 
 ### Post-Event: May 3-10
-- [ ] Donate $350 to Feeding South Dakota
+- [ ] Donate $333 to Feeding South Dakota (online or 1111 N Creek Dr)
 - [ ] Submit impact report to AHA
 
 ---

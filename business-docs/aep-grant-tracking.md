@@ -79,7 +79,7 @@
 ### Post-Event — May 3-10
 - [ ] **Impact summary report** to AHA (participants, miles cleaned, photos)
 - [ ] **Social media recap** posts tagging AHA/AEP
-- [ ] **Donate $350 to Feeding South Dakota** — feedingsouthdakota.org, RC location at 1111 N Creek Dr
+- [ ] **Donate $333 to Feeding South Dakota** — feedingsouthdakota.org/ways-to-give/donate (one-time gift) or in-person at 1111 N Creek Dr, RC
 
 ---
 
@@ -103,7 +103,7 @@ Community ride + street cleanup combo addressing three empathy angles:
 | Event materials (flyers, signage, route maps) | $150 | Design + print |
 | Food & snacks for participants | $200 | Post-ride gathering |
 | Promotional outreach (social media boosted posts) | $100 | Instagram/Facebook |
-| Remainder → Feeding South Dakota donation | $350 | feedingsouthdakota.org |
+| Remainder → Feeding South Dakota donation | $333 | feedingsouthdakota.org (online one-time gift) |
 | **TOTAL** | **$1,000** | |
 
 ---
@@ -140,7 +140,7 @@ Community ride + street cleanup combo addressing three empathy angles:
 | Apr 15-30 | Finalize route, volunteer recruitment, final promotion push |
 | **May 2** | **Pedal for Empathy event day** |
 | May 3-10 | Post-event reporting, photos, impact summary to AHA |
-| May 10 | $350 donation to Feeding South Dakota |
+| May 10 | $333 donation to Feeding South Dakota |
 
 ---
 
