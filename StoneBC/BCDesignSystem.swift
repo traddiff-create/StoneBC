@@ -15,6 +15,12 @@ enum BCColors {
     static let brandGreen = Color(red: 0.020, green: 0.588, blue: 0.412)    // #059669
     static let brandAmber = Color(red: 0.961, green: 0.620, blue: 0.043)    // #f59e0b
 
+    // Immersive ride navigation
+    static let navPanel = Color(red: 0.039, green: 0.039, blue: 0.039)      // #0A0A0A
+    static let navTileHighlight = Color.white.opacity(0.08)
+    static let navAlertAmber = Color(red: 0.851, green: 0.467, blue: 0.024) // #D97706
+    static let navAlertRed = Color(red: 0.863, green: 0.149, blue: 0.149)   // #DC2626
+
     // Backgrounds
     static let background = Color(UIColor.systemBackground)
     static let cardBackground = Color(UIColor.secondarySystemBackground)
@@ -258,6 +264,23 @@ struct MetadataItem: View {
 
             Spacer()
         }
+    }
+}
+
+// MARK: - Nav Tile Modifier
+extension View {
+    /// Shared visual primitive for every full-width tile in the active-ride navigation view.
+    /// Near-black panel with a 1-px top-edge highlight so adjacent tiles read as stacked panels.
+    func bcNavTile(height: CGFloat) -> some View {
+        self
+            .frame(maxWidth: .infinity)
+            .frame(height: height)
+            .background(BCColors.navPanel)
+            .overlay(alignment: .top) {
+                Rectangle()
+                    .fill(BCColors.navTileHighlight)
+                    .frame(height: 1)
+            }
     }
 }
 
