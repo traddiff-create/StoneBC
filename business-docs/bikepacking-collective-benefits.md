@@ -193,13 +193,75 @@
 
 ---
 
+## Basecamp Platform Strategy
+
+**Membership Level:** Sustainer ($68/yr) — can post rides, answer questions, buy/sell in Co-op
+**TOS:** Accepted April 2026
+
+### Ride Rendezvous — Find & Recruit Riders
+
+9 active requests. Post rides to attract national bikepacking community to Black Hills events.
+
+**Post these rides:**
+- [ ] **8 Over 7** (May 15-17) — "Weekend Ride" or "Flexible Schedule", Seeking Any Riders. Describe: 3-day Black Hills bikepacking, 103 mi, 10,500ft. Spearfish to Sylvan Lake to Custer to Deerfield. Moderate-expert.
+- [ ] **Pedal for Empathy** (May 2) — "Group Ride", Seeking Any Riders. Community ride + trail cleanup in Rapid City, all levels welcome.
+- [ ] **Brewvet** (Sept 25-27) — "Weekend Ride", Seeking Any Riders. 3-day brewery bike tour through Black Hills, sag support included.
+
+### Ask the Experts — Build Authority
+
+102 questions across 8 categories. At Sustainer level: can view and answer (posting questions requires Builder tier).
+
+**Categories to watch and answer:**
+- **Route Advice** (25 questions) — Answer anything about Black Hills, SD, northern Great Plains riding
+- **GPS and App Advice** (7) — Mention StoneBC app, Ride with GPS integration
+- **Component Selection** (28) — Share Open Shop expertise on affordable setups
+- **How to Pack** (5) — Share 8 Over 7 pack list experience
+
+**Goal:** Become the go-to Black Hills bikepacking voice. Every answer links back to StoneBC credibility.
+
+### Bike Camp Co-op — Sell & Source
+
+2,205 active listings. Huge marketplace for bikes, bags, components, camping gear.
+
+**Sell (list Quarry bikes):**
+- [ ] Trek 7100 Hybrid — $275 (Hardtails category)
+- [ ] Specialized Rockhopper — $350 (Hardtails)
+- [ ] Schwinn Cruiser — $150 (Rigid Bikes)
+- [ ] Other available inventory as it comes in
+
+**Buy (source for Open Shop):**
+- Browse Components (808 listings) for cheap parts
+- Browse Tools & Electronics (105) for workshop tools
+- Browse Wanted (14) to see what people need — could fill requests
+- Browse Bikes for refurbishment candidates
+
+---
+
 ## Action Items
 
+### Immediate (This Week)
 - [ ] Activate Ride with GPS 20% discount
 - [ ] Order Rogue Panda bags before Apr 30 deadline
+- [ ] Post 8 Over 7 on Ride Rendezvous
+- [ ] Post Pedal for Empathy on Ride Rendezvous
+- [ ] List 2-3 Quarry bikes on Bike Camp Co-op
+- [ ] Answer 2-3 Route Advice questions on Ask the Experts
+
+### Before May 2 (Pedal for Empathy)
+- [ ] Source raffle items (coffee, grips, bells) using discount codes
 - [ ] Order 8 Over 7 food (Farm to Summit / Luxefly) by May 1
-- [ ] Source Pedal for Empathy raffle items (coffee, grips, bells)
+
+### Before May 15 (8 Over 7)
+- [ ] Order tires (WTB 30% or Teravail 20%)
+- [ ] Order camping gear if needed (Big Agnes/NEMO 15%)
 - [ ] Stock Open Shop with discounted components (Industry Nine, Cane Creek, ESI)
-- [ ] Submit 8 Over 7 route to bikepacking.com after the ride
-- [ ] Write expedition story for Journal section post-ride
-- [ ] Order rain gear (Showers Pass) before Brewvet
+
+### After 8 Over 7 (May 18+)
+- [ ] Submit 8 Over 7 route to bikepacking.com/contribute/share-route/
+- [ ] Write expedition story for Journal section
+- [ ] Log completed ride in Route Log
+- [ ] Post Brewvet on Ride Rendezvous
+
+### Before Brewvet (September)
+- [ ] Order rain gear (Showers Pass 20%)
+- [ ] Order ORTLIEB panniers if needed
