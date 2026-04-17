@@ -105,6 +105,32 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .sync-error { background: #7f1d1d; color: #fca5a5; }
 .sync-loading { background: #1e3a5f; color: #60a5fa; }
 
+/* Parts banner + panel — same family as waitlist */
+.parts-banner { background: #1e3a5f; color: #93c5fd; padding: 10px 24px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid #334155; user-select: none; }
+.parts-banner:hover { background: #24466e; }
+.parts-banner strong { color: #bfdbfe; }
+.parts-banner .low-badge { background: #7f1d1d; color: #fca5a5; font-size: 0.68rem; padding: 2px 8px; border-radius: 99px; margin-left: 8px; font-weight: 700; }
+.parts-panel { background: #1e293b; border-bottom: 1px solid #334155; padding: 16px 24px; max-height: 60vh; overflow-y: auto; }
+.parts-panel.hidden { display: none; }
+.parts-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.parts-table th { text-align: left; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; padding: 8px 10px; border-bottom: 1px solid #334155; font-weight: 600; }
+.parts-table td { padding: 8px 10px; border-bottom: 1px solid #1e3a5f; vertical-align: middle; }
+.parts-table tr:hover { background: #0f172a; }
+.parts-table input { background: #0f172a; border: 1px solid #334155; border-radius: 4px; padding: 5px 8px; color: #f8fafc; font-size: 0.85rem; font-family: inherit; width: 100%; }
+.parts-table input:focus { outline: none; border-color: #3b82f6; }
+.parts-qty-low { color: #fca5a5; font-weight: 700; }
+.parts-add-btn { background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; margin-top: 12px; }
+.parts-add-btn:hover { background: #2563eb; }
+.parts-del { background: none; border: none; color: #f87171; cursor: pointer; font-size: 1.1rem; padding: 2px 6px; }
+.parts-del:hover { color: #ef4444; }
+.parts-empty { color: #64748b; font-style: italic; padding: 12px 0; }
+.parts-stock-chip { display: inline-block; background: #052e16; color: #4ade80; padding: 2px 8px; border-radius: 99px; font-size: 0.7rem; font-weight: 600; margin-left: 6px; white-space: nowrap; }
+.parts-stock-chip.low { background: #422006; color: #fbbf24; }
+.parts-stock-chip.out { background: #7f1d1d; color: #fca5a5; }
+.parts-consume-btn { background: #064e3b; color: #6ee7b7; border: 1px solid #065f46; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; margin-left: 6px; white-space: nowrap; }
+.parts-consume-btn:hover { background: #065f46; color: #a7f3d0; }
+.parts-consume-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
 /* Delete button */
 .btn-delete { background: #7f1d1d; color: #fca5a5; border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; margin-top: 16px; }
 .btn-delete:hover { background: #991b1b; }
@@ -136,6 +162,16 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   <div id="wl-content"><div class="wl-empty">Loading wait list…</div></div>
   <div class="wl-hint">Read-only view of the shared wait list. To add/edit applicants, update <code>waitlist.json</code> in the repo. When you flip a bike to <strong>ready</strong>, run <code>python3 Scripts/match_waitlist.py</code> to auto-draft notification emails.</div>
 </div>
+
+<div class="parts-banner" onclick="togglePartsPanel()">
+  <span>🔧 Parts Shelf: <strong id="parts-count">…</strong> items<span id="parts-low-badge" class="low-badge" style="display:none"></span></span>
+  <span id="parts-toggle">▼ show</span>
+</div>
+<div class="parts-panel hidden" id="parts-panel">
+  <div id="parts-content"><div class="parts-empty">Loading parts…</div></div>
+</div>
+
+<datalist id="parts-datalist"></datalist>
 
 <div class="layout">
   <div class="bike-list">
@@ -332,9 +368,10 @@ function renderForm() {
 
   var refurbRows = '';
   b.refurb.forEach(function(r, i) {
-    refurbRows += '<tr>' +
+    refurbRows += '<tr data-bike-id="' + esc(b.id) + '" data-row-idx="' + i + '">' +
       '<td><input value="' + esc(r.date) + '" onchange="updateRefurb(\'' + b.id + '\',' + i + ',\'date\',this.value)" type="date"></td>' +
-      '<td><input value="' + esc(r.item) + '" onchange="updateRefurb(\'' + b.id + '\',' + i + ',\'item\',this.value)" placeholder="New chain, brake pads..."></td>' +
+      '<td><input value="' + esc(r.item) + '" list="parts-datalist" onchange="updateRefurb(\'' + b.id + '\',' + i + ',\'item\',this.value); refreshStockChipsOnly();" placeholder="Type or pick from catalog"></td>' +
+      '<td class="stock-chip-cell" style="white-space:nowrap">' + refurbStockChipHTML(b.id, i) + '</td>' +
       '<td><input value="' + (r.cost || '') + '" onchange="updateRefurb(\'' + b.id + '\',' + i + ',\'cost\',this.value)" type="number" step="0.01" placeholder="0.00"></td>' +
       '<td><input value="' + (r.hours || '') + '" onchange="updateRefurb(\'' + b.id + '\',' + i + ',\'hours\',this.value)" type="number" step="0.25" placeholder="0"></td>' +
       '<td style="width:30px;text-align:center"><span style="cursor:pointer;color:#f87171;font-size:1.1rem" onclick="removeRefurb(\'' + b.id + '\',' + i + ')">x</span></td></tr>';
@@ -374,7 +411,7 @@ function renderForm() {
 
     '<hr class="section-divider">' +
     '<div class="section-label">Refurbishment Work</div>' +
-    '<table class="refurb-table"><thead><tr><th>Date</th><th>Item</th><th>Cost ($)</th><th>Labor Hrs</th><th></th></tr></thead><tbody>' +
+    '<table class="refurb-table"><thead><tr><th>Date</th><th>Item</th><th>Stock</th><th>Cost ($)</th><th>Labor Hrs</th><th></th></tr></thead><tbody>' +
     refurbRows + '</tbody></table>' +
     '<button class="btn-add-row" onclick="addRefurbRow(\'' + b.id + '\')">+ Add work item</button>' +
 
@@ -473,11 +510,13 @@ function download(name, content) {
 
 loadBikes();
 loadWaitlist();
+loadParts();
 
 // Auto-refresh when tab regains focus so you see other users' edits
 window.addEventListener('focus', function() {
   loadBikes();
   loadWaitlist();
+  loadParts();
 });
 
 var waitlistData = null;
@@ -513,6 +552,239 @@ function loadWaitlist() {
         '<div class="wl-error">Could not load waitlist: ' + esc(err.message) + '</div>');
     });
 }
+
+/* ---------- Parts panel ---------- */
+
+var partsDoc = null;
+var partsById = {};
+
+function togglePartsPanel() {
+  var panel = document.getElementById('parts-panel');
+  var toggle = document.getElementById('parts-toggle');
+  var hidden = panel.classList.toggle('hidden');
+  toggle.textContent = hidden ? '▼ show' : '▲ hide';
+}
+
+function loadParts() {
+  fetch('/api/parts?t=' + Date.now())
+    .then(function(r) {
+      if (handleAuthError(r)) return null;
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function(data) {
+      if (!data) return;
+      partsDoc = data;
+      partsById = {};
+      (data.parts || []).forEach(function(p) { partsById[p.id] = p; });
+      renderPartsPanel();
+      renderPartsDatalist();
+      // Also re-render the current bike form so refurb rows update stock chips
+      if (selectedId) renderForm();
+    })
+    .catch(function(err) {
+      var el = document.getElementById('parts-content');
+      el.textContent = '';
+      el.insertAdjacentHTML('beforeend', '<div class="wl-error">Could not load parts: ' + esc(err.message) + '</div>');
+    });
+}
+
+function savePartsDoc() {
+  return fetch('/api/parts', {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(partsDoc)
+  }).then(function(r) {
+    if (handleAuthError(r)) return;
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  });
+}
+
+function nextPartId() {
+  var max = 0;
+  (partsDoc.parts || []).forEach(function(p) {
+    var n = parseInt(String(p.id || '').replace(/[^0-9]/g, ''), 10);
+    if (!isNaN(n) && n > max) max = n;
+  });
+  return 'PART-' + String(max + 1).padStart(4, '0');
+}
+
+function addPart() {
+  if (!partsDoc) return;
+  if (!partsDoc.parts) partsDoc.parts = [];
+  partsDoc.parts.push({
+    id: nextPartId(),
+    name: '',
+    category: 'other',
+    specs: '',
+    qty: 0,
+    reorder_at: 2,
+    cost_each: 0,
+    supplier_id: '',
+    sku: '',
+    notes: '',
+    updated: new Date().toISOString()
+  });
+  renderPartsPanel();
+}
+
+function updatePart(id, field, value) {
+  var p = partsById[id];
+  if (!p) return;
+  if (field === 'qty' || field === 'reorder_at' || field === 'cost_each') {
+    value = parseFloat(value) || 0;
+  }
+  p[field] = value;
+  p.updated = new Date().toISOString();
+  savePartsDoc().then(function() { refreshStockChipsOnly(); renderPartsDatalist(); });
+}
+
+function deletePart(id) {
+  var p = partsById[id];
+  if (!p) return;
+  if (!confirm('Delete ' + (p.name || id) + ' from catalog?')) return;
+  partsDoc.parts = partsDoc.parts.filter(function(x) { return x.id !== id; });
+  delete partsById[id];
+  savePartsDoc().then(function() { renderPartsPanel(); renderPartsDatalist(); if (selectedId) renderForm(); });
+}
+
+function consumePart(partId, qty, bikeId) {
+  if (!partsById[partId]) return Promise.resolve();
+  return fetch('/api/parts/consume', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ partId: partId, qty: qty || 1, bikeId: bikeId || null })
+  }).then(function(r) {
+    if (handleAuthError(r)) return null;
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  }).then(function(res) {
+    if (!res) return;
+    partsById[partId].qty = res.part.qty;
+    partsDoc.parts = partsDoc.parts.map(function(p) { return p.id === partId ? res.part : p; });
+    refreshStockChipsOnly();
+    renderPartsPanel();
+    renderPartsDatalist();
+  });
+}
+
+function partStockStatus(p) {
+  var qty = Number(p.qty) || 0;
+  var reorder = Number(p.reorder_at) || 0;
+  if (qty <= 0) return 'out';
+  if (reorder > 0 && qty <= reorder) return 'low';
+  return 'ok';
+}
+
+function renderPartsPanel() {
+  var el = document.getElementById('parts-content');
+  var countEl = document.getElementById('parts-count');
+  var lowBadge = document.getElementById('parts-low-badge');
+  var parts = (partsDoc && partsDoc.parts) || [];
+
+  countEl.textContent = parts.length;
+  var lowCount = parts.filter(function(p) { return partStockStatus(p) !== 'ok'; }).length;
+  if (lowCount > 0) {
+    lowBadge.textContent = lowCount + ' low/out';
+    lowBadge.style.display = '';
+  } else {
+    lowBadge.style.display = 'none';
+  }
+
+  if (!parts.length) {
+    el.textContent = '';
+    el.insertAdjacentHTML('beforeend',
+      '<div class="parts-empty">No parts in catalog yet. Click "+ Add part" to start.</div>' +
+      '<button class="parts-add-btn" onclick="addPart()">+ Add part</button>');
+    return;
+  }
+
+  var rows = '';
+  parts.forEach(function(p) {
+    var status = partStockStatus(p);
+    var qtyCls = status === 'ok' ? '' : 'parts-qty-low';
+    rows += '<tr>' +
+      '<td style="width:90px;color:#64748b;font-size:0.75rem">' + esc(p.id) + '</td>' +
+      '<td><input value="' + esc(p.name || '') + '" placeholder="e.g. Chain (9-spd)" onchange="updatePart(\'' + p.id + '\',\'name\',this.value)"></td>' +
+      '<td style="width:90px"><select onchange="updatePart(\'' + p.id + '\',\'category\',this.value)" style="background:#0f172a;border:1px solid #334155;border-radius:4px;padding:5px 6px;color:#f8fafc;font-size:0.8rem">' +
+        ['tires','brakes','drivetrain','wheels','cockpit','hardware','consumable','paint','other'].map(function(c) {
+          return '<option value="' + c + '"' + (c === (p.category || 'other') ? ' selected' : '') + '>' + c + '</option>';
+        }).join('') + '</select></td>' +
+      '<td style="width:110px"><input value="' + esc(p.specs || '') + '" placeholder="size/spec" onchange="updatePart(\'' + p.id + '\',\'specs\',this.value)"></td>' +
+      '<td style="width:70px" class="' + qtyCls + '"><input type="number" step="1" value="' + (p.qty != null ? p.qty : 0) + '" onchange="updatePart(\'' + p.id + '\',\'qty\',this.value)"></td>' +
+      '<td style="width:80px"><input type="number" step="1" value="' + (p.reorder_at != null ? p.reorder_at : 2) + '" title="Reorder when qty drops to this" onchange="updatePart(\'' + p.id + '\',\'reorder_at\',this.value)"></td>' +
+      '<td style="width:90px"><input type="number" step="0.01" value="' + (p.cost_each != null ? p.cost_each : 0) + '" onchange="updatePart(\'' + p.id + '\',\'cost_each\',this.value)"></td>' +
+      '<td style="width:30px"><button class="parts-del" onclick="deletePart(\'' + p.id + '\')" title="Delete">×</button></td>' +
+      '</tr>';
+  });
+
+  el.textContent = '';
+  el.insertAdjacentHTML('beforeend',
+    '<table class="parts-table"><thead><tr>' +
+    '<th>ID</th><th>Name</th><th>Category</th><th>Specs</th>' +
+    '<th>Qty</th><th>Reorder at</th><th>Cost ea ($)</th><th></th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table>' +
+    '<button class="parts-add-btn" onclick="addPart()">+ Add part</button>');
+}
+
+function renderPartsDatalist() {
+  var dl = document.getElementById('parts-datalist');
+  dl.textContent = '';
+  (partsDoc && partsDoc.parts || []).forEach(function(p) {
+    if (!p.name) return;
+    var opt = document.createElement('option');
+    opt.value = p.name + (p.specs ? ' (' + p.specs + ')' : '');
+    opt.dataset.partId = p.id;
+    dl.appendChild(opt);
+  });
+}
+
+function findPartByItemText(itemText) {
+  if (!itemText || !partsDoc) return null;
+  var match = (partsDoc.parts || []).find(function(p) {
+    if (!p.name) return false;
+    var label = p.name + (p.specs ? ' (' + p.specs + ')' : '');
+    return label === itemText || p.name === itemText;
+  });
+  return match || null;
+}
+
+function refreshStockChipsOnly() {
+  if (!selectedId) return;
+  var rows = document.querySelectorAll('.refurb-table tr[data-bike-id]');
+  rows.forEach(function(tr) {
+    var bikeId = tr.getAttribute('data-bike-id');
+    var rowIdx = parseInt(tr.getAttribute('data-row-idx'), 10);
+    var chipCell = tr.querySelector('.stock-chip-cell');
+    if (chipCell) {
+      chipCell.textContent = '';
+      chipCell.insertAdjacentHTML('beforeend', refurbStockChipHTML(bikeId, rowIdx));
+    }
+  });
+}
+
+function refurbStockChipHTML(bikeId, rowIdx) {
+  var b = getBike(bikeId);
+  if (!b || !b.refurb[rowIdx]) return '';
+  var r = b.refurb[rowIdx];
+  var part = findPartByItemText(r.item);
+  if (!part) return '';
+  var status = partStockStatus(part);
+  var chipCls = 'parts-stock-chip' + (status === 'ok' ? '' : ' ' + status);
+  return '<span class="' + chipCls + '">' + (part.qty || 0) + ' on shelf</span>' +
+    '<button class="parts-consume-btn" onclick="consumeFromRow(\'' + bikeId + '\',' + rowIdx + ')" ' + (part.qty <= 0 ? 'disabled' : '') + '>-1</button>';
+}
+
+function consumeFromRow(bikeId, rowIdx) {
+  var b = getBike(bikeId);
+  if (!b || !b.refurb[rowIdx]) return;
+  var part = findPartByItemText(b.refurb[rowIdx].item);
+  if (!part) return;
+  consumePart(part.id, 1, bikeId);
+}
+
+/* ---------- Waitlist rendering (unchanged) ---------- */
 
 function renderWaitlist(apps) {
   var contentEl = document.getElementById('wl-content');

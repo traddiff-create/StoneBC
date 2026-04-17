@@ -25,6 +25,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/parts/consume"
+  to = "/.netlify/functions/parts-consume"
+  status = 200
+
+[[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
