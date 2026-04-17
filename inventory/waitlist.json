@@ -35,6 +35,11 @@
           "date": "2026-04-17",
           "action": "added_to_waitlist",
           "note": "Initial outreach reply drafted; see drafts/sbc-replies-2026-04-17.md"
+        },
+        {
+          "date": "2026-04-17",
+          "action": "reply_sent",
+          "note": "Sent from Mac Mail"
         }
       ]
     }

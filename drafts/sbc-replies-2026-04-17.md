@@ -1,6 +1,6 @@
 # SBC Contact Form Replies — April 17, 2026
 
-Ready to send from **info@stonebicyclecoalition.com** (Hover webmail: https://mail.hover.com)
+Sent from **info@stonebicyclecoalition.com** via Mac Mail
 
 ---
 
