@@ -45,8 +45,23 @@
     }
   ],
   "_schema": {
-    "status_values": ["active", "matched", "fulfilled", "withdrawn", "stale"],
-    "bike_type_values": ["road", "mountain", "hybrid", "cruiser", "kids", "bmx", "gravel", "electric"],
+    "status_values": [
+      "active",
+      "matched",
+      "fulfilled",
+      "withdrawn",
+      "stale"
+    ],
+    "bike_type_values": [
+      "road",
+      "mountain",
+      "hybrid",
+      "cruiser",
+      "kids",
+      "bmx",
+      "gravel",
+      "electric"
+    ],
     "stale_rule": "Flip to 'stale' if no response after 2 outreach attempts over 30 days",
     "id_format": "WL-YYYY-NNN",
     "next_id": "WL-2026-002"
