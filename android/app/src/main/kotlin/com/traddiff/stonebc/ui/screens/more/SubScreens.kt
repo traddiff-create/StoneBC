@@ -180,23 +180,17 @@ fun GalleryScreen(onBack: () -> Unit) {
             horizontalArrangement = Arrangement.spacedBy(BCSpacing.xs)
         ) {
             items(photos, key = { it.id }) { photo ->
-                Box(
+                coil.compose.AsyncImage(
+                    model = "file:///android_asset/images/${photo.filename}",
+                    contentDescription = photo.title,
+                    contentScale = androidx.compose.ui.layout.ContentScale.Crop,
                     modifier = Modifier
                         .aspectRatio(1f)
                         .background(
                             MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
                             RoundedCornerShape(6.dp)
-                        ),
-                    contentAlignment = Alignment.BottomStart
-                ) {
-                    Text(
-                        photo.title,
-                        fontSize = 9.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(4.dp),
-                        maxLines = 2
-                    )
-                }
+                        )
+                )
             }
         }
     }

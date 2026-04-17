@@ -20,7 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DirectionsBike
+import androidx.compose.material.icons.automirrored.filled.DirectionsBike
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.FiberManualRecord
 import androidx.compose.material.icons.filled.Image
@@ -53,13 +53,8 @@ fun HomeScreen() {
         if (state.isLoading) state.load()
     }
 
-    if (state.isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = BCColors.BrandBlue)
-        }
-        return
-    }
-
+    // Render immediately — each section handles its own empty/loading state
+    // so other tabs don't get blocked behind the 3.9MB routes decode.
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -99,7 +94,7 @@ private fun HeroSection(title: String, tagline: String) {
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                imageVector = Icons.Default.DirectionsBike,
+                imageVector = Icons.AutoMirrored.Filled.DirectionsBike,
                 contentDescription = null,
                 tint = Color.White,
                 modifier = Modifier.size(36.dp)
@@ -184,7 +179,7 @@ private data class QuickLink(val icon: ImageVector, val label: String)
 private val quickLinkData = listOf(
     QuickLink(Icons.Default.Map, "Routes"),
     QuickLink(Icons.Default.FiberManualRecord, "Record"),
-    QuickLink(Icons.Default.DirectionsBike, "Bikes"),
+    QuickLink(Icons.AutoMirrored.Filled.DirectionsBike, "Bikes"),
     QuickLink(Icons.Default.Event, "Events"),
     QuickLink(Icons.Default.Image, "Gallery")
 )

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -142,5 +143,3 @@ private fun ToolRow(
     }
 }
 
-@Composable
-private fun Modifier.width(dp: androidx.compose.ui.unit.Dp) = this.then(Modifier.padding(end = dp))

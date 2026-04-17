@@ -57,15 +57,23 @@ class AppState(
 
     fun load() {
         scope.launch {
-            config = repository.loadConfig()
-            bikes = repository.loadBikes()
-            posts = repository.loadPosts()
-            events = repository.loadEvents()
-            programs = repository.loadPrograms()
-            photos = repository.loadPhotos()
-            tourGuides = repository.loadTourGuides()
-            routes = repository.loadRoutes()
-            isLoading = false
+            // Fire all 8 JSON loads in parallel. Each coroutine updates its
+            // own state field as it completes, so Home can render bikes + posts
+            // the instant they're ready instead of waiting for the 3.9MB routes
+            // decode. The global `isLoading` flag is released when routes — the
+            // slowest load — finishes, but individual screens should gate on
+            // their own collections (e.g. routes.isEmpty()) rather than this.
+            launch { config = repository.loadConfig() }
+            launch { bikes = repository.loadBikes() }
+            launch { posts = repository.loadPosts() }
+            launch { events = repository.loadEvents() }
+            launch { programs = repository.loadPrograms() }
+            launch { photos = repository.loadPhotos() }
+            launch { tourGuides = repository.loadTourGuides() }
+            launch {
+                routes = repository.loadRoutes()
+                isLoading = false
+            }
         }
     }
 }

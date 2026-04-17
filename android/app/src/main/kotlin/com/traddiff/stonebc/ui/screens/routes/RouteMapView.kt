@@ -23,7 +23,10 @@ import org.maplibre.android.plugins.annotation.LineOptions
 import org.maplibre.android.plugins.annotation.SymbolManager
 import org.maplibre.android.plugins.annotation.SymbolOptions
 
-private const val DEMO_STYLE_URL = "https://demotiles.maplibre.org/style.json"
+// Versatiles — free, OpenStreetMap-based vector tiles with no API key.
+// Picked over demotiles.maplibre.org (dev-only, rate-limited) and Google/Mapbox
+// (both paid). Offline tile pack swap-in tracked in Phase 8 of the parity plan.
+private const val MAP_STYLE_URL = "https://tiles.versatiles.org/assets/styles/colorful.json"
 private const val ROUTE_COLOR = "#2563EB"
 
 @Composable
@@ -38,7 +41,7 @@ fun RouteMapView(route: Route, modifier: Modifier = Modifier, height: Dp = 240.d
         mapView.onStart()
         mapView.onResume()
         mapView.getMapAsync { map ->
-            map.setStyle(Style.Builder().fromUri(DEMO_STYLE_URL)) { style ->
+            map.setStyle(Style.Builder().fromUri(MAP_STYLE_URL)) { style ->
                 renderRoute(mapView, map, style, route)
             }
         }
