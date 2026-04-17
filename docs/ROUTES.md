@@ -1,6 +1,6 @@
 # Routes & GPX System — StoneBC
 
-**Last Updated:** 2026-04-04
+**Last Updated:** 2026-04-17
 
 ---
 
@@ -242,3 +242,30 @@ Auto-classified by `process_routes.py`, user-selectable on import.
 - Route recording (track your own ride → save as GPX)
 - Multi-route planner (chain connected routes into a single ride)
 - Offline map tiles for navigation without signal
+
+---
+
+## SD Trail Catalog (Pending Integration — 2026-04-17)
+
+A broader SD trail catalog has been built and is ready for app + website integration.
+
+### Files
+| File | Location | Description |
+|------|----------|-------------|
+| `trails-catalog.json` | `StoneBC/trails-catalog.json` | 68 trails total: 56 have GPX, 12 need GPX |
+| `trails-review.html` | `StoneBC/trails-review.html` | Standalone review UI (restyled to match site) |
+
+Both files are indexed in Alexandria under subjects **"Bike Routes, South Dakota Trails, StoneBC"**.
+
+### Catalog Stats
+- **56 routes** with GPX files ready
+- **12 routes** need GPX acquisition (6 HIGH priority: Skyline, Big Hill, HLMP, Storm Mountain, Deerfield, Centennial Trail)
+- **14 regions** across South Dakota
+- Sources: Trailforks, Wikiloc, Singletracks, USFS, Strava
+
+### Integration Checklist (TODO)
+- [ ] **App** — surface catalog in RoutesView (new "Discover SD Trails" section or expanded filter)
+- [ ] **App** — link to Trailforks/Wikiloc for trails without bundled GPX
+- [ ] **Website** — embed `trails-review.html` or port to Eleventy page on stonebikeco.com
+- [ ] **GPX acquisition** — collect 6 high-priority missing files, run process_routes.py, add to routes.json
+- [ ] **Alexandria sync** — re-index after GPX files added (`alexandria index`)
