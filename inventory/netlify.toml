@@ -30,6 +30,16 @@
   status = 200
 
 [[redirects]]
+  from = "/api/bikes/*/photos"
+  to = "/.netlify/functions/bike-photo"
+  status = 200
+
+[[redirects]]
+  from = "/api/bikes/*/photos/*"
+  to = "/.netlify/functions/bike-photo"
+  status = 200
+
+[[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200

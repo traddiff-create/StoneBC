@@ -131,6 +131,21 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .parts-consume-btn:hover { background: #065f46; color: #a7f3d0; }
 .parts-consume-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
+/* Photos */
+.photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 12px; }
+.photo-tile { position: relative; aspect-ratio: 4/3; background: #0f172a; border: 1px solid #334155; border-radius: 8px; overflow: hidden; cursor: pointer; }
+.photo-tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photo-tile .photo-del { position: absolute; top: 4px; right: 4px; background: rgba(15,23,42,0.9); color: #fca5a5; border: none; border-radius: 4px; padding: 2px 8px; font-size: 0.75rem; cursor: pointer; opacity: 0; transition: opacity 0.15s; }
+.photo-tile:hover .photo-del { opacity: 1; }
+.photo-tile .photo-del:hover { background: #7f1d1d; color: white; }
+.photo-add-btn { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+.photo-add-btn:hover:not(:disabled) { background: #2563eb; }
+.photo-add-btn:disabled { background: #475569; cursor: not-allowed; }
+.photo-empty { color: #64748b; font-style: italic; padding: 16px; border: 1px dashed #334155; border-radius: 8px; text-align: center; margin-bottom: 12px; }
+.lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; cursor: zoom-out; }
+.lightbox.open { display: flex; }
+.lightbox img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
 /* Delete button */
 .btn-delete { background: #7f1d1d; color: #fca5a5; border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; margin-top: 16px; }
 .btn-delete:hover { background: #991b1b; }
@@ -172,6 +187,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 </div>
 
 <datalist id="parts-datalist"></datalist>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox()"><img id="lightbox-img" alt=""></div>
 
 <div class="layout">
   <div class="bike-list">
@@ -295,6 +312,7 @@ function addBike() {
 function selectBike(id) {
   selectedId = id;
   render();
+  loadPhotosForBike(id);
 }
 
 function deleteBike(id) {
@@ -410,6 +428,10 @@ function renderForm() {
     '</div>' +
 
     '<hr class="section-divider">' +
+    '<div class="section-label">Photos</div>' +
+    '<div id="photos-area-' + esc(b.id) + '"></div>' +
+
+    '<hr class="section-divider">' +
     '<div class="section-label">Refurbishment Work</div>' +
     '<table class="refurb-table"><thead><tr><th>Date</th><th>Item</th><th>Stock</th><th>Cost ($)</th><th>Labor Hrs</th><th></th></tr></thead><tbody>' +
     refurbRows + '</tbody></table>' +
@@ -429,6 +451,11 @@ function renderForm() {
 
   area.textContent = '';
   area.insertAdjacentHTML('beforeend', html);
+  if (photosByBike[b.id] !== undefined) {
+    renderPhotosArea(b.id);
+  } else {
+    loadPhotosForBike(b.id);
+  }
 }
 
 function renderTotals(b) {
@@ -517,6 +544,7 @@ window.addEventListener('focus', function() {
   loadBikes();
   loadWaitlist();
   loadParts();
+  if (selectedId) loadPhotosForBike(selectedId);
 });
 
 var waitlistData = null;
@@ -782,6 +810,158 @@ function consumeFromRow(bikeId, rowIdx) {
   var part = findPartByItemText(b.refurb[rowIdx].item);
   if (!part) return;
   consumePart(part.id, 1, bikeId);
+}
+
+/* ---------- Photos ---------- */
+
+var photosByBike = {}; // {bikeId: [{id, ts, contentType, size, caption}]}
+
+function loadPhotosForBike(bikeId) {
+  return fetch('/api/bikes/' + encodeURIComponent(bikeId) + '/photos?t=' + Date.now())
+    .then(function(r) {
+      if (handleAuthError(r)) return null;
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function(data) {
+      if (!data) return;
+      photosByBike[bikeId] = data.photos || [];
+      renderPhotosArea(bikeId);
+    })
+    .catch(function(err) {
+      var area = document.getElementById('photos-area-' + bikeId);
+      if (area) {
+        area.textContent = '';
+        area.insertAdjacentHTML('beforeend',
+          '<div class="wl-error">Could not load photos: ' + esc(err.message) + '</div>');
+      }
+    });
+}
+
+function renderPhotosArea(bikeId) {
+  var area = document.getElementById('photos-area-' + bikeId);
+  if (!area) return;
+  var photos = photosByBike[bikeId] || [];
+  area.textContent = '';
+
+  var html = '';
+  if (photos.length === 0) {
+    html += '<div class="photo-empty">No photos yet. Snap a before/after shot to document the bike.</div>';
+  } else {
+    html += '<div class="photo-grid">';
+    photos.forEach(function(p) {
+      var src = '/api/bikes/' + encodeURIComponent(bikeId) + '/photos/' + encodeURIComponent(p.id);
+      html += '<div class="photo-tile" onclick="openLightbox(\'' + esc(src) + '\')">' +
+        '<img src="' + esc(src) + '" alt="Bike photo" loading="lazy">' +
+        '<button class="photo-del" onclick="event.stopPropagation(); deletePhoto(\'' + esc(bikeId) + '\',\'' + esc(p.id) + '\')">Delete</button>' +
+        '</div>';
+    });
+    html += '</div>';
+  }
+
+  var disabled = photos.length >= 5 ? 'disabled' : '';
+  var hint = photos.length >= 5 ? ' (max 5 reached)' : '';
+  html += '<input type="file" id="photo-input-' + esc(bikeId) + '" accept="image/*" capture="environment" style="display:none" onchange="handlePhotoUpload(\'' + esc(bikeId) + '\', this.files)">' +
+    '<button class="photo-add-btn" ' + disabled + ' onclick="document.getElementById(\'photo-input-' + esc(bikeId) + '\').click()">' +
+    '📷 Add photo' + hint + '</button>' +
+    '<span id="photo-status-' + esc(bikeId) + '" style="color:#94a3b8;font-size:0.82rem;margin-left:12px"></span>';
+
+  area.insertAdjacentHTML('beforeend', html);
+}
+
+function handlePhotoUpload(bikeId, files) {
+  if (!files || !files.length) return;
+  var file = files[0];
+  if (!file.type || !file.type.startsWith('image/')) {
+    setPhotoStatus(bikeId, 'Not an image file.', true);
+    return;
+  }
+  setPhotoStatus(bikeId, 'Resizing…');
+
+  resizeImage(file, 1600).then(function(dataUrl) {
+    setPhotoStatus(bikeId, 'Uploading…');
+    return fetch('/api/bikes/' + encodeURIComponent(bikeId) + '/photos', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ dataUrl: dataUrl })
+    });
+  }).then(function(r) {
+    if (handleAuthError(r)) return null;
+    return r.json().then(function(body) { return { ok: r.ok, body: body }; });
+  }).then(function(result) {
+    if (!result) return;
+    if (!result.ok) {
+      setPhotoStatus(bikeId, 'Upload failed: ' + (result.body.error || 'unknown'), true);
+      return;
+    }
+    setPhotoStatus(bikeId, 'Uploaded.');
+    return loadPhotosForBike(bikeId);
+  }).catch(function(err) {
+    setPhotoStatus(bikeId, 'Error: ' + err.message, true);
+  });
+}
+
+function setPhotoStatus(bikeId, msg, isError) {
+  var el = document.getElementById('photo-status-' + bikeId);
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = isError ? '#f87171' : '#94a3b8';
+  if (!isError && msg !== 'Resizing…' && msg !== 'Uploading…') {
+    setTimeout(function() { if (el.textContent === msg) el.textContent = ''; }, 3000);
+  }
+}
+
+function resizeImage(file, maxEdge) {
+  return new Promise(function(resolve, reject) {
+    var reader = new FileReader();
+    reader.onload = function() {
+      var img = new Image();
+      img.onload = function() {
+        var w = img.naturalWidth, h = img.naturalHeight;
+        if (w > maxEdge || h > maxEdge) {
+          var scale = maxEdge / Math.max(w, h);
+          w = Math.round(w * scale);
+          h = Math.round(h * scale);
+        }
+        var canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.85));
+      };
+      img.onerror = function() { reject(new Error('Image decode failed')); };
+      img.src = reader.result;
+    };
+    reader.onerror = function() { reject(new Error('File read failed')); };
+    reader.readAsDataURL(file);
+  });
+}
+
+function deletePhoto(bikeId, photoId) {
+  if (!confirm('Delete this photo?')) return;
+  fetch('/api/bikes/' + encodeURIComponent(bikeId) + '/photos/' + encodeURIComponent(photoId), {
+    method: 'DELETE'
+  }).then(function(r) {
+    if (handleAuthError(r)) return;
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return loadPhotosForBike(bikeId);
+  }).catch(function(err) {
+    setPhotoStatus(bikeId, 'Delete failed: ' + err.message, true);
+  });
+}
+
+function openLightbox(src) {
+  var lb = document.getElementById('lightbox');
+  var img = document.getElementById('lightbox-img');
+  img.src = src;
+  lb.classList.add('open');
+}
+
+function closeLightbox() {
+  var lb = document.getElementById('lightbox');
+  lb.classList.remove('open');
+  document.getElementById('lightbox-img').src = '';
 }
 
 /* ---------- Waitlist rendering (unchanged) ---------- */
