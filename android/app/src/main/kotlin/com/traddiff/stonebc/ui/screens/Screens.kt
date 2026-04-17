@@ -19,9 +19,6 @@ import androidx.compose.ui.unit.sp
  */
 
 @Composable
-fun RecordScreen() = PlaceholderScreen("Record", "GPS recording with 7 s auto-pause — Phase 4.")
-
-@Composable
 fun BikesScreen() = PlaceholderScreen("Bikes", "The Quarry marketplace — Phase 5.")
 
 @Composable

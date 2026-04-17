@@ -25,8 +25,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.traddiff.stonebc.ui.screens.BikesScreen
 import com.traddiff.stonebc.ui.screens.MoreScreen
-import com.traddiff.stonebc.ui.screens.RecordScreen
 import com.traddiff.stonebc.ui.screens.home.HomeScreen
+import com.traddiff.stonebc.ui.screens.record.RecordScreen
 import com.traddiff.stonebc.ui.screens.routes.RouteDetailScreen
 import com.traddiff.stonebc.ui.screens.routes.RoutesScreen
 

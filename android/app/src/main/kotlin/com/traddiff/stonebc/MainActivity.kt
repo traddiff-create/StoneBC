@@ -18,7 +18,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val appState = remember {
-                AppState(AssetsRepository(applicationContext)).also { it.load() }
+                AppState(
+                    repository = AssetsRepository(applicationContext),
+                    rideHistoryStore = com.traddiff.stonebc.storage.RideHistoryStore(applicationContext)
+                ).also { it.load() }
             }
             StoneBCTheme {
                 CompositionLocalProvider(LocalAppState provides appState) {

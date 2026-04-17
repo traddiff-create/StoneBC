@@ -19,7 +19,10 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
 @Stable
-class AppState(private val repository: AssetsRepository) {
+class AppState(
+    private val repository: AssetsRepository,
+    val rideHistoryStore: com.traddiff.stonebc.storage.RideHistoryStore
+) {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 

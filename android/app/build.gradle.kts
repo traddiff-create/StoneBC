@@ -92,6 +92,9 @@ dependencies {
     implementation("org.maplibre.gl:android-sdk:11.0.1")
     implementation("org.maplibre.gl:android-plugin-annotation-v9:3.0.1")
 
+    // Location Services (Phase 4)
+    implementation("com.google.android.gms:play-services-location:21.1.0")
+
     // Debug
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
