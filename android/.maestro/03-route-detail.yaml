@@ -1,0 +1,22 @@
+appId: com.traddiff.stonebc
+name: Route detail — elevation profile + MapLibre map render
+---
+- launchApp
+- runFlow: subflows/skip-onboarding.yaml
+- tapOn:
+    text: "Routes"
+    index: 1
+
+- tapOn: "8 Over 7"
+
+- assertVisible: "ELEVATION PROFILE"
+- assertVisible: "MAP"
+
+- scrollUntilVisible:
+    element:
+      text: "Start Ride on This Route"
+    direction: DOWN
+- assertVisible: "Start Ride on This Route"
+
+- back
+- assertVisible: "DIFFICULTY"

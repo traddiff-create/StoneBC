@@ -1,0 +1,17 @@
+appId: com.traddiff.stonebc
+name: Routes tab — list renders with routes and filter chips
+---
+- launchApp
+- runFlow: subflows/skip-onboarding.yaml
+- tapOn:
+    text: "Routes"
+    index: 1
+- assertVisible: "Search routes"
+- assertVisible: "DIFFICULTY"
+- assertVisible: "Easy"
+- assertVisible: "Moderate"
+- assertVisible: "Hard"
+- assertVisible: "Expert"
+- assertVisible: "CATEGORY"
+- assertVisible: "Gravel"
+- assertVisible: "8 Over 7"

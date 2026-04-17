@@ -1,0 +1,13 @@
+appId: com.traddiff.stonebc
+name: Volunteer form renders Time/Talent/Treasure + Open Email CTA
+---
+- launchApp
+- runFlow: subflows/skip-onboarding.yaml
+- tapOn: "More"
+- tapOn: "Volunteer"
+- assertVisible: "Volunteer"
+- assertVisible:
+    text: ".*Time.*Talent.*Treasure.*"
+- assertVisible: "Open Email"
+- back
+- assertVisible: "COMMUNITY"

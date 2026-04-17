@@ -1,0 +1,15 @@
+appId: com.traddiff.stonebc
+---
+# Subflow: if onboarding is showing, power through it.
+# Used by every non-onboarding flow via `- runFlow: _skip-onboarding.yaml`.
+- runFlow:
+    when:
+      visible: "Welcome to StoneBC"
+    commands:
+      - repeat:
+          times: 11
+          commands:
+            - swipe:
+                start: 85%, 50%
+                end: 15%, 50%
+      - tapOn: "Get Started"

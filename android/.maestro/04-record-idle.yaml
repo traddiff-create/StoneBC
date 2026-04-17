@@ -1,0 +1,12 @@
+appId: com.traddiff.stonebc
+name: Record tab idle state — START button + empty history
+---
+- launchApp
+- runFlow: subflows/skip-onboarding.yaml
+- tapOn:
+    text: "Record"
+    index: 1
+- assertVisible: "START"
+- assertVisible: "RIDE"
+- assertVisible: "RECENT RIDES"
+- assertVisible: "Your first ride will appear here."

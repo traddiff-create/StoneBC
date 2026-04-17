@@ -1,0 +1,21 @@
+appId: com.traddiff.stonebc
+name: Bikes tab — inventory + filter chips
+---
+- launchApp
+- runFlow: subflows/skip-onboarding.yaml
+- tapOn:
+    text: "Bikes"
+    index: 1
+- assertVisible: "The Quarry"
+- assertVisible: "Bikes looking for riders"
+- assertVisible: "STATUS"
+- assertVisible: "Available"
+- assertVisible: "TYPE"
+- assertVisible: "Hybrid"
+- assertVisible: "Mountain"
+- assertVisible: "Cruiser"
+- assertVisible: "Trek 7100 Hybrid"
+
+# Narrow to Hybrid — Trek + Giant remain
+- tapOn: "Hybrid"
+- assertVisible: "Trek 7100 Hybrid"

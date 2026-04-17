@@ -1,0 +1,17 @@
+appId: com.traddiff.stonebc
+name: Bike detail — specs + Ask About This Bike CTA visible
+---
+- launchApp
+- runFlow: subflows/skip-onboarding.yaml
+- tapOn:
+    text: "Bikes"
+    index: 1
+- assertVisible: "Trek 7100 Hybrid"
+- tapOn: "Trek 7100 Hybrid"
+
+# Bike detail should render
+- assertVisible: "Trek 7100 Hybrid"
+- assertVisible: "Ask About This Bike"
+
+- back
+- assertVisible: "The Quarry"

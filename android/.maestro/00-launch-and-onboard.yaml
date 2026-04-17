@@ -1,0 +1,23 @@
+appId: com.traddiff.stonebc
+name: Launch + complete 12-card onboarding
+---
+- launchApp:
+    clearState: true
+- assertVisible: "Welcome to StoneBC"
+
+# Advance through the 11 transitions (card 1 → card 12) by swiping the pager.
+# Permission cards (8, 9, 11) still advance on swipe even though their button
+# text differs. /test-android auto-granted permissions via adb shell pm grant
+# during install, so the launcher no-ops if a button is pressed.
+- repeat:
+    times: 11
+    commands:
+      - swipe:
+          start: 85%, 50%
+          end: 15%, 50%
+
+- assertVisible: "Ready to Ride"
+- tapOn: "Get Started"
+
+# Landed on Home tab
+- assertVisible: "Stone Bicycle Coalition"

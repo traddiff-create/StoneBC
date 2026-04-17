@@ -1,0 +1,15 @@
+appId: com.traddiff.stonebc
+name: Swiss Army Knife — all 5 tool rows render
+---
+- launchApp
+- runFlow: subflows/skip-onboarding.yaml
+- tapOn: "More"
+- tapOn: "Swiss Army Knife"
+- assertVisible: "Swiss Army Knife"
+- assertVisible: "Emergency Call"
+- assertVisible: "Weather (OpenWeatherMap)"
+- assertVisible: "Trail Conditions (Trailforks)"
+- assertVisible: "USFS Closures (ArcGIS)"
+- assertVisible: "Strava Sync"
+- back
+- assertVisible: "COMMUNITY"

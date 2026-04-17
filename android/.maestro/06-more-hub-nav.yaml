@@ -1,0 +1,37 @@
+appId: com.traddiff.stonebc
+name: More hub — visit every sub-screen and back
+---
+- launchApp
+- runFlow: subflows/skip-onboarding.yaml
+- tapOn: "More"
+- assertVisible: "COMMUNITY"
+- assertVisible: "Community Feed"
+- assertVisible: "Events"
+- assertVisible: "Programs"
+- assertVisible: "Gallery"
+- assertVisible: "Tour Guides"
+- assertVisible: "Expedition Journal"
+- assertVisible: "Swiss Army Knife"
+- assertVisible: "Volunteer"
+- assertVisible: "Donate"
+
+- tapOn: "Community Feed"
+- assertVisible: "AEP Grant Awarded!"
+- back
+
+- tapOn: "Events"
+- assertVisible: "Pedal for Empathy"
+- back
+
+- tapOn: "Programs"
+- assertVisible: "Earn-A-Bike"
+- back
+
+- tapOn: "Gallery"
+- assertVisible: "Gallery"
+- back
+
+- tapOn: "Tour Guides"
+- assertVisible: "Brewvet"
+- assertVisible: "8 Over 7"
+- back

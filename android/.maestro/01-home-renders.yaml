@@ -1,0 +1,11 @@
+appId: com.traddiff.stonebc
+name: Home tab renders hero + season + quick links + featured bikes
+---
+- launchApp
+- runFlow: subflows/skip-onboarding.yaml
+- assertVisible: "Stone Bicycle Coalition"
+- assertVisible: "Building Community Through Cycling"
+- assertVisible: "YOUR SEASON"
+- assertVisible: "QUICK LINKS"
+- assertVisible: "FEATURED BIKES IN THE QUARRY"
+- assertVisible: "Trek 7100 Hybrid"

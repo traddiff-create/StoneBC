@@ -1,0 +1,12 @@
+appId: com.traddiff.stonebc
+name: Rally Radio shows as iOS-exclusive on More tab
+---
+- launchApp
+- runFlow: subflows/skip-onboarding.yaml
+- tapOn: "More"
+- scrollUntilVisible:
+    element:
+      text: "Rally Radio"
+    direction: DOWN
+- assertVisible: "Rally Radio"
+- assertVisible: "IOS ONLY"

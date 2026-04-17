@@ -1,0 +1,13 @@
+appId: com.traddiff.stonebc
+name: Expedition Journal — opens and shows empty state
+---
+- launchApp
+- runFlow: subflows/skip-onboarding.yaml
+- tapOn: "More"
+- tapOn: "Expedition Journal"
+
+# Landed on Expedition Journal list (empty state)
+- assertVisible: "Expedition Journal"
+
+- back
+- assertVisible: "COMMUNITY"
