@@ -1,0 +1,69 @@
+default_platform(:android)
+
+platform :android do
+  desc "Runs unit tests"
+  lane :test do
+    gradle(task: "test")
+  end
+
+  desc "Builds a debug APK"
+  lane :build_debug do
+    gradle(task: "clean assembleDebug")
+  end
+
+  desc "Builds a signed release AAB (App Bundle)"
+  lane :build_release do
+    gradle(
+      task: "clean bundleRelease",
+      properties: {
+        "android.injected.signing.store.file"     => ENV["STONEBC_KEYSTORE_PATH"],
+        "android.injected.signing.store.password" => ENV["STONEBC_STORE_PASSWORD"],
+        "android.injected.signing.key.alias"      => ENV["STONEBC_KEY_ALIAS"],
+        "android.injected.signing.key.password"   => ENV["STONEBC_KEY_PASSWORD"]
+      }.compact
+    )
+  end
+
+  desc "Uploads the signed AAB to Play Console internal track"
+  lane :internal do
+    build_release
+    upload_to_play_store(
+      track: "internal",
+      aab: "app/build/outputs/bundle/release/app-release.aab",
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "Promotes the current internal build to closed beta"
+  lane :beta do
+    upload_to_play_store(
+      track: "internal",
+      track_promote_to: "beta",
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "Promotes the current beta build to production"
+  lane :production do
+    upload_to_play_store(
+      track: "beta",
+      track_promote_to: "production",
+      rollout: "0.1",
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+end
