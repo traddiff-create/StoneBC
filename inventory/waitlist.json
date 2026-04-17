@@ -1,0 +1,49 @@
+{
+  "applicants": [
+    {
+      "id": "WL-2026-001",
+      "date_added": "2026-04-17",
+      "name": "Gina Scotto",
+      "email": "",
+      "phone": "910-367-6779",
+      "source": "Facebook comment (used-bikes post)",
+      "needs": [
+        {
+          "rider": "daughter (12, priority)",
+          "height": "5'10\"",
+          "bike_type": "mountain",
+          "frame_size_min_in": 19,
+          "frame_size_max_in": 21,
+          "notes": "Was on men's MTB previously; tall for age"
+        },
+        {
+          "rider": "Gina",
+          "height": "5'8\"",
+          "bike_type": "mountain",
+          "frame_size_min_in": 17,
+          "frame_size_max_in": 19,
+          "notes": ""
+        }
+      ],
+      "accessory_needs": [],
+      "status": "active",
+      "priority_notes": "Unemployed (Uber); daughter spending more time indoors since theft; social work / counseling background",
+      "last_contacted": "2026-04-17",
+      "matched_bike_ids": [],
+      "history": [
+        {
+          "date": "2026-04-17",
+          "action": "added_to_waitlist",
+          "note": "Initial outreach reply drafted; see drafts/sbc-replies-2026-04-17.md"
+        }
+      ]
+    }
+  ],
+  "_schema": {
+    "status_values": ["active", "matched", "fulfilled", "withdrawn", "stale"],
+    "bike_type_values": ["road", "mountain", "hybrid", "cruiser", "kids", "bmx", "gravel", "electric"],
+    "stale_rule": "Flip to 'stale' if no response after 2 outreach attempts over 30 days",
+    "id_format": "WL-YYYY-NNN",
+    "next_id": "WL-2026-002"
+  }
+}
