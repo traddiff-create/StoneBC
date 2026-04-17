@@ -1,0 +1,10 @@
+[build]
+  publish = "_site"
+  command = "mkdir -p _site && cp pos.html _site/index.html && cp waitlist.json bikes.json _site/"
+
+[[edge_functions]]
+  path = "/*"
+  function = "auth"
+
+[build.environment]
+  NODE_VERSION = "20"
