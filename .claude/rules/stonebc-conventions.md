@@ -13,6 +13,18 @@
 - Events: edit StoneBC/events.json directly
 - Routes: GPX → process_routes.py → routes.json
 
+## Bike Wait List ↔ Inventory (always linked)
+When touching `inventory/` or bike status, always check:
+- `inventory/waitlist.json` — people waiting for a bike (source of truth)
+- `inventory/WAITLIST.md` — human-readable table + process
+- `Scripts/match_waitlist.py` — run after flipping any bike to `status: "ready"`; drafts notification emails into `drafts/notify-WL-XXX-SBC-YYY.md`
+
+Rules:
+- **Before accepting/sourcing a donation:** glance at WAITLIST.md to know what sizes/types are actively needed. Prefer bikes that fit waiting applicants.
+- **When flipping a bike to `ready`:** run the matcher (`python3 Scripts/match_waitlist.py` from StoneBC root). Never skip this step.
+- **After sending a notify email:** update the applicant in `waitlist.json` — append bike ID to `matched_bike_ids`, flip `status` to `matched`, add a history entry.
+- **Send channel:** replies + notifications go from `info@stonebicyclecoalition.com` via Mac Mail (Hover mailbox).
+
 ## UI Patterns
 - Use BCDesignSystem components (FilterChip, badges, PressableButtonStyle)
 - Section headers: 10pt semibold, tracking 1, secondary color

@@ -103,10 +103,12 @@ StoneBC/
 │   ├── BIKES/POSTS/EVENTS_TEMPLATE.json
 │   └── BUILD_CHECKLIST.md
 │
-├── inventory/                   # The Quarry POS system
-│   ├── pos.html                 # Browser-based inventory manager
+├── inventory/                   # The Quarry POS + bike program
+│   ├── pos.html                 # Browser-based inventory + waitlist dashboard
 │   ├── bikes.json               # Source of truth for bike data
-│   ├── INTAKE.md                # Bike intake templates
+│   ├── waitlist.json            # Applicants waiting for bikes (source of truth)
+│   ├── WAITLIST.md              # Wait list process doc + scannable table
+│   ├── INTAKE.md                # Bike intake templates (links to waitlist)
 │   └── PARTS.md                 # Parts inventory
 │
 ├── website/                     # Eleventy + Netlify site

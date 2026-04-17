@@ -75,6 +75,29 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #475569; }
 .empty-state h3 { font-size: 1.25rem; margin-bottom: 8px; color: #64748b; }
 
+/* Wait list banner + panel */
+.wl-banner { background: #422006; color: #fbbf24; padding: 10px 24px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid #334155; user-select: none; }
+.wl-banner:hover { background: #4a2509; }
+.wl-banner strong { color: #fde68a; }
+.wl-panel { background: #1e293b; border-bottom: 1px solid #334155; padding: 16px 24px; max-height: 50vh; overflow-y: auto; }
+.wl-panel.hidden { display: none; }
+.wl-empty { color: #64748b; font-style: italic; padding: 12px 0; }
+.wl-error { color: #f87171; padding: 12px 0; font-size: 0.85rem; }
+.wl-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+.wl-table th { text-align: left; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; padding: 8px 10px; border-bottom: 1px solid #334155; }
+.wl-table td { padding: 10px; border-bottom: 1px solid #1e3a5f; font-size: 0.85rem; vertical-align: top; }
+.wl-table tr:hover { background: #0f172a; }
+.wl-id { color: #60a5fa; font-weight: 700; font-size: 0.75rem; }
+.wl-name { color: #f8fafc; font-weight: 600; }
+.wl-contact { color: #94a3b8; font-size: 0.78rem; margin-top: 2px; }
+.wl-needs { color: #cbd5e1; font-size: 0.82rem; }
+.wl-need-row { padding: 2px 0; }
+.wl-need-priority { color: #fbbf24; font-weight: 600; }
+.wl-status { font-size: 0.7rem; padding: 2px 8px; border-radius: 99px; font-weight: 600; background: #052e16; color: #4ade80; text-transform: uppercase; }
+.wl-status-matched { background: #1e3a5f; color: #60a5fa; }
+.wl-status-stale { background: #1c1917; color: #a8a29e; }
+.wl-hint { color: #64748b; font-size: 0.8rem; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #334155; }
+
 /* Delete button */
 .btn-delete { background: #7f1d1d; color: #fca5a5; border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; margin-top: 16px; }
 .btn-delete:hover { background: #991b1b; }
@@ -96,6 +119,15 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     <button class="btn-export" onclick="exportIntake()">Export INTAKE.md</button>
     <button class="btn-clear" onclick="if(confirm('Clear ALL bikes?')) { bikes=[]; selectedId=null; save(); render(); }">Reset</button>
   </div>
+</div>
+
+<div class="wl-banner" onclick="toggleWaitlist()">
+  <span>🔔 Wait List: <strong id="wl-active-count">…</strong> active</span>
+  <span id="wl-toggle">▼ show</span>
+</div>
+<div class="wl-panel hidden" id="wl-panel">
+  <div id="wl-content"><div class="wl-empty">Loading wait list…</div></div>
+  <div class="wl-hint">Read-only view of <code>waitlist.json</code>. To add/edit applicants, update the file directly. When you flip a bike to <strong>ready</strong> and export, run <code>python3 Scripts/match_waitlist.py</code> to auto-draft notification emails.</div>
 </div>
 
 <div class="layout">
@@ -361,6 +393,79 @@ function download(name, content) {
 }
 
 render();
+loadWaitlist();
+
+var waitlistData = null;
+
+function toggleWaitlist() {
+  var panel = document.getElementById('wl-panel');
+  var toggle = document.getElementById('wl-toggle');
+  var hidden = panel.classList.toggle('hidden');
+  toggle.textContent = hidden ? '▼ show' : '▲ hide';
+}
+
+function loadWaitlist() {
+  var countEl = document.getElementById('wl-active-count');
+  var contentEl = document.getElementById('wl-content');
+  fetch('./waitlist.json?t=' + Date.now())
+    .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(data) {
+      waitlistData = data;
+      var apps = data.applicants || [];
+      var active = apps.filter(function(a) { return a.status === 'active'; });
+      countEl.textContent = active.length;
+      renderWaitlist(apps);
+    })
+    .catch(function(err) {
+      countEl.textContent = '?';
+      contentEl.textContent = '';
+      contentEl.insertAdjacentHTML('beforeend',
+        '<div class="wl-error">Could not load waitlist.json (' + esc(err.message) + '). ' +
+        'If you opened this file directly (file://), that is expected — browsers block fetch() from disk. ' +
+        'Run <code>python3 -m http.server</code> in the inventory/ folder and visit http://localhost:8000/pos.html.</div>');
+    });
+}
+
+function renderWaitlist(apps) {
+  var contentEl = document.getElementById('wl-content');
+  if (!apps.length) {
+    contentEl.textContent = '';
+    contentEl.insertAdjacentHTML('beforeend', '<div class="wl-empty">No applicants on the wait list yet.</div>');
+    return;
+  }
+  var rows = '';
+  apps.forEach(function(a) {
+    var statusCls = 'wl-status';
+    if (a.status === 'matched') statusCls += ' wl-status-matched';
+    if (a.status === 'stale' || a.status === 'withdrawn' || a.status === 'fulfilled') statusCls += ' wl-status-stale';
+    var needsHtml = (a.needs || []).map(function(n) {
+      var rider = esc(n.rider || 'rider');
+      var isPriority = /priority/i.test(rider);
+      var riderCls = isPriority ? 'wl-need-priority' : '';
+      var sizeStr = '';
+      if (n.frame_size_min_in != null && n.frame_size_max_in != null) {
+        sizeStr = ' ' + n.frame_size_min_in + '&ndash;' + n.frame_size_max_in + '"';
+      }
+      return '<div class="wl-need-row"><span class="' + riderCls + '">' + rider + ':</span> ' +
+        esc(n.bike_type || '?') + sizeStr + '</div>';
+    }).join('');
+    var contactParts = [];
+    if (a.email) contactParts.push(esc(a.email));
+    if (a.phone) contactParts.push(esc(a.phone));
+    var contact = contactParts.join(' · ') || '<em>no contact info</em>';
+    rows += '<tr>' +
+      '<td><div class="wl-id">' + esc(a.id) + '</div><div style="color:#64748b;font-size:0.72rem;margin-top:2px">' + esc(a.date_added || '') + '</div></td>' +
+      '<td><div class="wl-name">' + esc(a.name || '(no name)') + '</div><div class="wl-contact">' + contact + '</div></td>' +
+      '<td><div class="wl-needs">' + needsHtml + '</div></td>' +
+      '<td><span class="' + statusCls + '">' + esc(a.status || 'active') + '</span></td>' +
+      '</tr>';
+  });
+  contentEl.textContent = '';
+  contentEl.insertAdjacentHTML('beforeend',
+    '<table class="wl-table"><thead><tr>' +
+    '<th>ID / Added</th><th>Applicant</th><th>Needs</th><th>Status</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table>');
+}
 </script>
 </body>
 </html>

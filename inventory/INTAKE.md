@@ -1,6 +1,18 @@
 # Bike Intake Log
 
-Copy the blank entry below for each new bike. Fill in what you know — leave blanks for later. When you finish a bike (status: `ready`), mirror the key fields into `inventory/bikes.json` so the wait list matcher can find it.
+Copy the blank entry below for each new bike. Fill in what you know — leave blanks for later.
+
+## → First, check the wait list
+
+Before sourcing or accepting a donation: **[open WAITLIST.md](./WAITLIST.md)** to see what sizes/types are actively needed. Match real needs first; it saves refurb hours.
+
+## → After flipping to `ready`
+
+1. Copy the key fields from this log into `inventory/bikes.json` (id, status, model, type, frameSize, wheelSize, color, condition, features, description).
+2. Also copy into `StoneBC/bikes.json` (app bundle mirror).
+3. Run the matcher: `python3 Scripts/match_waitlist.py` from StoneBC root.
+4. Review any drafts in `drafts/notify-WL-*.md`, send from Mac Mail (`info@stonebicyclecoalition.com`).
+5. Update the matched applicant in `waitlist.json` — append bike ID to `matched_bike_ids`, flip `status` to `matched`.
 
 ---
 
