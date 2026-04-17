@@ -88,6 +88,10 @@ dependencies {
     // Images (Phase 2)
     implementation("io.coil-kt:coil-compose:2.5.0")
 
+    // Maps (Phase 3)
+    implementation("org.maplibre.gl:android-sdk:11.0.1")
+    implementation("org.maplibre.gl:android-plugin-annotation-v9:3.0.1")
+
     // Debug
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")

@@ -19,9 +19,6 @@ import androidx.compose.ui.unit.sp
  */
 
 @Composable
-fun RoutesScreen() = PlaceholderScreen("Routes", "56 curated routes loaded from routes.json — Phase 3.")
-
-@Composable
 fun RecordScreen() = PlaceholderScreen("Record", "GPS recording with 7 s auto-pause — Phase 4.")
 
 @Composable
