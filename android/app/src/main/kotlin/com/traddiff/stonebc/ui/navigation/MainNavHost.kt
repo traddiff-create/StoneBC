@@ -25,6 +25,10 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.traddiff.stonebc.ui.screens.bikes.BikeDetailScreen
 import com.traddiff.stonebc.ui.screens.bikes.BikesScreen
+import com.traddiff.stonebc.ui.screens.expedition.ExpeditionCaptureScreen
+import com.traddiff.stonebc.ui.screens.expedition.ExpeditionDetailScreen
+import com.traddiff.stonebc.ui.screens.expedition.ExpeditionListScreen
+import com.traddiff.stonebc.ui.screens.expedition.ExpeditionNewScreen
 import com.traddiff.stonebc.ui.screens.home.HomeScreen
 import com.traddiff.stonebc.ui.screens.more.CommunityFeedScreen
 import com.traddiff.stonebc.ui.screens.more.DonateScreen
@@ -124,6 +128,43 @@ fun MainNavHost() {
             composable("guides") { TourGuidesScreen(onBack = { navController.popBackStack() }) }
             composable("volunteer") { VolunteerScreen(onBack = { navController.popBackStack() }) }
             composable("donate") { DonateScreen(onBack = { navController.popBackStack() }) }
+
+            composable("expeditions") {
+                ExpeditionListScreen(
+                    onBack = { navController.popBackStack() },
+                    onOpen = { id -> navController.navigate("expedition/$id") },
+                    onNew = { navController.navigate("expedition_new") }
+                )
+            }
+            composable("expedition_new") {
+                ExpeditionNewScreen(
+                    onBack = { navController.popBackStack() },
+                    onCreated = { id ->
+                        navController.popBackStack()
+                        navController.navigate("expedition/$id")
+                    }
+                )
+            }
+            composable(
+                route = "expedition/{journalId}",
+                arguments = listOf(navArgument("journalId") { type = NavType.StringType })
+            ) { entry ->
+                val id = entry.arguments?.getString("journalId").orEmpty()
+                ExpeditionDetailScreen(
+                    journalId = id,
+                    onBack = { navController.popBackStack() },
+                    onAddEntry = { journalId -> navController.navigate("expedition_capture/$journalId") }
+                )
+            }
+            composable(
+                route = "expedition_capture/{journalId}",
+                arguments = listOf(navArgument("journalId") { type = NavType.StringType })
+            ) { entry ->
+                ExpeditionCaptureScreen(
+                    journalId = entry.arguments?.getString("journalId").orEmpty(),
+                    onBack = { navController.popBackStack() }
+                )
+            }
         }
     }
 }
@@ -134,8 +175,9 @@ private fun isInTabFamily(tab: Tab, currentRoute: String?): Boolean {
         Tab.Routes -> currentRoute.startsWith("route_detail/")
         Tab.Bikes -> currentRoute.startsWith("bike_detail/")
         Tab.More -> currentRoute in setOf(
-            "community", "events", "programs", "gallery", "guides", "volunteer", "donate"
-        )
+            "community", "events", "programs", "gallery", "guides", "volunteer", "donate",
+            "expeditions", "expedition_new"
+        ) || currentRoute.startsWith("expedition/") || currentRoute.startsWith("expedition_capture/")
         else -> false
     }
 }

@@ -63,6 +63,7 @@ fun MoreScreen(onNavigate: (String) -> Unit) {
         Spacer(Modifier.height(BCSpacing.md))
         SectionTitle("Rides & Trips")
         NavRow(Icons.Default.Backpack, "Tour Guides", "${state.tourGuides.size} guides") { onNavigate("guides") }
+        NavRow(Icons.Default.Book, "Expedition Journal", "Lewis & Clark–style ride docs") { onNavigate("expeditions") }
 
         Spacer(Modifier.height(BCSpacing.md))
         SectionTitle("Get Involved")
