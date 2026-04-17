@@ -5,6 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import com.traddiff.stonebc.data.AppState
 import com.traddiff.stonebc.data.AssetsRepository
@@ -20,12 +22,22 @@ class MainActivity : ComponentActivity() {
             val appState = remember {
                 AppState(
                     repository = AssetsRepository(applicationContext),
-                    rideHistoryStore = com.traddiff.stonebc.storage.RideHistoryStore(applicationContext)
+                    rideHistoryStore = com.traddiff.stonebc.storage.RideHistoryStore(applicationContext),
+                    onboardingStore = com.traddiff.stonebc.storage.OnboardingStore(applicationContext)
                 ).also { it.load() }
             }
+            val onboardingComplete by appState.onboardingStore.hasCompleted
+                .collectAsState(initial = null)
+
             StoneBCTheme {
                 CompositionLocalProvider(LocalAppState provides appState) {
-                    MainNavHost()
+                    when (onboardingComplete) {
+                        null -> Unit // still loading DataStore, show nothing briefly
+                        false -> com.traddiff.stonebc.ui.screens.onboarding.OnboardingScreen(
+                            onComplete = { /* recomposition via Flow handles it */ }
+                        )
+                        true -> MainNavHost()
+                    }
                 }
             }
         }

@@ -21,6 +21,7 @@ import androidx.compose.material.icons.automirrored.filled.Article
 import androidx.compose.material.icons.automirrored.filled.NavigateNext
 import androidx.compose.material.icons.filled.Backpack
 import androidx.compose.material.icons.filled.Book
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Image
@@ -64,6 +65,7 @@ fun MoreScreen(onNavigate: (String) -> Unit) {
         SectionTitle("Rides & Trips")
         NavRow(Icons.Default.Backpack, "Tour Guides", "${state.tourGuides.size} guides") { onNavigate("guides") }
         NavRow(Icons.Default.Book, "Expedition Journal", "Lewis & Clark–style ride docs") { onNavigate("expeditions") }
+        NavRow(Icons.Default.Build, "Swiss Army Knife", "Weather, trails, emergency, sync") { onNavigate("swiss") }
 
         Spacer(Modifier.height(BCSpacing.md))
         SectionTitle("Get Involved")

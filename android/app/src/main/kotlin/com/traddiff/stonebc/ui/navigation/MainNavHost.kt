@@ -36,6 +36,7 @@ import com.traddiff.stonebc.ui.screens.more.EventsScreen
 import com.traddiff.stonebc.ui.screens.more.GalleryScreen
 import com.traddiff.stonebc.ui.screens.more.MoreScreen
 import com.traddiff.stonebc.ui.screens.more.ProgramsScreen
+import com.traddiff.stonebc.ui.screens.more.SwissArmyKnifeScreen
 import com.traddiff.stonebc.ui.screens.more.TourGuidesScreen
 import com.traddiff.stonebc.ui.screens.more.VolunteerScreen
 import com.traddiff.stonebc.ui.screens.record.RecordScreen
@@ -128,6 +129,7 @@ fun MainNavHost() {
             composable("guides") { TourGuidesScreen(onBack = { navController.popBackStack() }) }
             composable("volunteer") { VolunteerScreen(onBack = { navController.popBackStack() }) }
             composable("donate") { DonateScreen(onBack = { navController.popBackStack() }) }
+            composable("swiss") { SwissArmyKnifeScreen(onBack = { navController.popBackStack() }) }
 
             composable("expeditions") {
                 ExpeditionListScreen(
@@ -176,7 +178,7 @@ private fun isInTabFamily(tab: Tab, currentRoute: String?): Boolean {
         Tab.Bikes -> currentRoute.startsWith("bike_detail/")
         Tab.More -> currentRoute in setOf(
             "community", "events", "programs", "gallery", "guides", "volunteer", "donate",
-            "expeditions", "expedition_new"
+            "expeditions", "expedition_new", "swiss"
         ) || currentRoute.startsWith("expedition/") || currentRoute.startsWith("expedition_capture/")
         else -> false
     }
