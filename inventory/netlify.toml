@@ -1,10 +1,20 @@
 [build]
   publish = "_site"
-  command = "mkdir -p _site && cp pos.html _site/index.html && cp waitlist.json bikes.json _site/"
+  command = "mkdir -p _site && cp pos.html _site/index.html && cp waitlist.json bikes.json parts.json _site/"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[functions]
+  node_bundler = "esbuild"
+  directory = "netlify/functions"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
 
 [[edge_functions]]
   path = "/*"
   function = "auth"
-
-[build.environment]
-  NODE_VERSION = "20"
+  excludedPath = ["/.netlify/*"]

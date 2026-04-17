@@ -1,0 +1,53 @@
+{
+  "parts": [],
+  "purchases": [],
+  "suppliers": [],
+  "_schema": {
+    "part": {
+      "id": "string, e.g. PART-0001",
+      "name": "string, e.g. 'Brake pads (disc)'",
+      "category": "tires | brakes | drivetrain | wheels | cockpit | hardware | consumable | paint | other",
+      "specs": "string, e.g. '700c' or 'Shimano 9-spd'",
+      "qty": "integer, current shelf count",
+      "reorder_at": "integer, threshold to flag low-stock",
+      "cost_each": "number, last unit cost",
+      "supplier_id": "string, references suppliers[].id",
+      "sku": "string, optional supplier SKU",
+      "notes": "string, optional",
+      "updated": "ISO date"
+    },
+    "purchase": {
+      "id": "string, PUR-YYYY-NNN",
+      "date": "ISO date",
+      "supplier_id": "string",
+      "items": "[{part_id, qty, cost_each}]",
+      "total": "number",
+      "xero_account": "string, e.g. '5020'",
+      "bike_id": "string, optional; if purchased for a specific bike"
+    },
+    "supplier": {
+      "id": "string, SUP-001",
+      "name": "string",
+      "what": "string, e.g. 'Parts', 'Tires', 'Paint'",
+      "contact": "string",
+      "account_num": "string",
+      "notes": "string"
+    },
+    "categories": [
+      "tires",
+      "brakes",
+      "drivetrain",
+      "wheels",
+      "cockpit",
+      "hardware",
+      "consumable",
+      "paint",
+      "other"
+    ],
+    "next_ids": {
+      "part": "PART-0001",
+      "purchase": "PUR-2026-001",
+      "supplier": "SUP-001"
+    }
+  }
+}

@@ -98,6 +98,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .wl-status-stale { background: #1c1917; color: #a8a29e; }
 .wl-hint { color: #64748b; font-size: 0.8rem; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #334155; }
 
+/* Sync status pill */
+.sync-pill { font-size: 0.72rem; padding: 4px 10px; border-radius: 99px; font-weight: 600; margin-right: 12px; }
+.sync-idle { background: #052e16; color: #4ade80; }
+.sync-saving { background: #422006; color: #fbbf24; }
+.sync-error { background: #7f1d1d; color: #fca5a5; }
+.sync-loading { background: #1e3a5f; color: #60a5fa; }
+
 /* Delete button */
 .btn-delete { background: #7f1d1d; color: #fca5a5; border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; margin-top: 16px; }
 .btn-delete:hover { background: #991b1b; }
@@ -115,9 +122,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 <div class="header">
   <h1><span>The Quarry</span> — Inventory</h1>
   <div class="header-actions">
-    <button class="btn-export" onclick="exportJSON()">Export bikes.json</button>
+    <span id="sync-pill" class="sync-pill sync-loading">Loading…</span>
     <button class="btn-export" onclick="exportIntake()">Export INTAKE.md</button>
-    <button class="btn-clear" onclick="if(confirm('Clear ALL bikes?')) { bikes=[]; selectedId=null; save(); render(); }">Reset</button>
+    <button class="btn-clear" onclick="refreshAll()">Refresh</button>
   </div>
 </div>
 
@@ -127,7 +134,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 </div>
 <div class="wl-panel hidden" id="wl-panel">
   <div id="wl-content"><div class="wl-empty">Loading wait list…</div></div>
-  <div class="wl-hint">Read-only view of <code>waitlist.json</code>. To add/edit applicants, update the file directly. When you flip a bike to <strong>ready</strong> and export, run <code>python3 Scripts/match_waitlist.py</code> to auto-draft notification emails.</div>
+  <div class="wl-hint">Read-only view of the shared wait list. To add/edit applicants, update <code>waitlist.json</code> in the repo. When you flip a bike to <strong>ready</strong>, run <code>python3 Scripts/match_waitlist.py</code> to auto-draft notification emails.</div>
 </div>
 
 <div class="layout">
@@ -147,9 +154,71 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 </div>
 
 <script>
-var bikes = JSON.parse(localStorage.getItem('quarry-bikes') || '[]');
+var bikes = [];
 var selectedId = null;
-var nextNum = 1;
+
+/* ---------- Sync status + API helpers ---------- */
+
+function setSync(state, label) {
+  var pill = document.getElementById('sync-pill');
+  pill.className = 'sync-pill sync-' + state;
+  pill.textContent = label;
+}
+
+var saveTimer = null;
+function save() {
+  // Debounce: multiple rapid edits coalesce into one PUT
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(flushSave, 400);
+  setSync('saving', 'Saving…');
+}
+
+function flushSave() {
+  saveTimer = null;
+  setSync('saving', 'Saving…');
+  fetch('/api/bikes', {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ bikes: bikes })
+  }).then(function(r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    setSync('idle', 'Saved ' + fmtTime(new Date()));
+  }).catch(function(err) {
+    setSync('error', 'Save failed — will retry');
+    setTimeout(flushSave, 2000);
+  });
+}
+
+function fmtTime(d) {
+  var h = d.getHours(), m = d.getMinutes();
+  var ap = h >= 12 ? 'pm' : 'am';
+  h = h % 12 || 12;
+  return h + ':' + (m < 10 ? '0' + m : m) + ap;
+}
+
+function refreshAll() {
+  // Flush any pending save so we don't discard in-flight edits
+  if (saveTimer) {
+    clearTimeout(saveTimer);
+    flushSave();
+  }
+  loadBikes();
+  loadWaitlist();
+}
+
+function loadBikes() {
+  setSync('loading', 'Loading…');
+  fetch('/api/bikes?t=' + Date.now())
+    .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(data) {
+      bikes = Array.isArray(data && data.bikes) ? data.bikes : [];
+      render();
+      setSync('idle', 'Loaded ' + bikes.length + ' bike' + (bikes.length === 1 ? '' : 's'));
+    })
+    .catch(function(err) {
+      setSync('error', 'Load failed: ' + err.message);
+    });
+}
 
 function getNextId() {
   var max = 0;
@@ -158,10 +227,6 @@ function getNextId() {
     if (n > max) max = n;
   });
   return 'SBC-' + String(max + 1).padStart(3, '0');
-}
-
-function save() {
-  localStorage.setItem('quarry-bikes', JSON.stringify(bikes));
 }
 
 function addBike() {
@@ -392,8 +457,14 @@ function download(name, content) {
   a.click();
 }
 
-render();
+loadBikes();
 loadWaitlist();
+
+// Auto-refresh when tab regains focus so you see other users' edits
+window.addEventListener('focus', function() {
+  loadBikes();
+  loadWaitlist();
+});
 
 var waitlistData = null;
 
@@ -407,7 +478,7 @@ function toggleWaitlist() {
 function loadWaitlist() {
   var countEl = document.getElementById('wl-active-count');
   var contentEl = document.getElementById('wl-content');
-  fetch('./waitlist.json?t=' + Date.now())
+  fetch('/api/waitlist?t=' + Date.now())
     .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
     .then(function(data) {
       waitlistData = data;
@@ -420,9 +491,7 @@ function loadWaitlist() {
       countEl.textContent = '?';
       contentEl.textContent = '';
       contentEl.insertAdjacentHTML('beforeend',
-        '<div class="wl-error">Could not load waitlist.json (' + esc(err.message) + '). ' +
-        'If you opened this file directly (file://), that is expected — browsers block fetch() from disk. ' +
-        'Run <code>python3 -m http.server</code> in the inventory/ folder and visit http://localhost:8000/pos.html.</div>');
+        '<div class="wl-error">Could not load waitlist: ' + esc(err.message) + '</div>');
     });
 }
 

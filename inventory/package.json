@@ -1,0 +1,9 @@
+{
+  "name": "stonebc-inventory",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Stone Bicycle Coalition — Inventory dashboard (pos.html + Netlify Functions + Blobs)",
+  "dependencies": {
+    "@netlify/blobs": "^8.0.0"
+  }
+}
