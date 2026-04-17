@@ -1,0 +1,4 @@
+<resources>
+    <!-- Material 3 parent — the real Compose theme lives in ui/theme/Theme.kt. -->
+    <style name="Theme.StoneBC" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

@@ -1,0 +1,242 @@
+[
+  {
+    "id": "bikes-050",
+    "filename": "bikes-050.jpg",
+    "title": "Fat Bike Snow Ride",
+    "category": "bikes"
+  },
+  {
+    "id": "bikes-080",
+    "filename": "bikes-080.jpg",
+    "title": "Mountain Bike Action",
+    "category": "bikes"
+  },
+  {
+    "id": "bikes-130",
+    "filename": "bikes-130.jpg",
+    "title": "Fat Bike Winter",
+    "category": "bikes"
+  },
+  {
+    "id": "bikes-150",
+    "filename": "bikes-150.jpg",
+    "title": "Winter Singletrack",
+    "category": "bikes"
+  },
+  {
+    "id": "bikes-200",
+    "filename": "bikes-200.jpg",
+    "title": "Bike Close-Up",
+    "category": "bikes"
+  },
+  {
+    "id": "bikes-240",
+    "filename": "bikes-240.jpg",
+    "title": "Fat Tire Action",
+    "category": "bikes"
+  },
+  {
+    "id": "bikes-280",
+    "filename": "bikes-280.jpg",
+    "title": "Mountain Bike",
+    "category": "bikes"
+  },
+  {
+    "id": "bikes-035",
+    "filename": "bikes-035.jpg",
+    "title": "Group Ride Gathering",
+    "category": "community"
+  },
+  {
+    "id": "bikes-095",
+    "filename": "bikes-095.jpg",
+    "title": "Riding Together",
+    "category": "community"
+  },
+  {
+    "id": "bikes-195",
+    "filename": "bikes-195.jpg",
+    "title": "Post-Ride Hangout",
+    "category": "community"
+  },
+  {
+    "id": "bikes-270",
+    "filename": "bikes-270.jpg",
+    "title": "Cycling Community",
+    "category": "community"
+  },
+  {
+    "id": "bikes-015",
+    "filename": "bikes-015.jpg",
+    "title": "Race Day",
+    "category": "events"
+  },
+  {
+    "id": "bikes-065",
+    "filename": "bikes-065.jpg",
+    "title": "Race Finish",
+    "category": "events"
+  },
+  {
+    "id": "bikes-110",
+    "filename": "bikes-110.jpg",
+    "title": "Race Start Line",
+    "category": "events"
+  },
+  {
+    "id": "bikes-165",
+    "filename": "bikes-165.jpg",
+    "title": "Finish Line Celebration",
+    "category": "events"
+  },
+  {
+    "id": "bikes-210",
+    "filename": "bikes-210.jpg",
+    "title": "Race Action",
+    "category": "events"
+  },
+  {
+    "id": "bikes-290",
+    "filename": "bikes-290.jpg",
+    "title": "Event Day",
+    "category": "events"
+  },
+  {
+    "id": "bikes-010",
+    "filename": "bikes-010.jpg",
+    "title": "Gravel Racing Action",
+    "category": "rides"
+  },
+  {
+    "id": "bikes-025",
+    "filename": "bikes-025.jpg",
+    "title": "Canyon Cycling",
+    "category": "rides"
+  },
+  {
+    "id": "bikes-042",
+    "filename": "bikes-042.jpg",
+    "title": "Trail Descent",
+    "category": "rides"
+  },
+  {
+    "id": "bikes-055",
+    "filename": "bikes-055.jpg",
+    "title": "Singletrack Session",
+    "category": "rides"
+  },
+  {
+    "id": "bikes-075",
+    "filename": "bikes-075.jpg",
+    "title": "Hill Climb",
+    "category": "rides"
+  },
+  {
+    "id": "bikes-100",
+    "filename": "bikes-100.jpg",
+    "title": "Gravel Road",
+    "category": "rides"
+  },
+  {
+    "id": "bikes-125",
+    "filename": "bikes-125.jpg",
+    "title": "Forest Trail",
+    "category": "rides"
+  },
+  {
+    "id": "bikes-140",
+    "filename": "bikes-140.jpg",
+    "title": "Black Hills Riding",
+    "category": "rides"
+  },
+  {
+    "id": "bikes-160",
+    "filename": "bikes-160.jpg",
+    "title": "Group Gravel Ride",
+    "category": "rides"
+  },
+  {
+    "id": "bikes-180",
+    "filename": "bikes-180.jpg",
+    "title": "Open Road",
+    "category": "rides"
+  },
+  {
+    "id": "bikes-225",
+    "filename": "bikes-225.jpg",
+    "title": "Sunset Ride",
+    "category": "rides"
+  },
+  {
+    "id": "bikes-255",
+    "filename": "bikes-255.jpg",
+    "title": "Dirt Road Adventure",
+    "category": "rides"
+  },
+  {
+    "id": "bikes-300",
+    "filename": "bikes-300.jpg",
+    "title": "Black Hills Gravel",
+    "category": "rides"
+  },
+  {
+    "id": "bhe-002",
+    "filename": "bhe-002.jpg",
+    "title": "Gravel Road Vista",
+    "category": "trails"
+  },
+  {
+    "id": "bhe-010",
+    "filename": "bhe-010.jpg",
+    "title": "Forest Service Road",
+    "category": "trails"
+  },
+  {
+    "id": "bhe-015",
+    "filename": "bhe-015.jpg",
+    "title": "Pine Ridge Trail",
+    "category": "trails"
+  },
+  {
+    "id": "bhe-020",
+    "filename": "bhe-020.jpg",
+    "title": "Black Hills Overlook",
+    "category": "trails"
+  },
+  {
+    "id": "bhe-025",
+    "filename": "bhe-025.jpg",
+    "title": "Canyon View",
+    "category": "trails"
+  },
+  {
+    "id": "bhe-030",
+    "filename": "bhe-030.jpg",
+    "title": "Mountain Meadow",
+    "category": "trails"
+  },
+  {
+    "id": "bhe-035",
+    "filename": "bhe-035.jpg",
+    "title": "Winding Gravel",
+    "category": "trails"
+  },
+  {
+    "id": "bhe-040",
+    "filename": "bhe-040.jpg",
+    "title": "Hills and Pines",
+    "category": "trails"
+  },
+  {
+    "id": "bhe-045",
+    "filename": "bhe-045.jpg",
+    "title": "Backcountry Road",
+    "category": "trails"
+  },
+  {
+    "id": "bhe-050",
+    "filename": "bhe-050.jpg",
+    "title": "Golden Hour Hills",
+    "category": "trails"
+  }
+]

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Simple bicycle glyph, white on green background. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M34,58a12,12 0 1,0 24,0a12,12 0 1,0 -24,0M50,58a4,4 0 1,0 8,0a4,4 0 1,0 -8,0M62,42L72,42L78,52L62,52L58,42L52,42L58,56L64,66L70,66M72,58a12,12 0 1,0 24,0a12,12 0 1,0 -24,0"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"/>
+</vector>

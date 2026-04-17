@@ -1,0 +1,62 @@
+[
+  {
+    "id": "earn-a-bike",
+    "name": "Earn-A-Bike",
+    "description": "Learn bicycle repair skills and earn your own bike through a structured 6-session program.",
+    "icon": "wrench.and.screwdriver",
+    "details": [
+      "6-session program covering complete bike overhaul",
+      "Learn wheel truing, brake adjustment, and drivetrain repair",
+      "Graduate with a refurbished bicycle you built yourself",
+      "All tools and parts provided",
+      "Open to ages 12 and up"
+    ],
+    "schedule": "Sessions run monthly, Saturday mornings",
+    "eligibility": "Open to all community members. Priority given to those without reliable transportation."
+  },
+  {
+    "id": "open-shop",
+    "name": "Open Shop",
+    "description": "Access our full workshop with professional tools. Volunteers on hand to help.",
+    "icon": "door.left.hand.open",
+    "details": [
+      "Full access to Park Tool professional stands and tools",
+      "Experienced volunteers available for guidance",
+      "Bring any bike for repair or maintenance",
+      "Parts available at cost",
+      "No appointment needed"
+    ],
+    "schedule": "Every Saturday, 10am - 4pm",
+    "eligibility": "Open to everyone. Membership not required."
+  },
+  {
+    "id": "safety",
+    "name": "Safety Education",
+    "description": "Road safety, hand signals, and riding confidence for all ages.",
+    "icon": "shield.checkered",
+    "details": [
+      "Road safety and traffic law basics",
+      "Hand signals and group riding etiquette",
+      "Basic maintenance checks before every ride",
+      "Free helmets and lights for participants",
+      "Classes for kids, teens, and adults"
+    ],
+    "schedule": "Monthly classes, check events for dates",
+    "eligibility": "All ages welcome. Youth under 12 must have guardian present."
+  },
+  {
+    "id": "youth",
+    "name": "Youth Programs",
+    "description": "Building confidence, skills, and community for young riders ages 8-16.",
+    "icon": "figure.outdoor.cycle",
+    "details": [
+      "Summer bike camps (week-long sessions)",
+      "After-school repair workshops",
+      "Trail riding skills and safety",
+      "Leadership and mentoring opportunities",
+      "Job skills development for teens"
+    ],
+    "schedule": "Summer camps in July. After-school programs during school year.",
+    "eligibility": "Ages 8-16. Scholarships available for all programs."
+  }
+]

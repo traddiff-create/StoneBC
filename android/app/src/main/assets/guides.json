@@ -1,0 +1,468 @@
+[
+  {
+    "id": "brewvet-2026",
+    "name": "Brewvet",
+    "subtitle": "3-Day Black Hills Brewery Bike Tour",
+    "description": "A three-day cycling tour connecting Black Hills breweries. Friday evening brewery crawl through Rapid City, followed by two epic Saturday and Sunday loops through the southern and northern Black Hills — with sag stops serving local craft beer at every turn.",
+    "type": "event",
+    "eventDate": "September 25-27, 2026",
+    "totalDays": 3,
+    "totalMiles": 102.5,
+    "totalElevation": 6550,
+    "difficulty": "hard",
+    "category": "brewery",
+    "region": "Black Hills",
+    "notes": [
+      "This is a tour, not a race. Plan 4.5–5 hours for Saturday and Sunday loops (~10 mph average).",
+      "One sag vehicle — stay with the group. No benefit in riding ahead.",
+      "Half-pour (6–8 oz) at each sag stop. No beer served to minors. ID may be required.",
+      "After completing each route, we visit the breweries in order shown.",
+      "Complete all three days to earn a Brewvet card with stamps at each stop."
+    ],
+    "checklist": null,
+    "days": [
+      {
+        "dayNumber": 1,
+        "name": "Rapid City Brewery Crawl",
+        "date": "Friday, September 25",
+        "startTime": "4:30 PM",
+        "startLocation": "Dakota Point Brewing",
+        "startCoordinate": [44.0805, -103.2310],
+        "totalMiles": 15,
+        "elevationGain": 0,
+        "estimatedDuration": "4 hours",
+        "finishLocation": "Lost Cabin Beer Co.",
+        "routeFile": null,
+        "gpxURL": null,
+        "trackpoints": null,
+        "stops": [
+          {
+            "name": "Dakota Point Brewing",
+            "type": "brewery",
+            "coordinate": [44.0805, -103.2310],
+            "mileMarker": 0,
+            "description": "Start here — meet the group, get your Brewvet card",
+            "beer": "Dakota Point Brewing"
+          },
+          {
+            "name": "Hay Camp Brewing",
+            "type": "brewery",
+            "coordinate": [44.0812, -103.2248],
+            "mileMarker": 4,
+            "description": "Brew stop #2",
+            "beer": "Hay Camp Brewing"
+          },
+          {
+            "name": "Firehouse Brewing Co.",
+            "type": "brewery",
+            "coordinate": [44.0803, -103.2283],
+            "mileMarker": 8,
+            "description": "Brew stop #3 — Rapid City's oldest brewpub",
+            "beer": "Firehouse Brewing Co."
+          },
+          {
+            "name": "Lost Cabin Beer Co.",
+            "type": "brewery",
+            "coordinate": [44.0764, -103.2088],
+            "mileMarker": 15,
+            "description": "Final stop — celebration beers",
+            "beer": "Lost Cabin Beer Co."
+          }
+        ]
+      },
+      {
+        "dayNumber": 2,
+        "name": "Southern Loop",
+        "date": "Saturday, September 26",
+        "startTime": "9:00 AM",
+        "startLocation": "Miner Brewing Co.",
+        "startCoordinate": [43.9481, -103.5225],
+        "totalMiles": 43,
+        "elevationGain": 3350,
+        "estimatedDuration": "4.5–5 hours",
+        "finishLocation": "Sick N Twisted Brewing",
+        "routeFile": "Brewvet_Southern",
+        "gpxURL": "https://stone-bicycle-coalition.netlify.app/gpx/Brewvet_Southern.tcx",
+        "trackpoints": null,
+        "stops": [
+          {
+            "name": "Miner Brewing Co.",
+            "type": "start",
+            "coordinate": [43.9481, -103.5225],
+            "mileMarker": 0,
+            "description": "Start — Hill City",
+            "beer": "Miner Brewing Co."
+          },
+          {
+            "name": "Crazy Horse Overflow Parking",
+            "type": "sag",
+            "coordinate": [43.8340, -103.6240],
+            "mileMarker": 12.8,
+            "description": "Sag #1 — regroup and refuel",
+            "beer": "Mt. Rushmore Brewing"
+          },
+          {
+            "name": "Top of Reno Gulch",
+            "type": "sag",
+            "coordinate": [43.8770, -103.7230],
+            "mileMarker": 26.5,
+            "description": "Sag #2 — top of the big climb",
+            "beer": "Zymurcracy"
+          },
+          {
+            "name": "Battle Ax & Deerfield",
+            "type": "sag",
+            "coordinate": [43.9520, -103.7690],
+            "mileMarker": 36,
+            "description": "Sag #3 (Optional) — almost home",
+            "beer": "Piney 44 Brewing"
+          },
+          {
+            "name": "Sick N Twisted Brewing",
+            "type": "brewery",
+            "coordinate": [43.9427, -103.5372],
+            "mileMarker": 43,
+            "description": "Finish — celebration beers",
+            "beer": "Sick N Twisted Brewing"
+          },
+          {
+            "name": "Miner Brewing Co.",
+            "type": "brewery",
+            "coordinate": [43.9481, -103.5225],
+            "mileMarker": null,
+            "description": "Brew stop #2 — back where we started",
+            "beer": "Miner Brewing Co."
+          }
+        ]
+      },
+      {
+        "dayNumber": 3,
+        "name": "Northern Loop",
+        "date": "Sunday, September 27",
+        "startTime": "9:00 AM",
+        "startLocation": "Sawyer Brewing Co.",
+        "startCoordinate": [44.5117, -103.8616],
+        "totalMiles": 44.5,
+        "elevationGain": 3200,
+        "estimatedDuration": "4.5–5 hours",
+        "finishLocation": "Crow Peak Brewing",
+        "routeFile": "Brewvet_Northern",
+        "gpxURL": "https://stone-bicycle-coalition.netlify.app/gpx/Brewvet_Northern.tcx",
+        "trackpoints": null,
+        "stops": [
+          {
+            "name": "Sawyer Brewing Co.",
+            "type": "start",
+            "coordinate": [44.5117, -103.8616],
+            "mileMarker": 0,
+            "description": "Start — Spearfish",
+            "beer": "Sawyer Brewing Co."
+          },
+          {
+            "name": "Roughlock Falls Dam Parking",
+            "type": "sag",
+            "coordinate": [44.3430, -103.8570],
+            "mileMarker": 16.6,
+            "description": "Sag #1 — Spearfish Canyon",
+            "beer": "Knuckle Brewing Co."
+          },
+          {
+            "name": "Higgins & Tinton Intersection",
+            "type": "sag",
+            "coordinate": [44.2850, -103.9150],
+            "mileMarker": 28.5,
+            "description": "Sag #2 — deep in the hills",
+            "beer": "Dakota Shivers"
+          },
+          {
+            "name": "Crow Peak Trailhead",
+            "type": "sag",
+            "coordinate": [44.4120, -103.9080],
+            "mileMarker": 36.5,
+            "description": "Sag #3 (Optional) — last push",
+            "beer": "Spearfish Brewing"
+          },
+          {
+            "name": "Crow Peak Brewing",
+            "type": "brewery",
+            "coordinate": [44.4905, -103.8614],
+            "mileMarker": 44.5,
+            "description": "Finish — celebration beers",
+            "beer": "Crow Peak Brewing"
+          },
+          {
+            "name": "Sawyer Brewing Co.",
+            "type": "brewery",
+            "coordinate": [44.5117, -103.8616],
+            "mileMarker": null,
+            "description": "Brew stop #2 — full circle",
+            "beer": "Sawyer Brewing Co."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "8over7-v2-2021-guide",
+    "name": "8 Over 7",
+    "subtitle": "3-Day Black Hills Singletrack Bikepacking",
+    "description": "The legendary 8 Over 7 as a 3-day bikepacking trip. Depart Spearfish Friday, ride Mickelson Trail to Sylvan Lake to camp. Saturday and Sunday cover the full 100+ mile singletrack link-up through pine forest, high-country ridgelines, and technical terrain — with resupply stops in Custer and Deerfield. Back in Spearfish by Sunday evening.",
+    "type": "event",
+    "eventDate": "May 15–17, 2026",
+    "totalDays": 3,
+    "totalMiles": 102.9,
+    "totalElevation": 10563,
+    "difficulty": "expert",
+    "category": "trail",
+    "region": "Black Hills",
+    "notes": [
+      "If weather looks terrible, postpone to the following weekend (May 22–24).",
+      "Late joiners: get dropped off at Sylvan Lake Friday afternoon/evening to meet the group.",
+      "Carry enough water and food between resupply points. Cell service is spotty.",
+      "The full route climbs nearly 10,000 feet across 3 days. Pace yourself.",
+      "Trail conditions vary — check recent reports for deadfall and washouts.",
+      "This is bikepacking — pack overnight gear for Friday night at Sylvan Lake."
+    ],
+    "checklist": [
+      {
+        "key": "photo-spearfish-start",
+        "category": "capture",
+        "title": "Photo: Spearfish departure",
+        "description": "Geotagged photo at the start. Group shot before rolling out.",
+        "mileEstimate": 0
+      },
+      {
+        "key": "photo-mickelson-entry",
+        "category": "capture",
+        "title": "Photo: Mickelson Trail entry point",
+        "description": "Where do you hop on Mickelson? Photo the trailhead sign.",
+        "mileEstimate": null
+      },
+      {
+        "key": "photo-sylvan-camp",
+        "category": "capture",
+        "title": "Photo: Sylvan Lake camp spot",
+        "description": "Document the overnight setup — helps future riders plan their bivy.",
+        "mileEstimate": null
+      },
+      {
+        "key": "note-custer-resupply",
+        "category": "note",
+        "title": "Custer resupply: What's open Saturday AM?",
+        "description": "Note the store name, hours, and what you stocked up on. Key intel for the guide.",
+        "mileEstimate": null
+      },
+      {
+        "key": "note-water-sources",
+        "category": "note",
+        "title": "Water sources between resupply points",
+        "description": "Note every reliable water source (creek, spigot, campground). Seasonal?",
+        "mileEstimate": null
+      },
+      {
+        "key": "note-cell-service",
+        "category": "safety",
+        "title": "Cell service zones: Where does signal drop/return?",
+        "description": "Note mile markers for dead zones. Critical for emergency planning.",
+        "mileEstimate": null
+      },
+      {
+        "key": "photo-trail-junctions",
+        "category": "capture",
+        "title": "Photos: Confusing trail junctions",
+        "description": "Any fork without a sign? Photo it with a note on which way to go.",
+        "mileEstimate": null
+      },
+      {
+        "key": "note-trail-surface",
+        "category": "note",
+        "title": "Trail surface: Major terrain changes",
+        "description": "Where does flowy singletrack turn technical? Rock gardens, roots, sand.",
+        "mileEstimate": null
+      },
+      {
+        "key": "note-deerfield-resupply",
+        "category": "note",
+        "title": "Deerfield resupply: What's available Sunday AM?",
+        "description": "Store, gas station, or campground store? Note what's open and what they carry.",
+        "mileEstimate": null
+      },
+      {
+        "key": "note-bailouts",
+        "category": "safety",
+        "title": "Bail-out points: Exits to roads",
+        "description": "Where can a rider exit to pavement? Note trail name and direction to nearest town.",
+        "mileEstimate": null
+      },
+      {
+        "key": "photo-high-point",
+        "category": "capture",
+        "title": "Photo: High country ridge / best viewpoint",
+        "description": "Capture the scenic highlight. Geotagged photo becomes a landmark.",
+        "mileEstimate": null
+      },
+      {
+        "key": "voice-navigation",
+        "category": "capture",
+        "title": "Voice memos: Tricky navigation",
+        "description": "Quick voice note at confusing spots. 'Turn left at the big rock' is gold.",
+        "mileEstimate": null
+      },
+      {
+        "key": "note-time-splits",
+        "category": "note",
+        "title": "Time splits: Screenshot Garmin at landmarks",
+        "description": "Elapsed time at key points calibrates pace estimates for future riders.",
+        "mileEstimate": null
+      },
+      {
+        "key": "photo-spearfish-finish",
+        "category": "capture",
+        "title": "Photo: Back in Spearfish",
+        "description": "You did it. Finish line photo. You earned this one.",
+        "mileEstimate": null
+      }
+    ],
+    "days": [
+      {
+        "dayNumber": 1,
+        "name": "Spearfish → Sylvan Lake",
+        "date": "Friday, May 15",
+        "startTime": "Afternoon",
+        "startLocation": "Spearfish",
+        "startCoordinate": [44.4905, -103.8614],
+        "totalMiles": 30,
+        "elevationGain": 2000,
+        "estimatedDuration": "Afternoon–evening",
+        "finishLocation": "Sylvan Lake (camp)",
+        "routeFile": "8over7-day1-spearfish-sylvan",
+        "gpxURL": "https://stone-bicycle-coalition.netlify.app/gpx/8over7-day1-spearfish-sylvan.gpx",
+        "trackpoints": null,
+        "stops": [
+          {
+            "name": "Spearfish",
+            "type": "start",
+            "coordinate": [44.4905, -103.8614],
+            "mileMarker": 0,
+            "description": "Depart Spearfish. Ride Mickelson Trail south toward Sylvan Peak.",
+            "beer": null
+          },
+          {
+            "name": "Mickelson Trail",
+            "type": "pointOfInterest",
+            "coordinate": [44.3500, -103.8500],
+            "mileMarker": null,
+            "description": "Follow Mickelson Trail — crushed gravel, gentle grade, well-marked.",
+            "beer": null
+          },
+          {
+            "name": "Sylvan Lake",
+            "type": "finish",
+            "coordinate": [43.8450, -103.5590],
+            "mileMarker": 30,
+            "description": "Camp here for the night. Late joiners can get dropped off Friday evening.",
+            "beer": null
+          }
+        ]
+      },
+      {
+        "dayNumber": 2,
+        "name": "Southern Section",
+        "date": "Saturday, May 16",
+        "startTime": "Early AM",
+        "startLocation": "Sylvan Lake",
+        "startCoordinate": [43.8450, -103.5590],
+        "totalMiles": 50,
+        "elevationGain": 5000,
+        "estimatedDuration": "Full day",
+        "finishLocation": "Camp TBD",
+        "routeFile": "8over7-v2-2021",
+        "gpxURL": "https://stone-bicycle-coalition.netlify.app/gpx/8over7v2.2021.gpx",
+        "trackpoints": null,
+        "stops": [
+          {
+            "name": "Sylvan Lake",
+            "type": "start",
+            "coordinate": [43.8450, -103.5590],
+            "mileMarker": 0,
+            "description": "Break camp and roll out. Big day ahead.",
+            "beer": null
+          },
+          {
+            "name": "Custer Resupply",
+            "type": "pointOfInterest",
+            "coordinate": [43.7666, -103.5986],
+            "mileMarker": null,
+            "description": "Saturday morning resupply. Top off water, food, and calories before the backcountry.",
+            "beer": null
+          },
+          {
+            "name": "High Country Ridge",
+            "type": "pointOfInterest",
+            "coordinate": [44.0500, -103.7500],
+            "mileMarker": null,
+            "description": "Highest terrain of the trip. Sustained climbing through pine forest.",
+            "beer": null
+          },
+          {
+            "name": "Camp — End of Day 2",
+            "type": "finish",
+            "coordinate": [44.1000, -103.7800],
+            "mileMarker": 50,
+            "description": "Set up camp. Rest up for the final push tomorrow.",
+            "beer": null
+          }
+        ]
+      },
+      {
+        "dayNumber": 3,
+        "name": "Northern Section → Spearfish",
+        "date": "Sunday, May 17",
+        "startTime": "Early AM",
+        "startLocation": "Camp",
+        "startCoordinate": [44.1000, -103.7800],
+        "totalMiles": 45,
+        "elevationGain": 3500,
+        "estimatedDuration": "Full day — arrive Spearfish ~5-6 PM",
+        "finishLocation": "Spearfish",
+        "routeFile": "8over7-v2-2021",
+        "gpxURL": "https://stone-bicycle-coalition.netlify.app/gpx/8over7v2.2021.gpx",
+        "trackpoints": null,
+        "stops": [
+          {
+            "name": "Camp",
+            "type": "start",
+            "coordinate": [44.1000, -103.7800],
+            "mileMarker": 0,
+            "description": "Final day. Break camp and head north toward Spearfish.",
+            "beer": null
+          },
+          {
+            "name": "Deerfield Resupply",
+            "type": "pointOfInterest",
+            "coordinate": [44.0200, -103.8100],
+            "mileMarker": null,
+            "description": "Sunday morning resupply. Last chance to stock up before the final stretch.",
+            "beer": null
+          },
+          {
+            "name": "Deadwood Descent",
+            "type": "pointOfInterest",
+            "coordinate": [44.2500, -103.8200],
+            "mileMarker": null,
+            "description": "Beginning of the final descent. The end is in sight.",
+            "beer": null
+          },
+          {
+            "name": "Spearfish",
+            "type": "finish",
+            "coordinate": [44.4905, -103.8614],
+            "mileMarker": 45,
+            "description": "You're back. 3 days, 100+ miles, ~10,000 feet of climbing. Legend.",
+            "beer": null
+          }
+        ]
+      }
+    ]
+  }
+]

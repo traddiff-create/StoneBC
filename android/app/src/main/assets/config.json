@@ -1,0 +1,36 @@
+{
+  "coalitionName": "Stone Bicycle Coalition",
+  "shortName": "SBC",
+  "tagline": "Building Community Through Cycling",
+  "websiteURL": "https://stonebicyclecoalition.com",
+  "email": "info@stonebicyclecoalition.com",
+  "phone": null,
+  "instagramHandle": "stone_bicycle_coalition",
+  "location": {
+    "name": "Minneluzahan Senior Center",
+    "address": "315 N 4th St",
+    "city": "Rapid City",
+    "state": "SD",
+    "zip": "57701"
+  },
+  "colors": {
+    "brandBlue": "#2563eb",
+    "brandGreen": "#059669",
+    "brandAmber": "#f59e0b"
+  },
+  "features": {
+    "enableMarketplace": true,
+    "enableCommunityFeed": true,
+    "enableRoutes": true,
+    "enableEvents": true,
+    "enableGallery": true,
+    "enableRadio": true,
+    "enableWeather": true
+  },
+  "dataURLs": {
+    "wordpressBase": "https://stonebicyclecoalition.com/wp-json/wp/v2",
+    "bikes": "/sbc_bike?per_page=50",
+    "events": "/sbc_event?per_page=50",
+    "posts": "/posts?per_page=20&_embed"
+  }
+}
