@@ -1,5 +1,6 @@
 import { getStore } from "@netlify/blobs";
 import partsSeed from "../../parts.json";
+import { logActivity } from "../lib/activity";
 
 type Part = {
   id: string;
@@ -65,6 +66,11 @@ export default async (req: Request): Promise<Response> => {
   const isLow =
     typeof data.parts[idx].reorder_at === "number" &&
     after <= (data.parts[idx].reorder_at as number);
+
+  const verb = qty > 0 ? "consumed" : "restocked";
+  const partName = data.parts[idx].name || partId;
+  const summary = `${verb} ${Math.abs(qty)} × ${partName}${bikeId ? ` (on ${bikeId})` : ""}; shelf now ${after}`;
+  await logActivity(req, "consume", "parts", partId, summary);
 
   return json({
     ok: true,

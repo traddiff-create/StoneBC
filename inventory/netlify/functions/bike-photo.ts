@@ -1,4 +1,5 @@
 import { getStore } from "@netlify/blobs";
+import { logActivity } from "../lib/activity";
 
 const PHOTOS_STORE = "bike-photos";
 const META_STORE = "inventory";
@@ -36,7 +37,7 @@ export default async (req: Request): Promise<Response> => {
       return listPhotos(bikeId);
     }
     if (req.method === "POST") return addPhoto(req, bikeId);
-    if (req.method === "DELETE" && photoId) return deletePhoto(bikeId, photoId);
+    if (req.method === "DELETE" && photoId) return deletePhoto(req, bikeId, photoId);
 
     return json({ error: "Method not allowed" }, 405);
   } catch (err) {
@@ -134,10 +135,12 @@ async function addPhoto(req: Request, bikeId: string): Promise<Response> {
   index[bikeId] = [...existing, meta];
   await writeIndex(index);
 
+  const kb = Math.round(bytes.byteLength / 1024);
+  await logActivity(req, "photo_add", "bike", bikeId, `added photo to ${bikeId} (${kb}KB)`);
   return json({ ok: true, photo: meta });
 }
 
-async function deletePhoto(bikeId: string, photoId: string): Promise<Response> {
+async function deletePhoto(req: Request, bikeId: string, photoId: string): Promise<Response> {
   const index = await readIndex();
   const list = index[bikeId] ?? [];
   const filtered = list.filter((p) => p.id !== photoId);
@@ -150,6 +153,7 @@ async function deletePhoto(bikeId: string, photoId: string): Promise<Response> {
 
   index[bikeId] = filtered;
   await writeIndex(index);
+  await logActivity(req, "photo_delete", "bike", bikeId, `deleted photo from ${bikeId}`);
   return json({ ok: true });
 }
 

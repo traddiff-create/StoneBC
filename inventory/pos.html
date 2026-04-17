@@ -131,6 +131,20 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .parts-consume-btn:hover { background: #065f46; color: #a7f3d0; }
 .parts-consume-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
+/* Activity feed */
+.activity-banner { background: #1e293b; color: #94a3b8; padding: 10px 24px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid #334155; user-select: none; }
+.activity-banner:hover { background: #27374d; }
+.activity-banner strong { color: #cbd5e1; }
+.activity-panel { background: #0f172a; border-bottom: 1px solid #334155; padding: 0 24px; max-height: 40vh; overflow-y: auto; }
+.activity-panel.hidden { display: none; }
+.activity-list { list-style: none; padding: 12px 0; margin: 0; }
+.activity-list li { padding: 6px 0; border-bottom: 1px solid #1e293b; font-size: 0.82rem; line-height: 1.4; display: flex; gap: 8px; }
+.activity-ts { color: #64748b; font-variant-numeric: tabular-nums; min-width: 72px; flex-shrink: 0; }
+.activity-actor { color: #60a5fa; min-width: 150px; flex-shrink: 0; }
+.activity-summary { color: #cbd5e1; }
+.activity-resource { color: #94a3b8; font-size: 0.72rem; text-transform: uppercase; padding: 1px 6px; border-radius: 4px; background: #334155; margin-right: 6px; }
+.activity-empty { color: #64748b; font-style: italic; padding: 24px 0; text-align: center; }
+
 /* Photos */
 .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 12px; }
 .photo-tile { position: relative; aspect-ratio: 4/3; background: #0f172a; border: 1px solid #334155; border-radius: 8px; overflow: hidden; cursor: pointer; }
@@ -184,6 +198,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 </div>
 <div class="parts-panel hidden" id="parts-panel">
   <div id="parts-content"><div class="parts-empty">Loading parts…</div></div>
+</div>
+
+<div class="activity-banner" onclick="toggleActivityPanel()">
+  <span>📋 Activity: <strong id="activity-count">…</strong> recent events</span>
+  <span id="activity-toggle">▼ show</span>
+</div>
+<div class="activity-panel hidden" id="activity-panel">
+  <div id="activity-content"><div class="activity-empty">Loading activity…</div></div>
 </div>
 
 <datalist id="parts-datalist"></datalist>
@@ -538,12 +560,14 @@ function download(name, content) {
 loadBikes();
 loadWaitlist();
 loadParts();
+loadActivity();
 
 // Auto-refresh when tab regains focus so you see other users' edits
 window.addEventListener('focus', function() {
   loadBikes();
   loadWaitlist();
   loadParts();
+  loadActivity();
   if (selectedId) loadPhotosForBike(selectedId);
 });
 
@@ -810,6 +834,69 @@ function consumeFromRow(bikeId, rowIdx) {
   var part = findPartByItemText(b.refurb[rowIdx].item);
   if (!part) return;
   consumePart(part.id, 1, bikeId);
+}
+
+/* ---------- Activity feed ---------- */
+
+var activityEntries = [];
+
+function toggleActivityPanel() {
+  var panel = document.getElementById('activity-panel');
+  var toggle = document.getElementById('activity-toggle');
+  var hidden = panel.classList.toggle('hidden');
+  toggle.textContent = hidden ? '▼ show' : '▲ hide';
+}
+
+function loadActivity() {
+  fetch('/api/activity?t=' + Date.now())
+    .then(function(r) {
+      if (handleAuthError(r)) return null;
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function(data) {
+      if (!data) return;
+      activityEntries = data.entries || [];
+      renderActivity();
+    })
+    .catch(function(err) {
+      document.getElementById('activity-count').textContent = '?';
+      var el = document.getElementById('activity-content');
+      el.textContent = '';
+      el.insertAdjacentHTML('beforeend', '<div class="activity-empty">Could not load: ' + esc(err.message) + '</div>');
+    });
+}
+
+function renderActivity() {
+  var countEl = document.getElementById('activity-count');
+  var el = document.getElementById('activity-content');
+  countEl.textContent = activityEntries.length;
+  el.textContent = '';
+  if (!activityEntries.length) {
+    el.insertAdjacentHTML('beforeend', '<div class="activity-empty">No activity yet. Edits will show up here.</div>');
+    return;
+  }
+  var visible = activityEntries.slice(0, 50);
+  var lis = visible.map(function(e) {
+    var ts = fmtActivityTime(e.ts);
+    return '<li>' +
+      '<span class="activity-ts">' + ts + '</span>' +
+      '<span class="activity-actor">' + esc(e.actor || 'unknown') + '</span>' +
+      '<span class="activity-summary"><span class="activity-resource">' + esc(e.resource || '?') + '</span>' + esc(e.summary || e.action || '') + '</span>' +
+      '</li>';
+  }).join('');
+  el.insertAdjacentHTML('beforeend', '<ul class="activity-list">' + lis + '</ul>' +
+    (activityEntries.length > 50 ? '<div style="color:#64748b;font-size:0.78rem;padding:8px 0 16px">Showing 50 of ' + activityEntries.length + ' entries. Older entries truncated at 500.</div>' : ''));
+}
+
+function fmtActivityTime(iso) {
+  if (!iso) return '';
+  var d = new Date(iso);
+  var now = new Date();
+  var sameDay = d.toDateString() === now.toDateString();
+  if (sameDay) return fmtTime(d);
+  var m = d.getMonth() + 1, day = d.getDate();
+  return m + '/' + day + ' ' + fmtTime(d);
 }
 
 /* ---------- Photos ---------- */
