@@ -181,6 +181,7 @@ function flushSave() {
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ bikes: bikes })
   }).then(function(r) {
+    if (handleAuthError(r)) return;
     if (!r.ok) throw new Error('HTTP ' + r.status);
     setSync('idle', 'Saved ' + fmtTime(new Date()));
   }).catch(function(err) {
@@ -206,11 +207,24 @@ function refreshAll() {
   loadWaitlist();
 }
 
+function handleAuthError(r) {
+  if (r.status === 401) {
+    window.location = '/login';
+    return true;
+  }
+  return false;
+}
+
 function loadBikes() {
   setSync('loading', 'Loading…');
   fetch('/api/bikes?t=' + Date.now())
-    .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(r) {
+      if (handleAuthError(r)) return null;
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
     .then(function(data) {
+      if (!data) return;
       bikes = Array.isArray(data && data.bikes) ? data.bikes : [];
       render();
       setSync('idle', 'Loaded ' + bikes.length + ' bike' + (bikes.length === 1 ? '' : 's'));
@@ -479,8 +493,13 @@ function loadWaitlist() {
   var countEl = document.getElementById('wl-active-count');
   var contentEl = document.getElementById('wl-content');
   fetch('/api/waitlist?t=' + Date.now())
-    .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(r) {
+      if (handleAuthError(r)) return null;
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
     .then(function(data) {
+      if (!data) return;
       waitlistData = data;
       var apps = data.applicants || [];
       var active = apps.filter(function(a) { return a.status === 'active'; });

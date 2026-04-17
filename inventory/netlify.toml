@@ -1,6 +1,6 @@
 [build]
   publish = "_site"
-  command = "mkdir -p _site && cp pos.html _site/index.html && cp waitlist.json bikes.json parts.json _site/"
+  command = "mkdir -p _site && cp pos.html _site/index.html && cp login.html _site/login.html && cp waitlist.json bikes.json parts.json _site/"
 
 [build.environment]
   NODE_VERSION = "20"
@@ -8,6 +8,21 @@
 [functions]
   node_bundler = "esbuild"
   directory = "netlify/functions"
+
+[[redirects]]
+  from = "/login"
+  to = "/login.html"
+  status = 200
+
+[[redirects]]
+  from = "/api/auth/request"
+  to = "/.netlify/functions/auth-request"
+  status = 200
+
+[[redirects]]
+  from = "/api/auth/verify"
+  to = "/.netlify/functions/auth-verify"
+  status = 200
 
 [[redirects]]
   from = "/api/*"
