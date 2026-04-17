@@ -23,9 +23,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.traddiff.stonebc.ui.screens.BikesScreen
-import com.traddiff.stonebc.ui.screens.MoreScreen
+import com.traddiff.stonebc.ui.screens.bikes.BikeDetailScreen
+import com.traddiff.stonebc.ui.screens.bikes.BikesScreen
 import com.traddiff.stonebc.ui.screens.home.HomeScreen
+import com.traddiff.stonebc.ui.screens.more.CommunityFeedScreen
+import com.traddiff.stonebc.ui.screens.more.DonateScreen
+import com.traddiff.stonebc.ui.screens.more.EventsScreen
+import com.traddiff.stonebc.ui.screens.more.GalleryScreen
+import com.traddiff.stonebc.ui.screens.more.MoreScreen
+import com.traddiff.stonebc.ui.screens.more.ProgramsScreen
+import com.traddiff.stonebc.ui.screens.more.TourGuidesScreen
+import com.traddiff.stonebc.ui.screens.more.VolunteerScreen
 import com.traddiff.stonebc.ui.screens.record.RecordScreen
 import com.traddiff.stonebc.ui.screens.routes.RouteDetailScreen
 import com.traddiff.stonebc.ui.screens.routes.RoutesScreen
@@ -38,9 +46,8 @@ enum class Tab(val route: String, val label: String, val icon: ImageVector) {
     More("more", "More", Icons.Default.MoreHoriz)
 }
 
-private const val ROUTE_DETAIL_ARG = "routeId"
-private const val ROUTE_DETAIL_TEMPLATE = "route_detail/{$ROUTE_DETAIL_ARG}"
-private fun routeDetailRoute(id: String) = "route_detail/$id"
+private const val ROUTE_DETAIL_TEMPLATE = "route_detail/{routeId}"
+private const val BIKE_DETAIL_TEMPLATE = "bike_detail/{bikeId}"
 
 @Composable
 fun MainNavHost() {
@@ -50,12 +57,11 @@ fun MainNavHost() {
         bottomBar = {
             val currentBackStack by navController.currentBackStackEntryAsState()
             val currentRoute = currentBackStack?.destination?.route
-
             NavigationBar {
                 Tab.entries.forEach { tab ->
                     val selected = currentRoute == tab.route ||
-                        currentRoute?.startsWith("${tab.route}/") == true ||
-                        (tab == Tab.Routes && currentRoute?.startsWith("route_detail/") == true)
+                        currentRoute?.startsWith("${tab.route}_") == true ||
+                        isInTabFamily(tab, currentRoute)
                     NavigationBarItem(
                         selected = selected,
                         onClick = {
@@ -80,19 +86,56 @@ fun MainNavHost() {
             modifier = Modifier.padding(padding)
         ) {
             composable(Tab.Home.route) { HomeScreen() }
+            composable(Tab.Record.route) { RecordScreen() }
+
             composable(Tab.Routes.route) {
-                RoutesScreen(onRouteTap = { id -> navController.navigate(routeDetailRoute(id)) })
+                RoutesScreen(onRouteTap = { id -> navController.navigate("route_detail/$id") })
             }
             composable(
                 route = ROUTE_DETAIL_TEMPLATE,
-                arguments = listOf(navArgument(ROUTE_DETAIL_ARG) { type = NavType.StringType })
+                arguments = listOf(navArgument("routeId") { type = NavType.StringType })
             ) { entry ->
-                val routeId = entry.arguments?.getString(ROUTE_DETAIL_ARG).orEmpty()
-                RouteDetailScreen(routeId = routeId, onBack = { navController.popBackStack() })
+                RouteDetailScreen(
+                    routeId = entry.arguments?.getString("routeId").orEmpty(),
+                    onBack = { navController.popBackStack() }
+                )
             }
-            composable(Tab.Record.route) { RecordScreen() }
-            composable(Tab.Bikes.route) { BikesScreen() }
-            composable(Tab.More.route) { MoreScreen() }
+
+            composable(Tab.Bikes.route) {
+                BikesScreen(onBikeTap = { id -> navController.navigate("bike_detail/$id") })
+            }
+            composable(
+                route = BIKE_DETAIL_TEMPLATE,
+                arguments = listOf(navArgument("bikeId") { type = NavType.StringType })
+            ) { entry ->
+                BikeDetailScreen(
+                    bikeId = entry.arguments?.getString("bikeId").orEmpty(),
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
+            composable(Tab.More.route) {
+                MoreScreen(onNavigate = { dest -> navController.navigate(dest) })
+            }
+            composable("community") { CommunityFeedScreen(onBack = { navController.popBackStack() }) }
+            composable("events") { EventsScreen(onBack = { navController.popBackStack() }) }
+            composable("programs") { ProgramsScreen(onBack = { navController.popBackStack() }) }
+            composable("gallery") { GalleryScreen(onBack = { navController.popBackStack() }) }
+            composable("guides") { TourGuidesScreen(onBack = { navController.popBackStack() }) }
+            composable("volunteer") { VolunteerScreen(onBack = { navController.popBackStack() }) }
+            composable("donate") { DonateScreen(onBack = { navController.popBackStack() }) }
         }
+    }
+}
+
+private fun isInTabFamily(tab: Tab, currentRoute: String?): Boolean {
+    if (currentRoute == null) return false
+    return when (tab) {
+        Tab.Routes -> currentRoute.startsWith("route_detail/")
+        Tab.Bikes -> currentRoute.startsWith("bike_detail/")
+        Tab.More -> currentRoute in setOf(
+            "community", "events", "programs", "gallery", "guides", "volunteer", "donate"
+        )
+        else -> false
     }
 }

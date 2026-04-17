@@ -19,12 +19,6 @@ import androidx.compose.ui.unit.sp
  */
 
 @Composable
-fun BikesScreen() = PlaceholderScreen("Bikes", "The Quarry marketplace — Phase 5.")
-
-@Composable
-fun MoreScreen() = PlaceholderScreen("More", "Community · Events · Expeditions · Contact — Phase 5+.")
-
-@Composable
 private fun PlaceholderScreen(title: String, subtitle: String) {
     Column(
         modifier = Modifier.fillMaxSize().padding(24.dp),
