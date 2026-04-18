@@ -488,6 +488,7 @@ struct RecordingSaveSheet: View {
     let recording: RecordingService
     let onDone: () -> Void
 
+    @Environment(AppState.self) var appState
     @State private var saveToHistory = true
     @State private var saveAsRoute = false
     @State private var routeName = ""
@@ -562,6 +563,11 @@ struct RecordingSaveSheet: View {
             }
             .navigationTitle("Save Recording")
             .navigationBarTitleDisplayMode(.inline)
+            .task {
+                if submitterEmail.isEmpty, let email = appState.memberEmail {
+                    submitterEmail = email
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Discard", role: .destructive) {

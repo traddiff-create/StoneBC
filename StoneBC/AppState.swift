@@ -23,6 +23,11 @@ class AppState {
     // Expedition
     var activeExpedition: ExpeditionJournal?
 
+    // Member auth
+    var memberEmail: String?
+    var memberToken: String?
+    var isMemberLoggedIn: Bool { memberEmail != nil && memberToken != nil }
+
     // Sync state
     var isSyncing = false
     var lastSyncDate: Date?
@@ -36,6 +41,10 @@ class AppState {
 
     init() {
         loadData()
+        if let session = MemberAuthService.loadSession() {
+            memberEmail = session.email
+            memberToken = session.token
+        }
         if let keys = config.apiKeys {
             if let id = keys.trailforksAppId, let secret = keys.trailforksAppSecret {
                 Task { await TrailforksService.shared.configure(appId: id, appSecret: secret) }
@@ -71,6 +80,20 @@ class AppState {
         if !invalid.isEmpty {
             loadErrors.append("\(invalid.count) routes skipped (insufficient trackpoints): \(invalid.map(\.name).joined(separator: ", "))")
         }
+    }
+
+    // MARK: - Member Auth
+
+    func signIn(email: String, token: String) {
+        memberEmail = email
+        memberToken = token
+        MemberAuthService.saveSession(email: email, token: token)
+    }
+
+    func signOut() {
+        memberEmail = nil
+        memberToken = nil
+        MemberAuthService.clearSession()
     }
 
     // MARK: - Imported Routes

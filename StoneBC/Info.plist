@@ -8,6 +8,17 @@
 	<array>
 		<string>_stonebc-radio._tcp</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.traddiff.StoneBC</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>stonebc</string>
+			</array>
+		</dict>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>

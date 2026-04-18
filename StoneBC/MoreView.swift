@@ -10,6 +10,7 @@ import SwiftUI
 struct MoreView: View {
     @Environment(AppState.self) var appState
     @State private var showTour = false
+    @State private var showLogin = false
 
     var body: some View {
         NavigationStack {
@@ -78,6 +79,38 @@ struct MoreView: View {
                         }
                     }
 
+                    // Member login
+                    moreSection(title: "CO-OP MEMBER", icon: "person.badge.key") {
+                        if appState.isMemberLoggedIn, let email = appState.memberEmail {
+                            moreRow(
+                                title: "Signed in",
+                                subtitle: email,
+                                icon: "checkmark.seal.fill"
+                            )
+                            Button {
+                                appState.signOut()
+                            } label: {
+                                moreRow(
+                                    title: "Sign Out",
+                                    subtitle: "Remove this device from your account",
+                                    icon: "rectangle.portrait.and.arrow.right"
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        } else {
+                            Button {
+                                showLogin = true
+                            } label: {
+                                moreRow(
+                                    title: "Member Login",
+                                    subtitle: "Sign in to submit routes & save progress",
+                                    icon: "person.badge.key"
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+
                     // Contact section
                     moreSection(title: "CONNECT", icon: "person") {
                         NavigationLink(destination: ContactView()) {
@@ -143,6 +176,9 @@ struct MoreView: View {
                 OnboardingView {
                     showTour = false
                 }
+            }
+            .sheet(isPresented: $showLogin) {
+                MemberLoginView()
             }
         }
     }
