@@ -1,0 +1,329 @@
+---
+layout: base.njk
+title: Route Review Queue — Stone Bicycle Coalition
+---
+<style>
+  .admin-wrap { max-width: 800px; margin: 0 auto; padding: 16px; }
+
+  .auth-screen { max-width: 360px; margin: 60px auto; text-align: center; }
+  .auth-screen h1 { font-size: 1.4rem; margin-bottom: 8px; }
+  .auth-screen p { color: var(--color-text-secondary); margin-bottom: 24px; font-size: 0.9rem; }
+  .auth-input { width: 100%; padding: 12px 16px; border: 1px solid var(--color-border); border-radius: 8px;
+    font-size: 1rem; background: var(--color-surface); color: var(--color-text); box-sizing: border-box; margin-bottom: 12px; }
+  .auth-btn { width: 100%; padding: 12px; background: var(--color-primary, #2563eb); color: #fff;
+    border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+  .auth-error { color: #dc2626; font-size: 0.85rem; margin-top: 8px; }
+
+  .queue-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 8px; }
+  .queue-header h1 { font-size: 1.3rem; margin: 0; }
+  .badge-count { background: var(--color-primary, #2563eb); color: #fff; border-radius: 99px;
+    padding: 2px 10px; font-size: 0.8rem; font-weight: 700; }
+  .logout-btn { font-size: 0.8rem; color: var(--color-text-secondary); cursor: pointer;
+    background: none; border: 1px solid var(--color-border); border-radius: 6px; padding: 6px 12px; }
+
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--color-text-secondary); }
+  .empty-state p { font-size: 1rem; margin: 8px 0 0; }
+
+  .sub-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 12px;
+    margin-bottom: 16px; overflow: hidden; }
+  .sub-header { padding: 16px; }
+  .sub-name { font-size: 1.05rem; font-weight: 700; margin: 0 0 4px; }
+  .sub-meta { font-size: 0.8rem; color: var(--color-text-secondary); }
+  .sub-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .chip { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;
+    padding: 2px 8px; border-radius: 99px; }
+  .chip-easy { background: #d1fae5; color: #065f46; }
+  .chip-moderate { background: #fef9c3; color: #713f12; }
+  .chip-hard { background: #fee2e2; color: #7f1d1d; }
+  .chip-expert { background: #fae8ff; color: #581c87; }
+  .chip-road { background: #dbeafe; color: #1e3a8a; }
+  .chip-gravel { background: #e0e7ff; color: #312e81; }
+  .chip-trail { background: #d1fae5; color: #064e3b; }
+  .chip-fatbike { background: #fef3c7; color: #78350f; }
+
+  .sub-desc { padding: 0 16px 12px; font-size: 0.88rem; color: var(--color-text-secondary); line-height: 1.5; }
+
+  .preview-toggle { display: flex; align-items: center; gap: 8px; padding: 8px 16px 12px;
+    font-size: 0.82rem; color: var(--color-primary, #2563eb); cursor: pointer; border: none;
+    background: none; font-weight: 600; }
+  .preview-frame { width: 100%; height: 260px; border: none; border-top: 1px solid var(--color-border); display: none; }
+  .preview-frame.open { display: block; }
+
+  .sub-actions { padding: 12px 16px; display: flex; gap: 10px; border-top: 1px solid var(--color-border); }
+  .btn-approve { flex: 1; padding: 12px; background: var(--color-secondary, #059669); color: #fff;
+    border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 700; cursor: pointer; }
+  .btn-reject { flex: 1; padding: 12px; background: #f3f4f6; color: #374151;
+    border: 1px solid var(--color-border); border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
+  .btn-approve:disabled, .btn-reject:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .note-row { padding: 0 16px 12px; }
+  .note-input { width: 100%; padding: 8px 12px; border: 1px solid var(--color-border); border-radius: 8px;
+    font-size: 0.85rem; background: var(--color-surface); color: var(--color-text);
+    resize: vertical; min-height: 60px; box-sizing: border-box; font-family: inherit; }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: #111827; color: #fff; padding: 12px 20px; border-radius: 10px; font-size: 0.9rem;
+    transition: transform 0.3s ease; z-index: 100; white-space: nowrap; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  .loading { text-align: center; padding: 60px 20px; color: var(--color-text-secondary); font-size: 0.9rem; }
+</style>
+
+<div class="admin-wrap">
+  <div id="auth-screen" class="auth-screen">
+    <h1>Route Review Queue</h1>
+    <p>Stone Bicycle Coalition — Admin Only</p>
+    <input id="pw-input" class="auth-input" type="password" placeholder="Admin password" autocomplete="current-password">
+    <button class="auth-btn" id="login-btn">Sign In</button>
+    <div id="auth-error" class="auth-error" style="display:none"></div>
+  </div>
+
+  <div id="queue-screen" style="display:none">
+    <div class="queue-header">
+      <h1 id="queue-title">Pending Routes</h1>
+      <button class="logout-btn" id="logout-btn">Sign out</button>
+    </div>
+    <div id="queue-list"><div class="loading">Loading submissions…</div></div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+(function () {
+  var TOKEN_KEY = 'sbc_admin_token';
+  var API = '/.netlify/functions/approve-route';
+
+  function getToken() { return sessionStorage.getItem(TOKEN_KEY) || ''; }
+  function setToken(t) { sessionStorage.setItem(TOKEN_KEY, t); }
+  function clearToken() { sessionStorage.removeItem(TOKEN_KEY); }
+
+  function showToast(msg) {
+    var el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(function () { el.classList.remove('show'); }, 2800);
+  }
+
+  document.getElementById('login-btn').addEventListener('click', doLogin);
+  document.getElementById('logout-btn').addEventListener('click', doLogout);
+  document.getElementById('pw-input').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') doLogin();
+  });
+
+  function doLogin() {
+    var pw = document.getElementById('pw-input').value.trim();
+    if (!pw) return;
+    setToken(pw);
+    loadQueue();
+  }
+
+  function doLogout() {
+    clearToken();
+    document.getElementById('queue-screen').style.display = 'none';
+    document.getElementById('auth-screen').style.display = '';
+    document.getElementById('pw-input').value = '';
+  }
+
+  function showAuthError(msg) {
+    var el = document.getElementById('auth-error');
+    el.textContent = msg;
+    el.style.display = '';
+  }
+
+  function loadQueue() {
+    fetch(API, { headers: { Authorization: 'Bearer ' + getToken() } })
+      .then(function (r) {
+        if (r.status === 401) { showAuthError('Incorrect password.'); clearToken(); return null; }
+        return r.json();
+      })
+      .then(function (data) { if (data) renderQueue(data); })
+      .catch(function () { showAuthError('Connection error. Try again.'); });
+  }
+
+  function renderQueue(submissions) {
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('auth-error').style.display = 'none';
+    document.getElementById('queue-screen').style.display = '';
+
+    var title = document.getElementById('queue-title');
+    var badge = document.createElement('span');
+    badge.className = 'badge-count';
+    badge.id = 'count-badge';
+    badge.textContent = String(submissions.length);
+    title.textContent = 'Pending Routes ';
+    title.appendChild(badge);
+
+    var list = document.getElementById('queue-list');
+    while (list.firstChild) list.removeChild(list.firstChild);
+
+    if (!submissions.length) {
+      list.appendChild(buildEmptyState());
+      return;
+    }
+    submissions.forEach(function (sub) { list.appendChild(buildCard(sub)); });
+  }
+
+  function buildEmptyState() {
+    var wrap = document.createElement('div');
+    wrap.className = 'empty-state';
+    var p = document.createElement('p');
+    p.textContent = 'All caught up — no pending submissions.';
+    wrap.appendChild(p);
+    return wrap;
+  }
+
+  function buildCard(sub) {
+    var card = document.createElement('div');
+    card.className = 'sub-card';
+    card.id = 'card-' + sub.id;
+
+    // Header
+    var header = document.createElement('div');
+    header.className = 'sub-header';
+
+    var name = document.createElement('p');
+    name.className = 'sub-name';
+    name.textContent = sub.name;
+    header.appendChild(name);
+
+    var meta = document.createElement('div');
+    meta.className = 'sub-meta';
+    var date = new Date(sub.submittedAt);
+    meta.textContent = sub.email + ' · ' + date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    header.appendChild(meta);
+
+    var chips = document.createElement('div');
+    chips.className = 'sub-chips';
+    var dc = document.createElement('span');
+    dc.className = 'chip chip-' + sub.difficulty;
+    dc.textContent = sub.difficulty;
+    chips.appendChild(dc);
+    var cc = document.createElement('span');
+    cc.className = 'chip chip-' + sub.category;
+    cc.textContent = sub.category;
+    chips.appendChild(cc);
+    header.appendChild(chips);
+
+    card.appendChild(header);
+
+    // Description
+    if (sub.description) {
+      var desc = document.createElement('p');
+      desc.className = 'sub-desc';
+      desc.textContent = sub.description;
+      card.appendChild(desc);
+    }
+
+    // Map preview toggle
+    var previewBtn = document.createElement('button');
+    previewBtn.className = 'preview-toggle';
+    previewBtn.textContent = 'Preview on map';
+    var iframe = document.createElement('iframe');
+    iframe.className = 'preview-frame';
+    iframe.title = 'Route preview map';
+    iframe.setAttribute('loading', 'lazy');
+    var mapOpen = false;
+    previewBtn.addEventListener('click', function () {
+      mapOpen = !mapOpen;
+      if (mapOpen) {
+        iframe.src = 'https://gpx.studio/embed?zoom=11&lat=44.08&lng=-103.73&imperial=false';
+        iframe.classList.add('open');
+        previewBtn.textContent = 'Hide map';
+      } else {
+        iframe.classList.remove('open');
+        previewBtn.textContent = 'Preview on map';
+      }
+    });
+    card.appendChild(previewBtn);
+    card.appendChild(iframe);
+
+    // Reviewer note
+    var noteRow = document.createElement('div');
+    noteRow.className = 'note-row';
+    var noteInput = document.createElement('textarea');
+    noteInput.className = 'note-input';
+    noteInput.placeholder = 'Optional note to submitter (shown on rejection)…';
+    noteRow.appendChild(noteInput);
+    card.appendChild(noteRow);
+
+    // Actions
+    var actions = document.createElement('div');
+    actions.className = 'sub-actions';
+
+    var approveBtn = document.createElement('button');
+    approveBtn.className = 'btn-approve';
+    approveBtn.textContent = 'Approve';
+
+    var rejectBtn = document.createElement('button');
+    rejectBtn.className = 'btn-reject';
+    rejectBtn.textContent = 'Reject';
+
+    approveBtn.addEventListener('click', function () {
+      doAction(sub.id, 'approve', '', approveBtn, rejectBtn);
+    });
+    rejectBtn.addEventListener('click', function () {
+      doAction(sub.id, 'reject', noteInput.value, approveBtn, rejectBtn);
+    });
+
+    actions.appendChild(approveBtn);
+    actions.appendChild(rejectBtn);
+    card.appendChild(actions);
+
+    return card;
+  }
+
+  function doAction(id, action, note, approveBtn, rejectBtn) {
+    approveBtn.disabled = true;
+    rejectBtn.disabled = true;
+    if (action === 'approve') approveBtn.textContent = 'Approving…';
+    else rejectBtn.textContent = 'Rejecting…';
+
+    fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + getToken() },
+      body: JSON.stringify({ id: id, action: action, note: note }),
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.ok) {
+          showToast(action === 'approve' ? 'Route approved! Submitter notified.' : 'Submission rejected.');
+          removeCard(id);
+        } else {
+          showToast('Error: ' + (data.error || 'Something went wrong'));
+          resetBtns(approveBtn, rejectBtn);
+        }
+      })
+      .catch(function () {
+        showToast('Network error — try again');
+        resetBtns(approveBtn, rejectBtn);
+      });
+  }
+
+  function resetBtns(a, r) {
+    a.disabled = false; r.disabled = false;
+    a.textContent = 'Approve'; r.textContent = 'Reject';
+  }
+
+  function removeCard(id) {
+    var card = document.getElementById('card-' + id);
+    if (!card) return;
+    card.style.transition = 'opacity 0.4s';
+    card.style.opacity = '0';
+    setTimeout(function () {
+      if (card.parentNode) card.parentNode.removeChild(card);
+      var badge = document.getElementById('count-badge');
+      if (!badge) return;
+      var n = Math.max(0, parseInt(badge.textContent, 10) - 1);
+      badge.textContent = String(n);
+      if (n === 0) {
+        var list = document.getElementById('queue-list');
+        while (list.firstChild) list.removeChild(list.firstChild);
+        list.appendChild(buildEmptyState());
+      }
+    }, 450);
+  }
+
+  if (getToken()) loadQueue();
+})();
+</script>

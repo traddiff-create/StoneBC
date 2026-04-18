@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "@11ty/eleventy": "^3.0.0",
-    "node-fetch": "^3.3.0"
+    "@netlify/blobs": "^8.1.0",
+    "node-fetch": "^3.3.0",
+    "resend": "^4.0.0"
   }
 }

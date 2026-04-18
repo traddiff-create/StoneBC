@@ -4,6 +4,9 @@
   command = "npm install && npx @11ty/eleventy"
   publish = "_site"
 
+[functions]
+  directory = "netlify/functions"
+
 [build.environment]
   # Set WP_API_URL to enable WordPress content fetching
   # WP_API_URL = "https://stonebikeco.com"
