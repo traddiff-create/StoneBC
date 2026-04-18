@@ -40,3 +40,4 @@ Site Pics/
 node_modules/
 dist/
 .netlify/
+android/fastlane/service-account.json
