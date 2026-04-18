@@ -202,6 +202,8 @@
 		K10007000000000000000007 /* RideChecklist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideChecklist.swift; sourceTree = "<group>"; };
 		K10008000000000000000008 /* GPXStudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPXStudioView.swift; sourceTree = "<group>"; };
 		J10003000000000000000003 /* StoneBC.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StoneBC.entitlements; sourceTree = "<group>"; };
+		P10001000000000000000001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		P10001000000000000000002 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = P10001000000000000000001 /* PrivacyInfo.xcprivacy */; };
 		M10001000000000000000001 /* OfflineRouteStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineRouteStorage.swift; sourceTree = "<group>"; };
 		M10002000000000000000002 /* RouteAnalysisService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteAnalysisService.swift; sourceTree = "<group>"; };
 		M10003000000000000000003 /* TrailforksService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailforksService.swift; sourceTree = "<group>"; };
@@ -346,6 +348,7 @@
 				K10007000000000000000007 /* RideChecklist.swift */,
 				K10008000000000000000008 /* GPXStudioView.swift */,
 				J10003000000000000000003 /* StoneBC.entitlements */,
+				P10001000000000000000001 /* PrivacyInfo.xcprivacy */,
 				D30000000000000000000001 /* Radio */,
 				E20001000000000000000001 /* Assets.xcassets */,
 				C20010000000000000000010 /* bikes.json */,
@@ -453,6 +456,7 @@
 				E10001000000000000000001 /* Assets.xcassets in Resources */,
 				G00008000000000000000008 /* cell_towers.json in Resources */,
 				K00006000000000000000006 /* guides.json in Resources */,
+				P10001000000000000000002 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
