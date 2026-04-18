@@ -1,3 +1,28 @@
 {
-  "entries": []
+  "entries": [
+    {
+      "id": "ACT-2026-001",
+      "date": "2026-04-17",
+      "type": "donation_inquiry",
+      "name": "Nate Thomas",
+      "email": "nthomas87@yahoo.com",
+      "source": "Website contact form (Jetpack)",
+      "device": "Chrome (Mobile)",
+      "message": "Boys' bike, missing brakes, used maybe a dozen times, about to be thrown away. Found SBC on TV.",
+      "status": "replied",
+      "notes": "Replied same day — confirmed donations accepted, brakes no problem, asked to coordinate drop-off.",
+      "history": [
+        {
+          "date": "2026-04-17",
+          "action": "inquiry_received",
+          "note": "Contact form submission via Jetpack"
+        },
+        {
+          "date": "2026-04-17",
+          "action": "reply_sent",
+          "note": "Sent from info@stonebicyclecoalition.com via Mac Mail"
+        }
+      ]
+    }
+  ]
 }
