@@ -310,3 +310,130 @@ private fun MailtoForm(
         }
     }
 }
+
+// ── Swiss Army Knife sub-screens ──────────────────────────────────────────────
+
+@Composable
+fun WeatherScreen(onBack: () -> Unit) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+        BackHeader(onBack, "Weather")
+        Text(
+            "Select a route to see the OpenWeatherMap forecast for that region.",
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(BCSpacing.md)
+        )
+        val routes = LocalAppState.current.routes
+        if (routes.isEmpty()) {
+            Text("No routes loaded.", fontSize = 13.sp, modifier = Modifier.padding(BCSpacing.md))
+        } else {
+            routes.forEach { route ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = BCSpacing.md, vertical = 4.dp)
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(0.4f), RoundedCornerShape(12.dp))
+                        .padding(BCSpacing.md)
+                ) {
+                    Text(route.name, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                    Text("Tap a route in the Routes tab to see weather on the detail screen.", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun TrailforksScreen(onBack: () -> Unit) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+        BackHeader(onBack, "Trail Conditions")
+        Text(
+            "Crowdsourced Trailforks trail status — 4-hour cache.",
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(BCSpacing.md)
+        )
+        val routes = LocalAppState.current.routes
+        if (routes.isEmpty()) {
+            Text("No routes loaded.", fontSize = 13.sp, modifier = Modifier.padding(BCSpacing.md))
+        } else {
+            routes.forEach { route ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = BCSpacing.md, vertical = 4.dp)
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(0.4f), RoundedCornerShape(12.dp))
+                        .padding(BCSpacing.md)
+                ) {
+                    Text(route.name, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                    Text("Conditions load when route is selected on the map.", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun USFSScreen(onBack: () -> Unit) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+        BackHeader(onBack, "USFS Closures")
+        Text(
+            "Black Hills National Forest road and trail closures from the public ArcGIS feed. No API key required.",
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(BCSpacing.md)
+        )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = BCSpacing.md, vertical = 4.dp)
+                .background(MaterialTheme.colorScheme.surfaceVariant.copy(0.4f), RoundedCornerShape(12.dp))
+                .padding(BCSpacing.md)
+        ) {
+            Text("Closures load in Route Detail", fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+            Text("Open a route from the Routes tab to see USFS closures in the area.", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+@Composable
+fun StravaScreen(onBack: () -> Unit) {
+    val context = LocalContext.current
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+        BackHeader(onBack, "Strava Sync")
+        Text(
+            "Connect your Strava account to view segment leaderboards along your routes.",
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(BCSpacing.md)
+        )
+        if (com.traddiff.stonebc.services.StravaService.isAuthenticated(context)) {
+            val athlete = com.traddiff.stonebc.services.StravaService.athleteName(context)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = BCSpacing.md, vertical = 4.dp)
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(0.4f), RoundedCornerShape(12.dp))
+                    .padding(BCSpacing.md)
+            ) {
+                Text("Connected${if (athlete != null) " as $athlete" else ""}", fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                Text("Segments load in Route Detail view.", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Button(
+                onClick = { com.traddiff.stonebc.services.StravaService.disconnect(context) },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                modifier = Modifier.fillMaxWidth().padding(BCSpacing.md)
+            ) {
+                Text("Disconnect Strava", color = Color.White, fontWeight = FontWeight.SemiBold)
+            }
+        } else {
+            Button(
+                onClick = { com.traddiff.stonebc.services.StravaService.startAuth(context) },
+                colors = ButtonDefaults.buttonColors(containerColor = BCColors.BrandAmber),
+                modifier = Modifier.fillMaxWidth().padding(BCSpacing.md)
+            ) {
+                Text("Connect with Strava", color = Color.White, fontWeight = FontWeight.SemiBold)
+            }
+        }
+    }
+}

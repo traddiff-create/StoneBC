@@ -14,7 +14,8 @@ data class AppConfig(
     val location: Location? = null,
     val colors: Colors = Colors(),
     val features: Features = Features(),
-    val dataURLs: DataURLs = DataURLs()
+    val dataURLs: DataURLs = DataURLs(),
+    val apiKeys: ApiKeys? = null
 ) {
     @Serializable
     data class Location(
@@ -49,6 +50,15 @@ data class AppConfig(
         val bikes: String = "",
         val events: String = "",
         val posts: String = ""
+    )
+
+    @Serializable
+    data class ApiKeys(
+        val trailforksAppId: String? = null,
+        val trailforksAppSecret: String? = null,
+        val stravaClientId: String? = null,
+        val stravaClientSecret: String? = null,
+        val openWeatherApiKey: String? = null
     )
 
     companion object {

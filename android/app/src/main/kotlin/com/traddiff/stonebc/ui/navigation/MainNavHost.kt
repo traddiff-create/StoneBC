@@ -36,9 +36,13 @@ import com.traddiff.stonebc.ui.screens.more.EventsScreen
 import com.traddiff.stonebc.ui.screens.more.GalleryScreen
 import com.traddiff.stonebc.ui.screens.more.MoreScreen
 import com.traddiff.stonebc.ui.screens.more.ProgramsScreen
+import com.traddiff.stonebc.ui.screens.more.StravaScreen
 import com.traddiff.stonebc.ui.screens.more.SwissArmyKnifeScreen
 import com.traddiff.stonebc.ui.screens.more.TourGuidesScreen
+import com.traddiff.stonebc.ui.screens.more.TrailforksScreen
+import com.traddiff.stonebc.ui.screens.more.USFSScreen
 import com.traddiff.stonebc.ui.screens.more.VolunteerScreen
+import com.traddiff.stonebc.ui.screens.more.WeatherScreen
 import com.traddiff.stonebc.ui.screens.record.RecordScreen
 import com.traddiff.stonebc.ui.screens.routes.RouteDetailScreen
 import com.traddiff.stonebc.ui.screens.routes.RoutesScreen
@@ -129,7 +133,16 @@ fun MainNavHost() {
             composable("guides") { TourGuidesScreen(onBack = { navController.popBackStack() }) }
             composable("volunteer") { VolunteerScreen(onBack = { navController.popBackStack() }) }
             composable("donate") { DonateScreen(onBack = { navController.popBackStack() }) }
-            composable("swiss") { SwissArmyKnifeScreen(onBack = { navController.popBackStack() }) }
+            composable("swiss") {
+                SwissArmyKnifeScreen(
+                    onBack = { navController.popBackStack() },
+                    onNavigate = { route -> navController.navigate(route) }
+                )
+            }
+            composable("swiss/weather") { WeatherScreen(onBack = { navController.popBackStack() }) }
+            composable("swiss/trailforks") { TrailforksScreen(onBack = { navController.popBackStack() }) }
+            composable("swiss/usfs") { USFSScreen(onBack = { navController.popBackStack() }) }
+            composable("swiss/strava") { StravaScreen(onBack = { navController.popBackStack() }) }
 
             composable("expeditions") {
                 ExpeditionListScreen(

@@ -32,5 +32,12 @@
     "bikes": "/sbc_bike?per_page=50",
     "events": "/sbc_event?per_page=50",
     "posts": "/posts?per_page=20&_embed"
+  },
+  "apiKeys": {
+    "trailforksAppId": null,
+    "trailforksAppSecret": null,
+    "stravaClientId": null,
+    "stravaClientSecret": null,
+    "openWeatherApiKey": null
   }
 }

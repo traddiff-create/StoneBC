@@ -55,6 +55,7 @@ struct AppConfig: Codable {
         let trailforksAppSecret: String?
         let stravaClientId: String?
         let stravaClientSecret: String?
+        let openWeatherApiKey: String?
     }
 
     let apiKeys: APIKeys?

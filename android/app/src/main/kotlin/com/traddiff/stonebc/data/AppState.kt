@@ -13,6 +13,9 @@ import com.traddiff.stonebc.data.models.Post
 import com.traddiff.stonebc.data.models.Program
 import com.traddiff.stonebc.data.models.Route
 import com.traddiff.stonebc.data.models.TourGuide
+import com.traddiff.stonebc.services.TrailforksService
+import com.traddiff.stonebc.services.WeatherService
+import com.traddiff.stonebc.services.StravaService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -63,7 +66,18 @@ class AppState(
             // decode. The global `isLoading` flag is released when routes — the
             // slowest load — finishes, but individual screens should gate on
             // their own collections (e.g. routes.isEmpty()) rather than this.
-            launch { config = repository.loadConfig() }
+            launch {
+                config = repository.loadConfig()
+                config.apiKeys?.let { keys ->
+                    keys.openWeatherApiKey?.let { WeatherService.configure(it) }
+                    val tfId = keys.trailforksAppId
+                    val tfSecret = keys.trailforksAppSecret
+                    if (tfId != null && tfSecret != null) TrailforksService.configure(tfId, tfSecret)
+                    val stravaId = keys.stravaClientId
+                    val stravaSecret = keys.stravaClientSecret
+                    if (stravaId != null && stravaSecret != null) StravaService.configure(stravaId, stravaSecret)
+                }
+            }
             launch { bikes = repository.loadBikes() }
             launch { posts = repository.loadPosts() }
             launch { events = repository.loadEvents() }

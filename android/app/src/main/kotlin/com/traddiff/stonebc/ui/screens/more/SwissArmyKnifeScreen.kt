@@ -4,17 +4,13 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -36,11 +32,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.traddiff.stonebc.services.TrailforksService
+import com.traddiff.stonebc.services.USFSService
+import com.traddiff.stonebc.services.WeatherService
+import com.traddiff.stonebc.services.StravaService
 import com.traddiff.stonebc.ui.theme.BCColors
 import com.traddiff.stonebc.ui.theme.BCSpacing
 
 @Composable
-fun SwissArmyKnifeScreen(onBack: () -> Unit) {
+fun SwissArmyKnifeScreen(onBack: () -> Unit, onNavigate: (String) -> Unit = {}) {
     val context = LocalContext.current
     Column(
         modifier = Modifier
@@ -50,9 +50,7 @@ fun SwissArmyKnifeScreen(onBack: () -> Unit) {
         BackHeader(onBack, "Swiss Army Knife")
 
         Text(
-            "Companion services for every ride. Emergency call is live now; " +
-                "Strava, Trailforks, USFS, and Weather sync is wired into " +
-                "iOS and will connect on Android when the shared keys ship.",
+            "Companion services for every ride.",
             fontSize = 13.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(BCSpacing.md)
@@ -75,16 +73,16 @@ fun SwissArmyKnifeScreen(onBack: () -> Unit) {
             icon = Icons.Default.CloudQueue,
             tint = BCColors.BrandBlue,
             title = "Weather (OpenWeatherMap)",
-            subtitle = "Forecast for the region around each route. iOS key reuse pending.",
-            onTap = null
+            subtitle = "Forecast for the region around each route.",
+            onTap = if (WeatherService.isConfigured) { { onNavigate("swiss/weather") } } else null
         )
 
         ToolRow(
             icon = Icons.Default.Terrain,
             tint = BCColors.BrandGreen,
             title = "Trail Conditions (Trailforks)",
-            subtitle = "Crowdsourced trail status with 4-hour cache. Awaiting Android key.",
-            onTap = null
+            subtitle = "Crowdsourced trail status with 4-hour cache.",
+            onTap = if (TrailforksService.isConfigured) { { onNavigate("swiss/trailforks") } } else null
         )
 
         ToolRow(
@@ -92,15 +90,15 @@ fun SwissArmyKnifeScreen(onBack: () -> Unit) {
             tint = BCColors.BrandGreen,
             title = "USFS Closures (ArcGIS)",
             subtitle = "Black Hills NF road and trail closures from the public feed.",
-            onTap = null
+            onTap = { onNavigate("swiss/usfs") }
         )
 
         ToolRow(
             icon = Icons.Default.Pool,
             tint = BCColors.BrandAmber,
             title = "Strava Sync",
-            subtitle = "OAuth2 via AppAuth — Android redirect URI to be registered in Strava.",
-            onTap = null
+            subtitle = "Connect your Strava account to see segment leaderboards.",
+            onTap = if (StravaService.isConfigured) { { onNavigate("swiss/strava") } } else null
         )
     }
 }
@@ -142,4 +140,3 @@ private fun ToolRow(
         }
     }
 }
-

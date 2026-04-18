@@ -36,6 +36,14 @@ class AppState {
 
     init() {
         loadData()
+        if let keys = config.apiKeys {
+            if let id = keys.trailforksAppId, let secret = keys.trailforksAppSecret {
+                Task { await TrailforksService.shared.configure(appId: id, appSecret: secret) }
+            }
+            if let id = keys.stravaClientId, let secret = keys.stravaClientSecret {
+                StravaService.shared.configure(clientId: id, clientSecret: secret)
+            }
+        }
     }
 
     private static let importedRoutesKey = "importedRoutes"

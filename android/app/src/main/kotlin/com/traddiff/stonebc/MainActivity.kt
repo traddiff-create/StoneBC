@@ -1,5 +1,6 @@
 package com.traddiff.stonebc
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,10 +12,18 @@ import androidx.compose.runtime.remember
 import com.traddiff.stonebc.data.AppState
 import com.traddiff.stonebc.data.AssetsRepository
 import com.traddiff.stonebc.data.LocalAppState
+import com.traddiff.stonebc.services.StravaService
 import com.traddiff.stonebc.ui.navigation.MainNavHost
 import com.traddiff.stonebc.ui.theme.StoneBCTheme
 
 class MainActivity : ComponentActivity() {
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        val code = intent.data?.getQueryParameter("code") ?: return
+        StravaService.pendingAuthCallback?.invoke(code)
+        StravaService.pendingAuthCallback = null
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
