@@ -64,6 +64,7 @@ struct RouteDetailView: View {
                     }
 
                     gpxStudioLink
+                    forkRouteButton
                 }
 
                 // Offline & Coverage tools
@@ -398,6 +399,36 @@ struct RouteDetailView: View {
                     .foregroundColor(BCColors.brandBlue)
                 Spacer()
                 Text("Interactive map, elevation, slope analysis")
+                    .font(.system(size: 10))
+                    .foregroundColor(.secondary)
+                Image(systemName: "arrow.up.right")
+                    .font(.system(size: 10))
+                    .foregroundColor(BCColors.tertiaryText)
+            }
+            .padding(BCSpacing.md)
+            .background(BCColors.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var forkRouteButton: some View {
+        Button {
+            let lat = route.startCoordinate.latitude
+            let lon = route.startCoordinate.longitude
+            if let url = URL(string: "https://gpx.studio/app#12/\(lat)/\(lon)") {
+                openURL(url)
+            }
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: "arrow.triangle.branch")
+                    .font(.system(size: 16))
+                    .foregroundColor(BCColors.brandGreen)
+                Text("Fork & Build")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(BCColors.brandGreen)
+                Spacer()
+                Text("Edit this route or build a variant")
                     .font(.system(size: 10))
                     .foregroundColor(.secondary)
                 Image(systemName: "arrow.up.right")

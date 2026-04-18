@@ -494,6 +494,11 @@ struct RecordingSaveSheet: View {
     @State private var category = "gravel"
     @State private var difficulty = "moderate"
     @State private var region = "Recorded"
+    @State private var submitToCoop = false
+    @State private var submitterEmail = ""
+    @State private var submitDescription = ""
+    @State private var isSubmitting = false
+    @State private var submitResult: String?
     @Environment(\.dismiss) var sheetDismiss
 
     private let categories = ["road", "gravel", "fatbike", "trail"]
@@ -535,6 +540,25 @@ struct RecordingSaveSheet: View {
                 } footer: {
                     Text("Route templates can be navigated again later. Stored on this device.")
                 }
+
+                Section {
+                    Toggle("Submit to Co-op", isOn: $submitToCoop)
+                    if submitToCoop {
+                        TextField("Your email", text: $submitterEmail)
+                            .keyboardType(.emailAddress)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                        TextField("Description (optional)", text: $submitDescription, axis: .vertical)
+                            .lineLimit(3, reservesSpace: false)
+                        if let result = submitResult {
+                            Label(result, systemImage: result.hasPrefix("✓") ? "checkmark.circle.fill" : "exclamationmark.triangle")
+                                .font(.caption)
+                                .foregroundColor(result.hasPrefix("✓") ? BCColors.brandGreen : .red)
+                        }
+                    }
+                } footer: {
+                    Text("Share your ride with the co-op. Submissions are reviewed by the SBC team before appearing in the app.")
+                }
             }
             .navigationTitle("Save Recording")
             .navigationBarTitleDisplayMode(.inline)
@@ -548,10 +572,18 @@ struct RecordingSaveSheet: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Save") {
                         performSave()
-                        sheetDismiss()
-                        onDone()
+                        if submitToCoop {
+                            Task { await submitRouteToCoop() }
+                        } else {
+                            sheetDismiss()
+                            onDone()
+                        }
                     }
-                    .disabled(saveAsRoute && routeName.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .disabled(
+                        (saveAsRoute && routeName.trimmingCharacters(in: .whitespaces).isEmpty) ||
+                        (submitToCoop && submitterEmail.trimmingCharacters(in: .whitespaces).isEmpty) ||
+                        isSubmitting
+                    )
                     .fontWeight(.semibold)
                 }
             }
@@ -595,6 +627,35 @@ struct RecordingSaveSheet: View {
                 isImported: true
             )
             UserRouteStore.shared.save(route)
+        }
+    }
+
+    @MainActor
+    private func submitRouteToCoop() async {
+        isSubmitting = true
+        let name = routeName.trimmingCharacters(in: .whitespaces).isEmpty ? "Recorded Ride" : routeName
+        let gpxString = RideExportService.exportGPX(
+            routeName: name,
+            locations: recording.trackpoints,
+            startTime: recording.startedAt ?? Date()
+        )
+        let result = await RouteSubmissionService.submit(
+            name: name,
+            description: submitDescription,
+            difficulty: difficulty,
+            category: category,
+            email: submitterEmail,
+            gpxData: Data(gpxString.utf8)
+        )
+        isSubmitting = false
+        switch result {
+        case .success:
+            submitResult = "✓ Submitted! We'll review and notify you."
+            try? await Task.sleep(for: .seconds(2))
+            sheetDismiss()
+            onDone()
+        case .failure(let error):
+            submitResult = error.localizedDescription
         }
     }
 }
