@@ -1,4 +1,4 @@
-appId: com.traddiff.stonebc
+appId: com.StoneBicycleCoalition
 ---
 # Subflow: if onboarding is showing, power through it.
 # Used by every non-onboarding flow via `- runFlow: _skip-onboarding.yaml`.

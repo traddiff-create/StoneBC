@@ -38,7 +38,7 @@ All upload lanes require `fastlane/service-account.json` (a Play Developer API s
 
 ## Google Play Console setup (one-time, manual)
 
-1. **Create app in Play Console** — go to [play.google.com/console](https://play.google.com/console), create app with package `com.traddiff.stonebc`
+1. **Create app in Play Console** — go to [play.google.com/console](https://play.google.com/console), create app with package `com.StoneBicycleCoalition`
 2. **Complete store listing** — name, description, screenshots, privacy policy URL
 3. **Upload first AAB manually via Play Console web UI** — needed to register the package. After that, Fastlane can upload subsequent builds
 4. **Opt into Play App Signing** — when uploading first AAB, Google offers to manage the signing key. Accept. Your upload keystore stays with you; Google holds the final signing key

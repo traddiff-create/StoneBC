@@ -42,6 +42,161 @@
           "note": "Sent from Mac Mail"
         }
       ]
+    },
+    {
+      "id": "WL-2026-002",
+      "date_added": "2026-03-31",
+      "name": "Harry Elthie",
+      "email": "sonnyelthie622@gmail.com",
+      "phone": "",
+      "source": "Website contact form",
+      "needs": [
+        {
+          "rider": "Harry",
+          "height": "",
+          "bike_type": "hybrid",
+          "frame_size_min_in": null,
+          "frame_size_max_in": null,
+          "notes": "Back issues — needs comfortable riding position. Upright frame preferred."
+        }
+      ],
+      "accessory_needs": [],
+      "status": "active",
+      "priority_notes": "Back history; needs ergonomic match",
+      "last_contacted": "2026-04-17",
+      "matched_bike_ids": [],
+      "history": [
+        {
+          "date": "2026-03-31",
+          "action": "added_to_waitlist",
+          "note": "Contact form submission; reply sent from stonebicyclecoalition@gmail.com"
+        },
+        {
+          "date": "2026-04-09",
+          "action": "reply_received",
+          "note": "Harry replied: 'Yes, I would be interested! Thank you very much'"
+        },
+        {
+          "date": "2026-04-17",
+          "action": "follow_up_sent",
+          "note": "Sent from info@ via Mac Mail. Asked for height and bike type preference (back-friendly)."
+        }
+      ]
+    },
+    {
+      "id": "WL-2026-003",
+      "date_added": "2026-03-31",
+      "name": "Amelia",
+      "email": "ammacct22@gmail.com",
+      "phone": "",
+      "source": "Website contact form",
+      "needs": [
+        {
+          "rider": "Amelia",
+          "height": "",
+          "bike_type": "",
+          "frame_size_min_in": null,
+          "frame_size_max_in": null,
+          "notes": "Wants to get back into riding. No specifics on bike type yet."
+        }
+      ],
+      "accessory_needs": [],
+      "status": "active",
+      "priority_notes": "",
+      "last_contacted": "2026-04-17",
+      "matched_bike_ids": [],
+      "history": [
+        {
+          "date": "2026-03-31",
+          "action": "added_to_waitlist",
+          "note": "Contact form submission; reply sent from stonebicyclecoalition@gmail.com"
+        },
+        {
+          "date": "2026-03-31",
+          "action": "reply_received",
+          "note": "Amelia replied: 'I'd love to be on the list. Let me know if you need any additional information.'"
+        },
+        {
+          "date": "2026-04-17",
+          "action": "follow_up_sent",
+          "note": "Sent from info@ via Mac Mail. Asked for height and bike type preference."
+        }
+      ]
+    },
+    {
+      "id": "WL-2026-004",
+      "date_added": "2026-04-12",
+      "name": "Chance Davis",
+      "email": "chancedavis1102@gmail.com",
+      "phone": "",
+      "source": "Website contact form",
+      "needs": [
+        {
+          "rider": "Chance",
+          "height": "",
+          "bike_type": "mountain",
+          "frame_size_min_in": null,
+          "frame_size_max_in": null,
+          "notes": "Needs bike for transportation/commuting. Wants something easy to pedal — mountain bike or beach cruiser. Also has existing unrideable MTB — offered to look at it at Tuesday open shop."
+        }
+      ],
+      "accessory_needs": [],
+      "status": "active",
+      "priority_notes": "Transportation need — commuting use case; has existing MTB needing repair",
+      "last_contacted": "2026-04-17",
+      "matched_bike_ids": [],
+      "history": [
+        {
+          "date": "2026-04-12",
+          "action": "added_to_waitlist",
+          "note": "Contact form email received"
+        },
+        {
+          "date": "2026-04-17",
+          "action": "reply_sent",
+          "note": "Sent from info@stonebicyclecoalition.com via Mac Mail. Offered waitlist + Tuesday open shop for his existing MTB."
+        }
+      ]
+    },
+    {
+      "id": "WL-2026-005",
+      "date_added": "2026-03-31",
+      "name": "Christopher Bradley",
+      "email": "yeet.combat@gmail.com",
+      "phone": "",
+      "source": "Website contact form",
+      "needs": [
+        {
+          "rider": "Christopher",
+          "height": "",
+          "bike_type": "cruiser",
+          "frame_size_min_in": null,
+          "frame_size_max_in": null,
+          "notes": "Wants fat tire bike for year-round commuting in Rapid City + hauling"
+        }
+      ],
+      "accessory_needs": [],
+      "status": "active",
+      "priority_notes": "Year-round commuter; needs fat tire for winter capability",
+      "last_contacted": "2026-04-17",
+      "matched_bike_ids": [],
+      "history": [
+        {
+          "date": "2026-03-31",
+          "action": "added_to_waitlist",
+          "note": "Contact form submission; reply sent from stonebicyclecoalition@gmail.com"
+        },
+        {
+          "date": "2026-03-31",
+          "action": "awaiting_response",
+          "note": "No reply received"
+        },
+        {
+          "date": "2026-04-17",
+          "action": "second_outreach_sent",
+          "note": "Sent from info@ via Mac Mail. Second attempt — asked if still interested, height, gear needs."
+        }
+      ]
     }
   ],
   "_schema": {
@@ -64,6 +219,6 @@
     ],
     "stale_rule": "Flip to 'stale' if no response after 2 outreach attempts over 30 days",
     "id_format": "WL-YYYY-NNN",
-    "next_id": "WL-2026-002"
+    "next_id": "WL-2026-006"
   }
 }

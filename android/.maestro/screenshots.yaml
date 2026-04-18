@@ -1,0 +1,67 @@
+appId: com.StoneBicycleCoalition
+name: Capture Play Store screenshots — 8 key screens
+---
+# Skip onboarding
+- launchApp
+- runFlow: subflows/skip-onboarding.yaml
+- extendedWaitUntil:
+    visible: "Stone Bicycle Coalition"
+    timeout: 8000
+
+# 1. Home — dashboard
+- takeScreenshot: screenshots/1_home
+
+# 2. Routes tab — route list with filters
+- tapOn:
+    text: "Routes"
+    index: 1
+- extendedWaitUntil:
+    visible: "DIFFICULTY"
+    timeout: 5000
+- takeScreenshot: screenshots/2_routes
+
+# 3. Route Detail — 8 Over 7 with map + elevation
+- tapOn: "8 Over 7"
+- extendedWaitUntil:
+    visible: "ELEVATION PROFILE"
+    timeout: 5000
+- takeScreenshot: screenshots/3_route_detail
+
+# 4. Bikes tab — tap nav icon by point (4th of 5 tabs)
+- tapOn:
+    point: 72%, 97%
+- extendedWaitUntil:
+    visible: "The Quarry"
+    timeout: 5000
+- takeScreenshot: screenshots/4_bikes
+
+# 5. More hub — tap nav icon by point (5th tab)
+- tapOn:
+    point: 90%, 97%
+- extendedWaitUntil:
+    visible: "COMMUNITY"
+    timeout: 5000
+- takeScreenshot: screenshots/5_more
+
+# 6. Events — Pedal for Empathy
+- tapOn: "Events"
+- extendedWaitUntil:
+    visible: "Pedal for Empathy"
+    timeout: 5000
+- takeScreenshot: screenshots/6_events
+- back
+
+# 7. Tour Guides — multi-day itineraries
+- tapOn: "Tour Guides"
+- extendedWaitUntil:
+    visible: "Brewvet"
+    timeout: 5000
+- takeScreenshot: screenshots/7_tour_guides
+- back
+
+# 8. Community Feed
+- tapOn: "Community Feed"
+- extendedWaitUntil:
+    visible: "AEP Grant Awarded!"
+    timeout: 5000
+- takeScreenshot: screenshots/8_community

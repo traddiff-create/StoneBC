@@ -1,69 +1,248 @@
 default_platform(:android)
 
 platform :android do
-  desc "Runs unit tests"
+
+  # ──────────────────────────────────────────────
+  # Helpers
+  # ──────────────────────────────────────────────
+
+  AAB_PATH = File.expand_path("../app/build/outputs/bundle/release/app-release.aab", __dir__)
+
+  def log(msg)
+    UI.message("🚲 #{msg}")
+  end
+
+  def ensure_aab_exists!
+    unless File.exist?(AAB_PATH)
+      UI.user_error!("AAB not found at #{AAB_PATH}. Build failed or path changed.")
+    end
+    log "AAB found: #{AAB_PATH} (#{(File.size(AAB_PATH) / 1024.0 / 1024.0).round(2)} MB)"
+  end
+
+  def read_version_code
+    content = File.read("../app/build.gradle.kts")
+    match = content.match(/versionCode\s*=\s*(\d+)/)
+    match ? match[1].to_i : nil
+  end
+
+  def read_version_name
+    content = File.read("../app/build.gradle.kts")
+    match = content.match(/versionName\s*=\s*"([^"]+)"/)
+    match ? match[1] : nil
+  end
+
+  # ──────────────────────────────────────────────
+  # Lane: bump_version_code
+  # ──────────────────────────────────────────────
+
+  desc "Auto-increment versionCode in build.gradle.kts"
+  lane :bump_version_code do
+    gradle_file = "../app/build.gradle.kts"
+    content = File.read(gradle_file)
+
+    current = read_version_code
+    UI.user_error!("Could not find versionCode in #{gradle_file}") unless current
+
+    new_code = current + 1
+    content.gsub!(/versionCode\s*=\s*\d+/, "versionCode = #{new_code}")
+    File.write(gradle_file, content)
+
+    log "versionCode bumped: #{current} → #{new_code}"
+    new_code
+  end
+
+  # ──────────────────────────────────────────────
+  # Lane: set_version_name
+  # ──────────────────────────────────────────────
+
+  desc "Set versionName in build.gradle.kts"
+  lane :set_version_name do |options|
+    version = options[:version]
+    next unless version
+
+    gradle_file = "../app/build.gradle.kts"
+    content = File.read(gradle_file)
+
+    old_name = read_version_name
+    content.gsub!(/versionName\s*=\s*"[^"]+"/, "versionName = \"#{version}\"")
+    File.write(gradle_file, content)
+
+    log "versionName set: #{old_name} → #{version}"
+  end
+
+  # ──────────────────────────────────────────────
+  # Lane: test
+  # ──────────────────────────────────────────────
+
+  desc "Run unit tests"
   lane :test do
-    gradle(task: "test")
+    gradle(task: "test", project_dir: ".")
   end
 
-  desc "Builds a debug APK"
+  # ──────────────────────────────────────────────
+  # Lane: build_debug
+  # ──────────────────────────────────────────────
+
+  desc "Build debug APK"
   lane :build_debug do
-    gradle(task: "clean assembleDebug")
+    gradle(task: "clean assembleDebug", project_dir: ".")
   end
 
-  desc "Builds a signed release AAB (App Bundle)"
+  # ──────────────────────────────────────────────
+  # Lane: build_release
+  # ──────────────────────────────────────────────
+
+  desc "Build release AAB"
   lane :build_release do
+    log "Building release AAB..."
     gradle(
       task: "clean bundleRelease",
-      properties: {
-        "android.injected.signing.store.file"     => ENV["STONEBC_KEYSTORE_PATH"],
-        "android.injected.signing.store.password" => ENV["STONEBC_STORE_PASSWORD"],
-        "android.injected.signing.key.alias"      => ENV["STONEBC_KEY_ALIAS"],
-        "android.injected.signing.key.password"   => ENV["STONEBC_KEY_PASSWORD"]
-      }.compact
+      project_dir: "."
     )
+    ensure_aab_exists!
+    log "Release AAB built successfully"
   end
 
-  desc "Uploads the signed AAB to Play Console internal track"
-  lane :internal do
+  # ──────────────────────────────────────────────
+  # Lane: deploy_internal
+  # ──────────────────────────────────────────────
+
+  desc "Build and deploy to Google Play internal testing track"
+  lane :deploy_internal do |options|
+    log "=== DEPLOYING TO INTERNAL TESTING ==="
+
+    # 1. Bump versionCode
+    new_code = bump_version_code
+
+    # 2. Optionally set versionName
+    if options[:version]
+      set_version_name(version: options[:version])
+    end
+
+    version_name = read_version_name
+    log "Deploying v#{version_name} (code #{new_code})"
+
+    # 3. Build AAB
     build_release
+
+    # 4. Upload to internal track
+    log "Uploading to Google Play (internal track)..."
     upload_to_play_store(
       track: "internal",
-      aab: "app/build/outputs/bundle/release/app-release.aab",
-      skip_upload_apk: true,
+      aab: AAB_PATH,
       skip_upload_metadata: true,
-      skip_upload_changelogs: true,
       skip_upload_images: true,
-      skip_upload_screenshots: true
+      skip_upload_screenshots: true,
+      skip_upload_changelogs: false,
+      release_status: options[:draft] ? "draft" : "completed"
     )
+
+    log "=== DEPLOYED TO INTERNAL TESTING ==="
+    log "versionName: #{version_name}"
+    log "versionCode: #{new_code}"
+    log "Track: internal"
   end
 
-  desc "Promotes the current internal build to closed beta"
-  lane :beta do
+  # ──────────────────────────────────────────────
+  # Lane: deploy_production
+  # ──────────────────────────────────────────────
+
+  desc "Build and deploy to Google Play production track"
+  lane :deploy_production do |options|
+    log "=== DEPLOYING TO PRODUCTION ==="
+
+    # 1. Bump versionCode
+    new_code = bump_version_code
+
+    # 2. Optionally set versionName
+    if options[:version]
+      set_version_name(version: options[:version])
+    end
+
+    version_name = read_version_name
+    log "Deploying v#{version_name} (code #{new_code})"
+
+    # 3. Confirm production deploy
+    unless options[:force]
+      UI.confirm("Deploy v#{version_name} (code #{new_code}) to PRODUCTION?")
+    end
+
+    # 4. Build AAB
+    build_release
+
+    # 5. Upload to production track
+    rollout = (options[:rollout] || "1.0").to_f
+    log "Uploading to Google Play (production track, #{(rollout * 100).to_i}% rollout)..."
+
+    upload_to_play_store(
+      track: "production",
+      aab: AAB_PATH,
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      release_status: rollout < 1.0 ? "inProgress" : "completed",
+      rollout: rollout < 1.0 ? rollout.to_s : nil
+    )
+
+    log "=== DEPLOYED TO PRODUCTION ==="
+    log "versionName: #{version_name}"
+    log "versionCode: #{new_code}"
+    log "Track: production"
+    log "Rollout: #{(rollout * 100).to_i}%"
+  end
+
+  # ──────────────────────────────────────────────
+  # Lane: promote_to_production
+  # ──────────────────────────────────────────────
+
+  desc "Promote internal testing release to production (no rebuild)"
+  lane :promote_to_production do |options|
+    log "=== PROMOTING INTERNAL → PRODUCTION ==="
+
+    version_name = read_version_name
+    version_code = read_version_code
+
+    unless options[:force]
+      UI.confirm("Promote v#{version_name} (code #{version_code}) from internal → production?")
+    end
+
     upload_to_play_store(
       track: "internal",
-      track_promote_to: "beta",
-      skip_upload_apk: true,
-      skip_upload_aab: true,
-      skip_upload_metadata: true,
-      skip_upload_changelogs: true,
-      skip_upload_images: true,
-      skip_upload_screenshots: true
-    )
-  end
-
-  desc "Promotes the current beta build to production"
-  lane :production do
-    upload_to_play_store(
-      track: "beta",
       track_promote_to: "production",
-      rollout: "0.1",
-      skip_upload_apk: true,
       skip_upload_aab: true,
       skip_upload_metadata: true,
-      skip_upload_changelogs: true,
       skip_upload_images: true,
       skip_upload_screenshots: true
     )
+
+    log "=== PROMOTED TO PRODUCTION ==="
+    log "v#{version_name} (code #{version_code}) is now live."
   end
+
+  # ──────────────────────────────────────────────
+  # Lane: upload_metadata
+  # ──────────────────────────────────────────────
+
+  desc "Upload store listing metadata and screenshots (no build)"
+  lane :upload_metadata do
+    log "=== UPLOADING STORE METADATA ==="
+
+    upload_to_play_store(
+      skip_upload_aab: true,
+      skip_upload_apk: true,
+      skip_upload_changelogs: true
+    )
+
+    log "=== METADATA UPLOADED ==="
+  end
+
+  # ──────────────────────────────────────────────
+  # Error handling
+  # ──────────────────────────────────────────────
+
+  error do |lane, exception|
+    UI.error("❌ Lane #{lane} failed:")
+    UI.error(exception.message)
+  end
+
 end

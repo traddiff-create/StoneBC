@@ -1,0 +1,31 @@
+Stone Bicycle Coalition is your cycling companion for the Black Hills. Browse routes, find bikes, join community rides, and connect with fellow riders -- all in one app.
+
+ROUTES
+Explore 42 cycling routes across the Black Hills with interactive maps, elevation profiles, and turn-by-turn details. Filter by difficulty, distance, and surface type. Download routes for offline use on your next adventure.
+
+THE QUARRY - BIKE MARKETPLACE
+Browse available bikes from the coalition's inventory. Filter by type, status, and price. Find your next ride or donate a bike to the community.
+
+RALLY RADIO
+Push-to-talk voice chat for group rides. No cell service required -- Rally Radio uses peer-to-peer connectivity so your group stays connected even in remote areas. No accounts, no servers, no internet needed.
+
+COMMUNITY FEED
+Stay up to date with coalition news, events, and ride reports. Read about upcoming community rides, workshops, and advocacy initiatives.
+
+EVENTS & PROGRAMS
+Find upcoming rides, workshops, and community events. From Pedal for Empathy to bikepacking tours, there's always something happening.
+
+TOUR GUIDES
+Multi-day ride guides with day-by-day itineraries, stop timelines, and ride recording checklists. Plan your Black Hills bikepacking adventure with the Brewvet brewery tour or the 8 Over 7 expedition.
+
+EXPEDITION JOURNAL
+Document your rides like Lewis and Clark. Capture photos, notes, audio, and GPS tracks during multi-day expeditions. Collaborate with your riding group and export beautiful HTML reports.
+
+BUILT FOR THE BLACK HILLS
+Stone Bicycle Coalition is a grassroots community organization in Rapid City, South Dakota, dedicated to advancing active transportation and building a more connected region through cycling. Founded by Rory and Nicole Stone.
+
+FREE & OPEN SOURCE
+No accounts. No ads. No tracking. No subscriptions. The app is free and the source code is open for other bike co-ops to fork and customize for their own communities.
+
+https://stonebicyclecoalition.com
+@stone_bicycle_coalition on Instagram

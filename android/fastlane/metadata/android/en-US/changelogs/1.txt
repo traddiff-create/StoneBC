@@ -1,0 +1,8 @@
+Initial release of Stone Bicycle Coalition for Android.
+
+- 42 Black Hills cycling routes with maps and elevation profiles
+- The Quarry bike marketplace
+- Rally Radio push-to-talk for group rides
+- Community feed and events
+- Tour guides for multi-day rides
+- Expedition journal for ride documentation
