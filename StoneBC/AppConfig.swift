@@ -41,6 +41,7 @@ struct AppConfig: Codable {
         let enableEvents: Bool
         let enableGallery: Bool
         let enableRadio: Bool
+        let enableRideAlerts: Bool?
     }
 
     struct DataURLs: Codable {
@@ -95,7 +96,8 @@ struct AppConfig: Codable {
             enableRoutes: true,
             enableEvents: true,
             enableGallery: true,
-            enableRadio: true
+            enableRadio: true,
+            enableRideAlerts: true
         ),
         dataURLs: nil,
         apiKeys: nil

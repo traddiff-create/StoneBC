@@ -118,6 +118,9 @@
 		P00005000000000000000005 /* RouteSubmissionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = P10005000000000000000005 /* RouteSubmissionService.swift */; };
 		P00007000000000000000007 /* MemberLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = P10007000000000000000007 /* MemberLoginView.swift */; };
 		P00006000000000000000006 /* MemberAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = P10006000000000000000006 /* MemberAuthService.swift */; };
+		Q00001000000000000000001 /* SunsetPillView.swift in Sources */ = {isa = PBXBuildFile; fileRef = Q10001000000000000000001 /* SunsetPillView.swift */; };
+		Q00002000000000000000002 /* RideAlertService.swift in Sources */ = {isa = PBXBuildFile; fileRef = Q10002000000000000000002 /* RideAlertService.swift */; };
+		Q00003000000000000000003 /* RideAlertsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = Q10003000000000000000003 /* RideAlertsSettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -236,6 +239,9 @@
 		P10005000000000000000005 /* RouteSubmissionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteSubmissionService.swift; sourceTree = "<group>"; };
 		P10007000000000000000007 /* MemberLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberLoginView.swift; sourceTree = "<group>"; };
 		P10006000000000000000006 /* MemberAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberAuthService.swift; sourceTree = "<group>"; };
+		Q10001000000000000000001 /* SunsetPillView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunsetPillView.swift; sourceTree = "<group>"; };
+		Q10002000000000000000002 /* RideAlertService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideAlertService.swift; sourceTree = "<group>"; };
+		Q10003000000000000000003 /* RideAlertsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideAlertsSettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -356,6 +362,9 @@
 				K10006000000000000000006 /* guides.json */,
 				K10007000000000000000007 /* RideChecklist.swift */,
 				K10008000000000000000008 /* GPXStudioView.swift */,
+				Q10001000000000000000001 /* SunsetPillView.swift */,
+				Q10002000000000000000002 /* RideAlertService.swift */,
+				Q10003000000000000000003 /* RideAlertsSettingsView.swift */,
 				J10003000000000000000003 /* StoneBC.entitlements */,
 				P10001000000000000000001 /* PrivacyInfo.xcprivacy */,
 				D30000000000000000000001 /* Radio */,
@@ -573,6 +582,9 @@
 				K00005000000000000000005 /* TourGuideDetailView.swift in Sources */,
 				K00007000000000000000007 /* RideChecklist.swift in Sources */,
 				K00008000000000000000008 /* GPXStudioView.swift in Sources */,
+				Q00001000000000000000001 /* SunsetPillView.swift in Sources */,
+				Q00002000000000000000002 /* RideAlertService.swift in Sources */,
+				Q00003000000000000000003 /* RideAlertsSettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

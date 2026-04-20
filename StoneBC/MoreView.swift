@@ -53,6 +53,19 @@ struct MoreView: View {
                         }
                     }
 
+                    // Ride Tools
+                    if appState.config.features.enableRideAlerts ?? true {
+                        moreSection(title: "RIDE TOOLS", icon: "bell.badge") {
+                            NavigationLink(destination: RideAlertsSettingsView()) {
+                                moreRow(
+                                    title: "Ride Alerts",
+                                    subtitle: rideAlertsSubtitle,
+                                    icon: "bell.badge"
+                                )
+                            }
+                        }
+                    }
+
                     // Tour Guides
                     if !appState.guides.isEmpty {
                         moreSection(title: "TOUR GUIDES", icon: "map") {
@@ -181,6 +194,13 @@ struct MoreView: View {
                 MemberLoginView()
             }
         }
+    }
+
+    private var rideAlertsSubtitle: String {
+        let enabled = RideAlertService.shared.alerts.filter(\.enabled).count
+        let total = RideAlertService.shared.alerts.count
+        if enabled == 0 { return "Beep on time or distance · \(total) presets" }
+        return "\(enabled) active of \(total)"
     }
 
     // MARK: - Section Builder

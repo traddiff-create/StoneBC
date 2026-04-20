@@ -23,6 +23,7 @@ struct RouteNavigationView: View {
     @State private var audioService = NavigationAudioService()
     @State private var workoutService = WorkoutService()
     @State private var activityManager = RideActivityManager()
+    @State private var alertService = RideAlertService.shared
     @State private var session: RideSession
     @State private var position: MapCameraPosition = .automatic
     @State private var isFollowingUser = true
@@ -32,6 +33,7 @@ struct RouteNavigationView: View {
     @State private var breadcrumbs: [CLLocationCoordinate2D] = []
     @State private var precomputedTurns: [TurnPoint] = []
     @State private var pulsePhase = false
+    @State private var weather: RouteWeather?
     @Environment(\.dismiss) var dismiss
 
     init(route: Route) {
@@ -62,6 +64,7 @@ struct RouteNavigationView: View {
         .animation(.easeInOut(duration: 0.25), value: session.isCriticallyOffRoute)
         .onAppear(perform: startRide)
         .task { await requestWorkoutAuthorization() }
+        .task { await loadWeather() }
         .onDisappear(perform: stopServices)
         .onChange(of: locationService.userLocation?.latitude, onLocationTick)
         .confirmationDialog(
@@ -238,6 +241,9 @@ struct RouteNavigationView: View {
                 label: "AVG",
                 valueColor: .white
             )
+            Divider().frame(width: 1).background(Color.white.opacity(0.1))
+
+            SunsetPillView(weather: weather, style: .sensorTile)
         }
         .bcNavTile(height: 80)
     }
@@ -464,6 +470,7 @@ struct RouteNavigationView: View {
         locationService.startTracking()
         altimeterService.start()
         audioService.reset()
+        alertService.startSession()
         session.start()
 
         locationService.onFirstAltitude = { [altimeterService] gpsAltitude in
@@ -481,7 +488,13 @@ struct RouteNavigationView: View {
     private func stopServices() {
         locationService.stopTracking()
         altimeterService.stop()
+        alertService.endSession()
         session.stop()
+    }
+
+    private func loadWeather() async {
+        let coord = route.clStartCoordinate
+        weather = await WeatherService.shared.weather(for: coord)
     }
 
     private func requestWorkoutAuthorization() async {
@@ -557,6 +570,12 @@ struct RouteNavigationView: View {
         audioService.checkMilestone(
             distanceMiles: session.distanceTraveledMiles,
             totalMiles: route.distanceMiles
+        )
+
+        // Signature beeps for time/distance reminders
+        alertService.tick(
+            elapsedSeconds: session.elapsedSeconds,
+            distanceMiles: session.distanceTraveledMiles
         )
 
         // Live Activity

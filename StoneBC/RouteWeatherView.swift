@@ -28,10 +28,16 @@ struct RouteWeatherSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("WEATHER AT START")
-                .font(.system(size: 10, weight: .semibold))
-                .tracking(1)
-                .foregroundColor(.secondary)
+            HStack(alignment: .center) {
+                Text("WEATHER AT START")
+                    .font(.system(size: 10, weight: .semibold))
+                    .tracking(1)
+                    .foregroundColor(.secondary)
+                Spacer()
+                if weather?.secondsUntilSunset != nil {
+                    SunsetPillView(weather: weather, style: .badge)
+                }
+            }
 
             if isLoading {
                 HStack(spacing: 8) {
