@@ -101,6 +101,18 @@
 		M00010000000000000000010 /* RouteIndexService.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10010000000000000000010 /* RouteIndexService.swift */; };
 		M00011000000000000000011 /* EventNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10011000000000000000011 /* EventNotificationService.swift */; };
 		M00012000000000000000012 /* MapboxOfflineService.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10012000000000000000012 /* MapboxOfflineService.swift */; };
+		M00013000000000000000013 /* RideJournal.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10013000000000000000013 /* RideJournal.swift */; };
+		M00014000000000000000014 /* RideJournalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10014000000000000000014 /* RideJournalService.swift */; };
+		M00015000000000000000015 /* TimeTrialService.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10015000000000000000015 /* TimeTrialService.swift */; };
+		M00016000000000000000016 /* DisclaimerBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10016000000000000000016 /* DisclaimerBannerView.swift */; };
+		M00017000000000000000017 /* RideDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10017000000000000000017 /* RideDetailView.swift */; };
+		M00018000000000000000018 /* RideShareSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10018000000000000000018 /* RideShareSheetView.swift */; };
+		M00019000000000000000019 /* RideJournalDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10019000000000000000019 /* RideJournalDetailView.swift */; };
+		M00020000000000000000020 /* TimeTrialLeaderboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10020000000000000000020 /* TimeTrialLeaderboardView.swift */; };
+		M00021000000000000000021 /* RidesTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10021000000000000000021 /* RidesTabView.swift */; };
+		M00022000000000000000022 /* JournalPromptSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10022000000000000000022 /* JournalPromptSheet.swift */; };
+		M00023000000000000000023 /* RideStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10023000000000000000023 /* RideStatsView.swift */; };
+		M00024000000000000000024 /* RideMiniMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10024000000000000000024 /* RideMiniMapView.swift */; };
 		N00001000000000000000001 /* ExpeditionJournal.swift in Sources */ = {isa = PBXBuildFile; fileRef = N10001000000000000000001 /* ExpeditionJournal.swift */; };
 		N00002000000000000000002 /* ExpeditionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = N10002000000000000000002 /* ExpeditionStorage.swift */; };
 		N00003000000000000000003 /* MediaCaptureService.swift in Sources */ = {isa = PBXBuildFile; fileRef = N10003000000000000000003 /* MediaCaptureService.swift */; };
@@ -219,6 +231,18 @@
 		M10010000000000000000010 /* RouteIndexService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteIndexService.swift; sourceTree = "<group>"; };
 		M10011000000000000000011 /* EventNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventNotificationService.swift; sourceTree = "<group>"; };
 		M10012000000000000000012 /* MapboxOfflineService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxOfflineService.swift; sourceTree = "<group>"; };
+		M10013000000000000000013 /* RideJournal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideJournal.swift; sourceTree = "<group>"; };
+		M10014000000000000000014 /* RideJournalService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideJournalService.swift; sourceTree = "<group>"; };
+		M10015000000000000000015 /* TimeTrialService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTrialService.swift; sourceTree = "<group>"; };
+		M10016000000000000000016 /* DisclaimerBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisclaimerBannerView.swift; sourceTree = "<group>"; };
+		M10017000000000000000017 /* RideDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideDetailView.swift; sourceTree = "<group>"; };
+		M10018000000000000000018 /* RideShareSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideShareSheetView.swift; sourceTree = "<group>"; };
+		M10019000000000000000019 /* RideJournalDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideJournalDetailView.swift; sourceTree = "<group>"; };
+		M10020000000000000000020 /* TimeTrialLeaderboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTrialLeaderboardView.swift; sourceTree = "<group>"; };
+		M10021000000000000000021 /* RidesTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RidesTabView.swift; sourceTree = "<group>"; };
+		M10022000000000000000022 /* JournalPromptSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalPromptSheet.swift; sourceTree = "<group>"; };
+		M10023000000000000000023 /* RideStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideStatsView.swift; sourceTree = "<group>"; };
+		M10024000000000000000024 /* RideMiniMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideMiniMapView.swift; sourceTree = "<group>"; };
 		N10001000000000000000001 /* ExpeditionJournal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpeditionJournal.swift; sourceTree = "<group>"; };
 		N10002000000000000000002 /* ExpeditionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpeditionStorage.swift; sourceTree = "<group>"; };
 		N10003000000000000000003 /* MediaCaptureService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaCaptureService.swift; sourceTree = "<group>"; };
@@ -320,6 +344,18 @@
 				M10010000000000000000010 /* RouteIndexService.swift */,
 				M10011000000000000000011 /* EventNotificationService.swift */,
 				M10012000000000000000012 /* MapboxOfflineService.swift */,
+				M10013000000000000000013 /* RideJournal.swift */,
+				M10014000000000000000014 /* RideJournalService.swift */,
+				M10015000000000000000015 /* TimeTrialService.swift */,
+				M10016000000000000000016 /* DisclaimerBannerView.swift */,
+				M10017000000000000000017 /* RideDetailView.swift */,
+				M10018000000000000000018 /* RideShareSheetView.swift */,
+				M10019000000000000000019 /* RideJournalDetailView.swift */,
+				M10020000000000000000020 /* TimeTrialLeaderboardView.swift */,
+				M10021000000000000000021 /* RidesTabView.swift */,
+				M10022000000000000000022 /* JournalPromptSheet.swift */,
+				M10023000000000000000023 /* RideStatsView.swift */,
+				M10024000000000000000024 /* RideMiniMapView.swift */,
 				N10001000000000000000001 /* ExpeditionJournal.swift */,
 				N10002000000000000000002 /* ExpeditionStorage.swift */,
 				N10003000000000000000003 /* MediaCaptureService.swift */,
@@ -539,6 +575,18 @@
 				M00010000000000000000010 /* RouteIndexService.swift in Sources */,
 				M00011000000000000000011 /* EventNotificationService.swift in Sources */,
 				M00012000000000000000012 /* MapboxOfflineService.swift in Sources */,
+				M00013000000000000000013 /* RideJournal.swift in Sources */,
+				M00014000000000000000014 /* RideJournalService.swift in Sources */,
+				M00015000000000000000015 /* TimeTrialService.swift in Sources */,
+				M00016000000000000000016 /* DisclaimerBannerView.swift in Sources */,
+				M00017000000000000000017 /* RideDetailView.swift in Sources */,
+				M00018000000000000000018 /* RideShareSheetView.swift in Sources */,
+				M00019000000000000000019 /* RideJournalDetailView.swift in Sources */,
+				M00020000000000000000020 /* TimeTrialLeaderboardView.swift in Sources */,
+				M00021000000000000000021 /* RidesTabView.swift in Sources */,
+				M00022000000000000000022 /* JournalPromptSheet.swift in Sources */,
+				M00023000000000000000023 /* RideStatsView.swift in Sources */,
+				M00024000000000000000024 /* RideMiniMapView.swift in Sources */,
 				N00001000000000000000001 /* ExpeditionJournal.swift in Sources */,
 				N00002000000000000000002 /* ExpeditionStorage.swift in Sources */,
 				N00003000000000000000003 /* MediaCaptureService.swift in Sources */,

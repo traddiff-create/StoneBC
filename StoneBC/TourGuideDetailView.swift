@@ -22,6 +22,9 @@ struct TourGuideDetailView: View {
                 // Header
                 headerSection
 
+                DisclaimerBannerView()
+                    .padding(.horizontal, BCSpacing.md)
+
                 // Day picker
                 if guide.totalDays > 1 {
                     dayPicker

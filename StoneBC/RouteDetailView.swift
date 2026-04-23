@@ -19,12 +19,16 @@ struct RouteDetailView: View {
     @State private var stravaSegments: [StravaSegment] = []
     @State private var trailClosures: [TrailClosure] = []
     @State private var isFavorite = false
+    @State private var isTimeTrial = false
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: BCSpacing.lg) {
                 // Header
                 headerSection
+
+                // Disclaimer
+                DisclaimerBannerView()
 
                 // Stats Grid
                 statsGrid
@@ -107,6 +111,20 @@ struct RouteDetailView: View {
                         } label: {
                             Label("Share as Image", systemImage: "photo")
                         }
+                        Divider()
+                        Button {
+                            if isTimeTrial {
+                                TimeTrialService.shared.removePreset(routeId: route.id)
+                            } else {
+                                TimeTrialService.shared.addPreset(routeId: route.id, routeName: route.name)
+                            }
+                            isTimeTrial.toggle()
+                        } label: {
+                            Label(
+                                isTimeTrial ? "Remove Time Trial" : "Set as Time Trial",
+                                systemImage: isTimeTrial ? "stopwatch.fill" : "stopwatch"
+                            )
+                        }
                     } label: {
                         Image(systemName: "square.and.arrow.up")
                             .font(.system(size: 14))
@@ -126,6 +144,7 @@ struct RouteDetailView: View {
             gpxFileURL = GPXService.writeToTempFile(gpx, name: route.name)
             isCachedOffline = await OfflineRouteStorage.shared.isCached(routeId: route.id)
             isFavorite = EventNotificationService.shared.isFavorite(routeId: route.id)
+            isTimeTrial = TimeTrialService.shared.isPreset(routeId: route.id)
 
             // Load USFS closures
             trailClosures = await USFSService.shared.closuresAffecting(route: route)

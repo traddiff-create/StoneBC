@@ -35,13 +35,11 @@ struct TabContainerView: View {
                 }
                 .tag(2)
 
-            if appState.config.features.enableMarketplace {
-                MarketplaceView()
-                    .tabItem {
-                        Label("Bikes", systemImage: "bicycle")
-                    }
-                    .tag(3)
-            }
+            RidesTabView()
+                .tabItem {
+                    Label("Rides", systemImage: "bicycle")
+                }
+                .tag(3)
 
             MoreView()
                 .tabItem {

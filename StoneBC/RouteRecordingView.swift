@@ -19,10 +19,14 @@ import MapKit
 import CoreLocation
 
 struct RouteRecordingView: View {
+    var routeId: String? = nil
+    var routeName: String? = nil
+
     @State private var locationService = LocationService()
     @State private var altimeterService = AltimeterService()
     @State private var audioService = NavigationAudioService()
     @State private var recording = RecordingService()
+    @State private var workoutService = WorkoutService()
 
     @State private var position: MapCameraPosition = .automatic
     @State private var isFollowingUser = true
@@ -31,9 +35,18 @@ struct RouteRecordingView: View {
     @State private var pulsePhase = false
     @Environment(\.dismiss) var dismiss
 
+    private var splitDelta: Double? {
+        guard let rid = routeId, recording.elapsedSeconds > 0, recording.distanceMiles > 0 else { return nil }
+        let progress = recording.distanceMiles / max(recording.distanceMiles, 0.1)
+        return TimeTrialService.shared.splitDelta(routeId: rid, currentSeconds: recording.elapsedSeconds, progressPercent: progress)
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             headerStrip
+            if let delta = splitDelta {
+                splitDeltaBanner(delta)
+            }
             navigationMap
             speedTile
             recordedSummaryTile
@@ -65,7 +78,7 @@ struct RouteRecordingView: View {
             Text("\(recording.formattedDistance) in \(recording.formattedElapsed)")
         }
         .sheet(isPresented: $showSaveSheet) {
-            RecordingSaveSheet(recording: recording) {
+            RecordingSaveSheet(recording: recording, workoutService: workoutService, routeId: routeId) {
                 dismiss()
             }
         }
@@ -121,6 +134,29 @@ struct RouteRecordingView: View {
         case .stopped:   return "STOPPED"
         case .idle:      return "READY"
         }
+    }
+
+    private func splitDeltaBanner(_ delta: Double) -> some View {
+        let isAhead = delta < 0
+        let abs = Swift.abs(delta)
+        let mins = Int(abs) / 60
+        let secs = Int(abs) % 60
+        let label = mins > 0 ? "\(mins):\(String(format: "%02d", secs))" : "\(secs)s"
+        return HStack(spacing: 6) {
+            Image(systemName: "stopwatch")
+                .font(.system(size: 10))
+            Text(isAhead ? "-\(label)" : "+\(label)")
+                .font(.system(size: 11, weight: .bold))
+                .monospacedDigit()
+            Text(isAhead ? "AHEAD OF PB" : "BEHIND PB")
+                .font(.system(size: 9, weight: .semibold))
+                .tracking(1)
+        }
+        .foregroundStyle(.white)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 5)
+        .frame(maxWidth: .infinity)
+        .background(isAhead ? Color.green.opacity(0.85) : Color.red.opacity(0.85))
     }
 
     private var topSafeAreaInset: CGFloat {
@@ -425,12 +461,20 @@ struct RouteRecordingView: View {
             audioService.announceResumed()
         }
         recording.start()
+
+        if workoutService.isAvailable {
+            Task {
+                await workoutService.requestAuthorization()
+                await workoutService.startWorkout(routeName: routeName ?? "Ride")
+            }
+        }
     }
 
     private func stopServices() {
         locationService.stopTracking()
         altimeterService.stop()
         recording.stop()
+        workoutService.cancelWorkout()
     }
 
     private func togglePause() {
@@ -467,6 +511,7 @@ struct RouteRecordingView: View {
 
         if let cl = locationService.locationHistory.last {
             recording.ingestLocation(cl)
+            workoutService.addRouteData([cl])
         }
 
         if isFollowingUser {
@@ -486,6 +531,8 @@ struct RouteRecordingView: View {
 
 struct RecordingSaveSheet: View {
     let recording: RecordingService
+    let workoutService: WorkoutService
+    var routeId: String? = nil
     let onDone: () -> Void
 
     @Environment(AppState.self) var appState
@@ -500,6 +547,8 @@ struct RecordingSaveSheet: View {
     @State private var submitDescription = ""
     @State private var isSubmitting = false
     @State private var submitResult: String?
+    @State private var showJournalPrompt = false
+    @State private var savedRideId: String? = nil
     @Environment(\.dismiss) var sheetDismiss
 
     private let categories = ["road", "gravel", "fatbike", "trail"]
@@ -571,18 +620,25 @@ struct RecordingSaveSheet: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Discard", role: .destructive) {
+                        workoutService.cancelWorkout()
                         sheetDismiss()
                         onDone()
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Save") {
-                        performSave()
+                        let rideId = performSave()
+                        savedRideId = rideId
+                        Task { await workoutService.endWorkout(distance: recording.distanceMiles, duration: recording.elapsedSeconds) }
                         if submitToCoop {
                             Task { await submitRouteToCoop() }
                         } else {
                             sheetDismiss()
-                            onDone()
+                            if rideId != nil && saveToHistory {
+                                showJournalPrompt = true
+                            } else {
+                                onDone()
+                            }
                         }
                     }
                     .disabled(
@@ -593,17 +649,25 @@ struct RecordingSaveSheet: View {
                     .fontWeight(.semibold)
                 }
             }
+            .sheet(isPresented: $showJournalPrompt, onDismiss: onDone) {
+                if let rId = savedRideId {
+                    JournalPromptSheet(rideId: rId, routeName: routeName.isEmpty ? "Ride" : routeName, distanceMiles: recording.distanceMiles, elapsedSeconds: recording.elapsedSeconds)
+                }
+            }
         }
     }
 
-    private func performSave() {
+    @discardableResult
+    private func performSave() -> String? {
         let name = routeName.trimmingCharacters(in: .whitespaces).isEmpty
             ? "Recorded Ride"
             : routeName
 
+        var savedRideId: String? = nil
+
         if saveToHistory {
-            RideHistoryService.shared.recordRide(
-                routeId: UUID().uuidString,
+            let rideId = RideHistoryService.shared.recordRide(
+                routeId: routeId ?? UUID().uuidString,
                 routeName: name,
                 category: category,
                 distanceMiles: recording.distanceMiles,
@@ -611,8 +675,20 @@ struct RecordingSaveSheet: View {
                 movingSeconds: recording.movingSeconds,
                 elevationGainFeet: recording.totalAscentFeet,
                 avgSpeedMPH: recording.avgSpeedMPH,
-                maxSpeedMPH: recording.maxSpeedMPH
+                maxSpeedMPH: recording.maxSpeedMPH,
+                gpxTrackpoints: recording.isSaveable ? recording.routeTrackpointTriples : nil
             )
+            savedRideId = rideId
+
+            if let rid = routeId {
+                let isNewPB = TimeTrialService.shared.recordAttempt(
+                    rideId: rideId,
+                    routeId: rid,
+                    seconds: recording.elapsedSeconds,
+                    distanceMiles: recording.distanceMiles
+                )
+                _ = isNewPB
+            }
         }
 
         if saveAsRoute, recording.isSaveable, let first = recording.trackpoints.first {
@@ -634,6 +710,8 @@ struct RecordingSaveSheet: View {
             )
             UserRouteStore.shared.save(route)
         }
+
+        return savedRideId
     }
 
     @MainActor

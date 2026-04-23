@@ -19,16 +19,21 @@ struct RecordTabView: View {
                     startRecordingButton
                         .padding(.top, BCSpacing.lg)
 
-                    if !history.rides.isEmpty {
-                        recentRidesSection
-                    } else {
-                        emptyState
+                    if let lastRide = history.rides.first {
+                        lastRidePeek(lastRide)
                     }
                 }
                 .padding(.horizontal, BCSpacing.md)
             }
-            .navigationTitle("Record")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("RECORD")
+                        .font(.bcSectionTitle)
+                        .tracking(2)
+                }
+            }
             .fullScreenCover(isPresented: $isRecording) {
                 RouteRecordingView()
             }
@@ -70,64 +75,43 @@ struct RecordTabView: View {
         .buttonStyle(PressableButtonStyle())
     }
 
-    // MARK: - Recent rides
+    // MARK: - Last ride peek
 
-    private var recentRidesSection: some View {
+    private func lastRidePeek(_ ride: CompletedRide) -> some View {
         VStack(alignment: .leading, spacing: BCSpacing.sm) {
-            Text("RECENT RIDES")
-                .font(.bcSectionTitle)
+            Text("LAST RIDE")
+                .font(.system(size: 10, weight: .semibold))
                 .tracking(1)
                 .foregroundStyle(.secondary)
                 .padding(.leading, 4)
 
-            LazyVStack(spacing: BCSpacing.sm) {
-                ForEach(history.rides.prefix(20)) { ride in
-                    rideRow(ride)
+            HStack(spacing: BCSpacing.md) {
+                Image(systemName: "bicycle")
+                    .font(.system(size: 18))
+                    .foregroundStyle(BCColors.categoryColor(ride.category))
+                    .frame(width: 36, height: 36)
+                    .background(BCColors.categoryColor(ride.category).opacity(0.15), in: Circle())
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(ride.routeName)
+                        .font(.system(size: 14, weight: .semibold))
+                        .lineLimit(1)
+                    Text("\(ride.formattedDistance) · \(ride.formattedTime) · \(ride.formattedDate)")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
                 }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(BCColors.tertiaryText)
             }
+            .padding(BCSpacing.md)
+            .background(BCColors.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
         }
-    }
-
-    private func rideRow(_ ride: CompletedRide) -> some View {
-        HStack(spacing: BCSpacing.md) {
-            Image(systemName: "bicycle")
-                .font(.system(size: 18))
-                .foregroundStyle(BCColors.categoryColor(ride.category))
-                .frame(width: 36, height: 36)
-                .background(BCColors.categoryColor(ride.category).opacity(0.15), in: Circle())
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(ride.routeName)
-                    .font(.system(size: 14, weight: .semibold))
-                    .lineLimit(1)
-                Text("\(ride.formattedDistance) · \(ride.formattedTime) · \(ride.formattedDate)")
-                    .font(.system(size: 12))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-            }
-
-            Spacer()
-        }
-        .padding(BCSpacing.md)
-        .background(BCColors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-    }
-
-    // MARK: - Empty state
-
-    private var emptyState: some View {
-        VStack(spacing: BCSpacing.sm) {
-            Image(systemName: "dot.circle.and.cursorarrow")
-                .font(.system(size: 40, weight: .light))
-                .foregroundStyle(.secondary)
-            Text("No recordings yet")
-                .font(.system(size: 14, weight: .semibold))
-            Text("Tap Start Recording to log your first ride.")
-                .font(.system(size: 12))
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-        }
-        .padding(.top, BCSpacing.xxl)
     }
 }
 

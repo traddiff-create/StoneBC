@@ -79,6 +79,19 @@ struct MoreView: View {
                         }
                     }
 
+                    // Bikes / Marketplace
+                    if appState.config.features.enableMarketplace {
+                        moreSection(title: "THE QUARRY", icon: "bicycle") {
+                            NavigationLink(destination: MarketplaceView()) {
+                                moreRow(
+                                    title: "Bike Marketplace",
+                                    subtitle: "Browse available co-op bikes",
+                                    icon: "bicycle"
+                                )
+                            }
+                        }
+                    }
+
                     // Member login
                     moreSection(title: "CO-OP MEMBER", icon: "person.badge.key") {
                         if appState.isMemberLoggedIn, let email = appState.memberEmail {

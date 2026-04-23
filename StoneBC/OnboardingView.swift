@@ -14,8 +14,8 @@
 import SwiftUI
 
 struct OnboardingView: View {
-    private static let pageCount = 12
-    private static let lastIndex = pageCount - 1   // = 11 (Ready)
+    private static let pageCount = 13
+    private static let lastIndex = pageCount - 1   // = 12 (Ready)
 
     @State private var currentPage = 0
     @State private var permissionService = PermissionService.shared
@@ -38,7 +38,8 @@ struct OnboardingView: View {
                     motionPage.tag(8)
                     micPage.tag(9)
                     healthPage.tag(10)
-                    readyPage.tag(11)
+                    disclaimerPage.tag(11)
+                    readyPage.tag(12)
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .animation(.easeInOut(duration: 0.3), value: currentPage)
@@ -191,6 +192,56 @@ struct OnboardingView: View {
                 Task { await permissionService.requestHealthKit() }
             }
         )
+    }
+
+    // MARK: - Disclaimer
+
+    private var disclaimerPage: some View {
+        VStack(spacing: 24) {
+            Spacer()
+
+            ZStack {
+                Circle()
+                    .fill(Color.orange.opacity(0.12))
+                    .frame(width: 100, height: 100)
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.system(size: 40))
+                    .foregroundColor(.orange)
+            }
+
+            VStack(spacing: 8) {
+                Text("BEFORE YOU RIDE")
+                    .font(.system(size: 10, weight: .bold))
+                    .tracking(2)
+                    .foregroundColor(.secondary)
+                Text("Ride Responsibly")
+                    .font(.system(size: 26, weight: .bold))
+            }
+
+            VStack(alignment: .leading, spacing: 12) {
+                disclaimerPoint(icon: "map", text: "Route data is provided for reference only — we cannot verify current trail conditions, closures, or hazards.")
+                disclaimerPoint(icon: "exclamationmark.shield", text: "Always check routes before riding. Conditions change. You assume all responsibility for your safety.")
+                disclaimerPoint(icon: "person.fill.checkmark", text: "Wear a helmet. Carry water and a repair kit. Tell someone your plan.")
+            }
+            .padding(.horizontal, 32)
+
+            Spacer()
+            Spacer()
+        }
+    }
+
+    private func disclaimerPoint(icon: String, text: String) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 14))
+                .foregroundColor(.orange)
+                .frame(width: 20)
+                .padding(.top, 1)
+            Text(text)
+                .font(.system(size: 13))
+                .foregroundColor(.secondary)
+                .lineSpacing(3)
+        }
     }
 
     // MARK: - Ready
