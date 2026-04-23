@@ -4,6 +4,7 @@ struct RidesTabView: View {
     @State private var history = RideHistoryService.shared
     @State private var journalService = RideJournalService.shared
     @State private var timeTrialService = TimeTrialService.shared
+    @State private var importer = HealthKitRideImporter.shared
     @State private var segment = 0
     @State private var historyFilter = 0  // 0=All, 1=This Year, 2=This Month, 3=This Week
     @State private var categoryFilter: String? = nil
@@ -15,6 +16,9 @@ struct RidesTabView: View {
             ScrollView {
                 VStack(spacing: BCSpacing.lg) {
                     seasonSummaryStrip
+                    if importer.isImporting {
+                        importingBanner
+                    }
                     segmentPicker
 
                     switch segment {
@@ -53,7 +57,25 @@ struct RidesTabView: View {
                     }
                 }
             }
+            .task { importer.runIfNeeded() }
         }
+    }
+
+    // MARK: - Import Banner
+
+    private var importingBanner: some View {
+        HStack(spacing: 8) {
+            ProgressView()
+                .scaleEffect(0.8)
+            Text("Importing ride maps from Health…")
+                .font(.system(size: 13))
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .padding(.horizontal, BCSpacing.md)
+        .background(BCColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 
     // MARK: - Season Summary

@@ -113,6 +113,7 @@
 		M00022000000000000000022 /* JournalPromptSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10022000000000000000022 /* JournalPromptSheet.swift */; };
 		M00023000000000000000023 /* RideStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10023000000000000000023 /* RideStatsView.swift */; };
 		M00024000000000000000024 /* RideMiniMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10024000000000000000024 /* RideMiniMapView.swift */; };
+		M00025000000000000000025 /* HealthKitRideImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10025000000000000000025 /* HealthKitRideImporter.swift */; };
 		N00001000000000000000001 /* ExpeditionJournal.swift in Sources */ = {isa = PBXBuildFile; fileRef = N10001000000000000000001 /* ExpeditionJournal.swift */; };
 		N00002000000000000000002 /* ExpeditionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = N10002000000000000000002 /* ExpeditionStorage.swift */; };
 		N00003000000000000000003 /* MediaCaptureService.swift in Sources */ = {isa = PBXBuildFile; fileRef = N10003000000000000000003 /* MediaCaptureService.swift */; };
@@ -243,6 +244,7 @@
 		M10022000000000000000022 /* JournalPromptSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalPromptSheet.swift; sourceTree = "<group>"; };
 		M10023000000000000000023 /* RideStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideStatsView.swift; sourceTree = "<group>"; };
 		M10024000000000000000024 /* RideMiniMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideMiniMapView.swift; sourceTree = "<group>"; };
+		M10025000000000000000025 /* HealthKitRideImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitRideImporter.swift; sourceTree = "<group>"; };
 		N10001000000000000000001 /* ExpeditionJournal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpeditionJournal.swift; sourceTree = "<group>"; };
 		N10002000000000000000002 /* ExpeditionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpeditionStorage.swift; sourceTree = "<group>"; };
 		N10003000000000000000003 /* MediaCaptureService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaCaptureService.swift; sourceTree = "<group>"; };
@@ -356,6 +358,7 @@
 				M10022000000000000000022 /* JournalPromptSheet.swift */,
 				M10023000000000000000023 /* RideStatsView.swift */,
 				M10024000000000000000024 /* RideMiniMapView.swift */,
+				M10025000000000000000025 /* HealthKitRideImporter.swift */,
 				N10001000000000000000001 /* ExpeditionJournal.swift */,
 				N10002000000000000000002 /* ExpeditionStorage.swift */,
 				N10003000000000000000003 /* MediaCaptureService.swift */,
@@ -587,6 +590,7 @@
 				M00022000000000000000022 /* JournalPromptSheet.swift in Sources */,
 				M00023000000000000000023 /* RideStatsView.swift in Sources */,
 				M00024000000000000000024 /* RideMiniMapView.swift in Sources */,
+				M00025000000000000000025 /* HealthKitRideImporter.swift in Sources */,
 				N00001000000000000000001 /* ExpeditionJournal.swift in Sources */,
 				N00002000000000000000002 /* ExpeditionStorage.swift in Sources */,
 				N00003000000000000000003 /* MediaCaptureService.swift in Sources */,
