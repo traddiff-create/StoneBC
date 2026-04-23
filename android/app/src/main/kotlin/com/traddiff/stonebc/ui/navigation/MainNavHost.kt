@@ -44,6 +44,7 @@ import com.traddiff.stonebc.ui.screens.more.USFSScreen
 import com.traddiff.stonebc.ui.screens.more.VolunteerScreen
 import com.traddiff.stonebc.ui.screens.more.WeatherScreen
 import com.traddiff.stonebc.ui.screens.record.RecordScreen
+import com.traddiff.stonebc.ui.screens.rides.RidesScreen
 import com.traddiff.stonebc.ui.screens.routes.RouteDetailScreen
 import com.traddiff.stonebc.ui.screens.routes.RoutesScreen
 
@@ -95,7 +96,10 @@ fun MainNavHost() {
             modifier = Modifier.padding(padding)
         ) {
             composable(Tab.Home.route) { HomeScreen() }
-            composable(Tab.Record.route) { RecordScreen() }
+            composable(Tab.Record.route) {
+                RecordScreen(onNavigateToRides = { navController.navigate("rides") })
+            }
+            composable("rides") { RidesScreen(onBack = { navController.popBackStack() }) }
 
             composable(Tab.Routes.route) {
                 RoutesScreen(onRouteTap = { id -> navController.navigate("route_detail/$id") })
@@ -188,6 +192,7 @@ private fun isInTabFamily(tab: Tab, currentRoute: String?): Boolean {
     if (currentRoute == null) return false
     return when (tab) {
         Tab.Routes -> currentRoute.startsWith("route_detail/")
+        Tab.Record -> currentRoute == "rides"
         Tab.Bikes -> currentRoute.startsWith("bike_detail/")
         Tab.More -> currentRoute in setOf(
             "community", "events", "programs", "gallery", "guides", "volunteer", "donate",

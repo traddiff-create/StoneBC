@@ -52,12 +52,11 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun RecordScreen() {
+fun RecordScreen(onNavigateToRides: () -> Unit = {}) {
     val context = LocalContext.current
     val appState = LocalAppState.current
     val coroutineScope = rememberCoroutineScope()
     val session by RecordingService.sessionFlow.collectAsState()
-    val history by appState.rideHistoryStore.entries.collectAsState(initial = emptyList())
 
     var permissionGranted by remember { mutableStateOf(hasLocationPermission(context)) }
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -86,7 +85,16 @@ fun RecordScreen() {
                                     date = today(),
                                     distanceMiles = saved.distanceMiles,
                                     elevationGainFeet = saved.elevationGainFeet,
-                                    durationSeconds = saved.durationSeconds
+                                    durationSeconds = saved.durationSeconds,
+                                    avgSpeedMph = if (saved.durationSeconds > 0)
+                                        saved.distanceMiles / (saved.durationSeconds / 3600.0) else 0.0,
+                                    maxSpeedMph = saved.trackpoints
+                                        .mapNotNull { it.speedMetersPerSecond }
+                                        .maxOrNull()
+                                        ?.toDouble()?.times(2.23694) ?: 0.0,
+                                    gpxTrackpoints = saved.trackpoints
+                                        .map { listOf(it.latitude, it.longitude, it.elevationMeters ?: 0.0) }
+                                        .takeIf { it.size >= 2 }
                                 )
                             )
                             writeGpxToCache(context, saved, "stonebc-${saved.id}.gpx")
@@ -109,7 +117,13 @@ fun RecordScreen() {
         }
 
         Spacer(Modifier.height(BCSpacing.sm))
-        RideHistorySection(history = history)
+        Button(
+            onClick = onNavigateToRides,
+            colors = ButtonDefaults.outlinedButtonColors(),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("MY RIDES →", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+        }
     }
 }
 
@@ -194,44 +208,6 @@ private fun StatCell(value: String, label: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = value, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
         Text(text = label, fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-    }
-}
-
-@Composable
-private fun RideHistorySection(history: List<RideEntry>) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = "RECENT RIDES",
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Medium,
-            letterSpacing = 1.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(Modifier.height(BCSpacing.xs))
-        if (history.isEmpty()) {
-            Text(
-                text = "Your first ride will appear here.",
-                fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(vertical = BCSpacing.sm)
-            )
-        } else {
-            history.takeLast(5).reversed().forEach { entry ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(entry.date, fontSize = 13.sp)
-                    Text(
-                        "${"%.2f".format(entry.distanceMiles)} mi · ${entry.elevationGainFeet} ft",
-                        fontSize = 13.sp,
-                        color = BCColors.BrandBlue
-                    )
-                }
-            }
-        }
     }
 }
 
