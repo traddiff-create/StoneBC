@@ -153,7 +153,7 @@ StoneBC/
 | Ride History | RideHistoryService | Persistent log + season summary |
 | Route Search | RouteIndexService | SQLite FTS5 full-text search |
 | Notifications | EventNotificationService | Local notifications for events + ride windows |
-| Offline Maps | MapboxOfflineService | Scaffold (needs Mapbox SPM + token) |
+| Offline Maps | MKTileOverlay (planned) | Per-route OSM tile packs in Application Support — manager not yet wired |
 
 ---
 

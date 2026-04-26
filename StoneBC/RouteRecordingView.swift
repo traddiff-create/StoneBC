@@ -25,7 +25,7 @@ struct RouteRecordingView: View {
     @State private var locationService = LocationService()
     @State private var altimeterService = AltimeterService()
     @State private var audioService = NavigationAudioService()
-    @State private var recording = RecordingService()
+    @State private var recording = RideSession(mode: .freeRecording)
     @State private var workoutService = WorkoutService()
 
     @State private var position: MapCameraPosition = .automatic
@@ -66,7 +66,9 @@ struct RouteRecordingView: View {
         .animation(.easeInOut(duration: 0.25), value: recording.state)
         .onAppear(perform: startRecording)
         .onDisappear(perform: stopServices)
-        .onChange(of: locationService.userLocation?.latitude, onLocationTick)
+        .onChange(of: locationService.locationUpdateCount) { _, _ in
+            onLocationTick()
+        }
         .confirmationDialog(
             "Stop recording?",
             isPresented: $showStopConfirm,
@@ -260,8 +262,8 @@ struct RouteRecordingView: View {
             Image(systemName: "arrow.up")
                 .font(.system(size: 20, weight: .light))
                 .foregroundStyle(BCColors.brandGreen)
-                .rotationEffect(.degrees(locationService.heading))
-                .animation(.easeInOut(duration: 0.3), value: locationService.heading)
+                .rotationEffect(.degrees(locationService.navigationHeading))
+                .animation(.easeInOut(duration: 0.3), value: locationService.navigationHeading)
         }
         .frame(width: 72, height: 72)
     }
@@ -449,8 +451,16 @@ struct RouteRecordingView: View {
     // MARK: - Lifecycle / ticks
 
     private func startRecording() {
+        locationService.onFirstAltitude = { [altimeterService] gpsAltitude in
+            altimeterService.calibrateWithGPS(altitudeMeters: gpsAltitude)
+        }
+        // Feed barometer-fused altitude into the ride engine so freerides
+        // record honest ascent, not GPS-only inflation.
+        recording.altitudeProvider = { [altimeterService] in
+            altimeterService.fusedAltitudeMeters
+        }
         locationService.requestPermission()
-        locationService.startTracking()
+        locationService.startTracking(mode: .ride)
         altimeterService.start()
         audioService.reset()
 
@@ -500,16 +510,20 @@ struct RouteRecordingView: View {
             position = .camera(MapCamera(
                 centerCoordinate: loc,
                 distance: 1500,
-                heading: locationService.heading,
+                heading: locationService.navigationHeading,
                 pitch: 45
             ))
         }
     }
 
-    private func onLocationTick(_ oldLat: Double?, _ newLat: Double?) {
+    private func onLocationTick() {
         guard let loc = locationService.userLocation else { return }
 
-        if let cl = locationService.locationHistory.last {
+        if let cl = locationService.lastLocation {
+            altimeterService.recalibrateIfPossible(
+                gpsAltitudeMeters: cl.altitude,
+                verticalAccuracy: cl.verticalAccuracy
+            )
             recording.ingestLocation(cl)
             workoutService.addRouteData([cl])
         }
@@ -519,7 +533,7 @@ struct RouteRecordingView: View {
                 position = .camera(MapCamera(
                     centerCoordinate: loc,
                     distance: 1500,
-                    heading: locationService.heading,
+                    heading: locationService.navigationHeading,
                     pitch: 45
                 ))
             }
@@ -530,7 +544,7 @@ struct RouteRecordingView: View {
 // MARK: - Save sheet
 
 struct RecordingSaveSheet: View {
-    let recording: RecordingService
+    let recording: RideSession
     let workoutService: WorkoutService
     var routeId: String? = nil
     let onDone: () -> Void
@@ -629,7 +643,9 @@ struct RecordingSaveSheet: View {
                     Button("Save") {
                         let rideId = performSave()
                         savedRideId = rideId
-                        Task { await workoutService.endWorkout(distance: recording.distanceMiles, duration: recording.elapsedSeconds) }
+                        let endDate = recording.lastLocation?.timestamp ?? Date()
+                        let events = recording.pauseEvents.map { (date: $0.date, isPause: $0.kind == .pause) }
+                        Task { await workoutService.endWorkout(endDate: endDate, pauseEvents: events) }
                         if submitToCoop {
                             Task { await submitRouteToCoop() }
                         } else {
@@ -708,7 +724,7 @@ struct RecordingSaveSheet: View {
                 trackpoints: recording.routeTrackpointTriples,
                 isImported: true
             )
-            UserRouteStore.shared.save(route)
+            appState.addImportedRoute(route)
         }
 
         return savedRideId

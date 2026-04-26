@@ -42,7 +42,7 @@ All notable changes to the Stone Bicycle Coalition project will be documented in
 #### Infrastructure
 - **RouteIndexService** — SQLite FTS5 full-text search with prefix matching across all routes
 - **EventNotificationService** — local notifications for favorited route events + weekly best ride window
-- **MapboxOfflineService** — scaffold for offline vector tiles with setup guide (needs SPM package)
+- ~~**MapboxOfflineService**~~ — removed; replaced with route-first offline navigation plus a planned MKTileOverlay-based per-route tile pack in Application Support
 
 #### Expedition Journal (New Feature)
 - **Lewis & Clark-style ride documentation** for multi-day bikepacking trips

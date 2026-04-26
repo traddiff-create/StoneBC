@@ -348,10 +348,15 @@ struct RouteDetailView: View {
             Button {
                 isPreparing = true
                 Task {
-                    // Cache route data + snapshot + tile warming in parallel
-                    await OfflineRouteStorage.shared.cacheRoute(route)
-                    await OfflineMapService.shared.warmTiles(for: route)
-                    _ = await OfflineMapService.shared.generateSnapshot(for: route)
+                    let snapshot = await OfflineMapService.shared.generateSnapshot(for: route)
+                    let alreadyHasSnapshot = await OfflineMapService.shared.hasSnapshot(for: route.id)
+                    let hasSnapshot = snapshot != nil || alreadyHasSnapshot
+                    let tilesAvailable = OfflineTileCoverage.contains(route: route)
+                    await OfflineRouteStorage.shared.cacheRoute(
+                        route,
+                        hasSnapshot: hasSnapshot,
+                        tilesAvailable: tilesAvailable
+                    )
 
                     // Cache current weather if available
                     if let weather = await WeatherService.shared.weather(for: route.clStartCoordinate) {

@@ -100,7 +100,6 @@
 		M00009000000000000000009 /* RideHistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10009000000000000000009 /* RideHistoryService.swift */; };
 		M00010000000000000000010 /* RouteIndexService.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10010000000000000000010 /* RouteIndexService.swift */; };
 		M00011000000000000000011 /* EventNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10011000000000000000011 /* EventNotificationService.swift */; };
-		M00012000000000000000012 /* MapboxOfflineService.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10012000000000000000012 /* MapboxOfflineService.swift */; };
 		M00013000000000000000013 /* RideJournal.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10013000000000000000013 /* RideJournal.swift */; };
 		M00014000000000000000014 /* RideJournalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10014000000000000000014 /* RideJournalService.swift */; };
 		M00015000000000000000015 /* TimeTrialService.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10015000000000000000015 /* TimeTrialService.swift */; };
@@ -124,7 +123,11 @@
 		N00008000000000000000008 /* ExpeditionExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = N10008000000000000000008 /* ExpeditionExporter.swift */; };
 		N00009000000000000000009 /* ExpeditionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = N10009000000000000000009 /* ExpeditionListView.swift */; };
 		N00010000000000000000010 /* PackingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = N10010000000000000000010 /* PackingListView.swift */; };
-		P00001000000000000000001 /* RecordingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = P10001000000000000000001 /* RecordingService.swift */; };
+		R00001000000000000000001 /* RideTuning.swift in Sources */ = {isa = PBXBuildFile; fileRef = R10001000000000000000001 /* RideTuning.swift */; };
+		R00002000000000000000002 /* NetworkStatusService.swift in Sources */ = {isa = PBXBuildFile; fileRef = R10002000000000000000002 /* NetworkStatusService.swift */; };
+		R00003000000000000000003 /* OfflineTileCoverage.swift in Sources */ = {isa = PBXBuildFile; fileRef = R10003000000000000000003 /* OfflineTileCoverage.swift */; };
+		R00004000000000000000004 /* RideMapTileOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = R10004000000000000000004 /* RideMapTileOverlay.swift */; };
+		R00005000000000000000005 /* OfflineCapableMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = R10005000000000000000005 /* OfflineCapableMapView.swift */; };
 		P00002000000000000000002 /* UserRouteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = P10002000000000000000002 /* UserRouteStore.swift */; };
 		P00003000000000000000003 /* RouteRecordingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = P10003000000000000000003 /* RouteRecordingView.swift */; };
 		P00004000000000000000004 /* RecordTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = P10004000000000000000004 /* RecordTabView.swift */; };
@@ -231,7 +234,6 @@
 		M10009000000000000000009 /* RideHistoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideHistoryService.swift; sourceTree = "<group>"; };
 		M10010000000000000000010 /* RouteIndexService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteIndexService.swift; sourceTree = "<group>"; };
 		M10011000000000000000011 /* EventNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventNotificationService.swift; sourceTree = "<group>"; };
-		M10012000000000000000012 /* MapboxOfflineService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxOfflineService.swift; sourceTree = "<group>"; };
 		M10013000000000000000013 /* RideJournal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideJournal.swift; sourceTree = "<group>"; };
 		M10014000000000000000014 /* RideJournalService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideJournalService.swift; sourceTree = "<group>"; };
 		M10015000000000000000015 /* TimeTrialService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeTrialService.swift; sourceTree = "<group>"; };
@@ -255,7 +257,11 @@
 		N10008000000000000000008 /* ExpeditionExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpeditionExporter.swift; sourceTree = "<group>"; };
 		N10009000000000000000009 /* ExpeditionListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpeditionListView.swift; sourceTree = "<group>"; };
 		N10010000000000000000010 /* PackingListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingListView.swift; sourceTree = "<group>"; };
-		P10001000000000000000001 /* RecordingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingService.swift; sourceTree = "<group>"; };
+		R10001000000000000000001 /* RideTuning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideTuning.swift; sourceTree = "<group>"; };
+		R10002000000000000000002 /* NetworkStatusService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkStatusService.swift; sourceTree = "<group>"; };
+		R10003000000000000000003 /* OfflineTileCoverage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineTileCoverage.swift; sourceTree = "<group>"; };
+		R10004000000000000000004 /* RideMapTileOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideMapTileOverlay.swift; sourceTree = "<group>"; };
+		R10005000000000000000005 /* OfflineCapableMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineCapableMapView.swift; sourceTree = "<group>"; };
 		P10002000000000000000002 /* UserRouteStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRouteStore.swift; sourceTree = "<group>"; };
 		P10003000000000000000003 /* RouteRecordingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteRecordingView.swift; sourceTree = "<group>"; };
 		P10004000000000000000004 /* RecordTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordTabView.swift; sourceTree = "<group>"; };
@@ -345,7 +351,6 @@
 				M10009000000000000000009 /* RideHistoryService.swift */,
 				M10010000000000000000010 /* RouteIndexService.swift */,
 				M10011000000000000000011 /* EventNotificationService.swift */,
-				M10012000000000000000012 /* MapboxOfflineService.swift */,
 				M10013000000000000000013 /* RideJournal.swift */,
 				M10014000000000000000014 /* RideJournalService.swift */,
 				M10015000000000000000015 /* TimeTrialService.swift */,
@@ -369,7 +374,11 @@
 				N10008000000000000000008 /* ExpeditionExporter.swift */,
 				N10009000000000000000009 /* ExpeditionListView.swift */,
 				N10010000000000000000010 /* PackingListView.swift */,
-				P10001000000000000000001 /* RecordingService.swift */,
+				R10001000000000000000001 /* RideTuning.swift */,
+				R10002000000000000000002 /* NetworkStatusService.swift */,
+				R10003000000000000000003 /* OfflineTileCoverage.swift */,
+				R10004000000000000000004 /* RideMapTileOverlay.swift */,
+				R10005000000000000000005 /* OfflineCapableMapView.swift */,
 				P10002000000000000000002 /* UserRouteStore.swift */,
 				P10003000000000000000003 /* RouteRecordingView.swift */,
 				P10004000000000000000004 /* RecordTabView.swift */,
@@ -577,7 +586,6 @@
 				M00009000000000000000009 /* RideHistoryService.swift in Sources */,
 				M00010000000000000000010 /* RouteIndexService.swift in Sources */,
 				M00011000000000000000011 /* EventNotificationService.swift in Sources */,
-				M00012000000000000000012 /* MapboxOfflineService.swift in Sources */,
 				M00013000000000000000013 /* RideJournal.swift in Sources */,
 				M00014000000000000000014 /* RideJournalService.swift in Sources */,
 				M00015000000000000000015 /* TimeTrialService.swift in Sources */,
@@ -601,7 +609,11 @@
 				N00008000000000000000008 /* ExpeditionExporter.swift in Sources */,
 				N00009000000000000000009 /* ExpeditionListView.swift in Sources */,
 				N00010000000000000000010 /* PackingListView.swift in Sources */,
-				P00001000000000000000001 /* RecordingService.swift in Sources */,
+				R00001000000000000000001 /* RideTuning.swift in Sources */,
+				R00002000000000000000002 /* NetworkStatusService.swift in Sources */,
+				R00003000000000000000003 /* OfflineTileCoverage.swift in Sources */,
+				R00004000000000000000004 /* RideMapTileOverlay.swift in Sources */,
+				R00005000000000000000005 /* OfflineCapableMapView.swift in Sources */,
 				P00002000000000000000002 /* UserRouteStore.swift in Sources */,
 				P00003000000000000000003 /* RouteRecordingView.swift in Sources */,
 				P00004000000000000000004 /* RecordTabView.swift in Sources */,
@@ -766,7 +778,7 @@
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "StoneBC reads your cycling workouts to show ride history.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "StoneBC saves your rides as cycling workouts in Apple Health.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Rally Radio discovers nearby riders on your local network.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "StoneBC uses your location to track your position on cycling routes.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "StoneBC uses your location during active rides to show maps, record routes, and keep tracking if the phone locks.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Rally Radio uses your microphone for group voice chat during rides.";
 				INFOPLIST_KEY_NSMotionUsageDescription = "StoneBC uses your iPhone's barometer to show altitude, climb rate, and elevation gain during rides.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "StoneBC saves expedition photos to your Photo Library so you can keep ride memories after the trip.";
@@ -807,7 +819,7 @@
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "StoneBC reads your cycling workouts to show ride history.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "StoneBC saves your rides as cycling workouts in Apple Health.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Rally Radio discovers nearby riders on your local network.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "StoneBC uses your location to track your position on cycling routes.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "StoneBC uses your location during active rides to show maps, record routes, and keep tracking if the phone locks.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Rally Radio uses your microphone for group voice chat during rides.";
 				INFOPLIST_KEY_NSMotionUsageDescription = "StoneBC uses your iPhone's barometer to show altitude, climb rate, and elevation gain during rides.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "StoneBC saves expedition photos to your Photo Library so you can keep ride memories after the trip.";

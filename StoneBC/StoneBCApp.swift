@@ -16,6 +16,7 @@ struct StoneBCApp: App {
             ContentView()
                 .environment(appState)
                 .task {
+                    NetworkStatusService.shared.start()
                     appState.startPeriodicSync()
                 }
                 .onOpenURL { url in

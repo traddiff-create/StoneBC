@@ -74,45 +74,6 @@ actor OfflineMapService {
         }
     }
 
-    // MARK: - Tile Warming
-
-    /// "Prepare for Offline" — programmatically request map tiles at multiple zoom levels
-    /// for a route's bounding box. MapKit caches these tiles automatically.
-    func warmTiles(for route: Route) async {
-        let coords = route.clTrackpoints
-        guard coords.count >= 2 else { return }
-
-        let region = boundingRegion(for: coords, padding: 1.2)
-
-        // Generate snapshots at multiple zoom levels to populate tile cache
-        let sizes: [CGSize] = [
-            CGSize(width: 512, height: 512),  // Overview
-            CGSize(width: 1024, height: 1024), // Medium detail
-        ]
-
-        // Also warm sub-regions for higher detail
-        let subRegions = splitRegion(region, divisions: 2)
-
-        for size in sizes {
-            let options = MKMapSnapshotter.Options()
-            options.region = region
-            options.size = size
-            options.mapType = .standard
-            let snapshotter = MKMapSnapshotter(options: options)
-            _ = try? await snapshotter.start()
-        }
-
-        // Higher zoom on sub-regions
-        for subRegion in subRegions {
-            let options = MKMapSnapshotter.Options()
-            options.region = subRegion
-            options.size = CGSize(width: 512, height: 512)
-            options.mapType = .standard
-            let snapshotter = MKMapSnapshotter(options: options)
-            _ = try? await snapshotter.start()
-        }
-    }
-
     // MARK: - Private Helpers
 
     private func snapshotPath(for routeId: String) -> URL {
@@ -137,8 +98,8 @@ actor OfflineMapService {
             longitude: (minLon + maxLon) / 2
         )
         let span = MKCoordinateSpan(
-            latitudeDelta: (maxLat - minLat) * padding,
-            longitudeDelta: (maxLon - minLon) * padding
+            latitudeDelta: max((maxLat - minLat) * padding, 0.002),
+            longitudeDelta: max((maxLon - minLon) * padding, 0.002)
         )
 
         return MKCoordinateRegion(center: center, span: span)

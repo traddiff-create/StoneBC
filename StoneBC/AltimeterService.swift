@@ -89,6 +89,21 @@ class AltimeterService {
         }
     }
 
+    /// Drift-correction recalibration. Called whenever a fresh GPS sample
+    /// arrives with vertical accuracy tighter than
+    /// `RideTuning.recalibrationVerticalAccuracyMeters`. Blends a small
+    /// fraction of the GPS-vs-fused delta into the baseline so the fused
+    /// altitude tracks reality over long climbs without step-changes.
+    func recalibrateIfPossible(gpsAltitudeMeters: Double, verticalAccuracy: Double) {
+        guard verticalAccuracy >= 0,
+              verticalAccuracy < RideTuning.recalibrationVerticalAccuracyMeters,
+              let baseline = gpsBaseline else { return }
+
+        let fused = baseline + relativeAltitudeMeters
+        let delta = gpsAltitudeMeters - fused
+        gpsBaseline = baseline + delta * RideTuning.recalibrationBlendFactor
+    }
+
     /// Fused altitude: GPS baseline + barometer relative changes (meters)
     var fusedAltitudeMeters: Double {
         guard let baseline = gpsBaseline else { return 0 }

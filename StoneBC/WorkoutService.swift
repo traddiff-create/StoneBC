@@ -19,6 +19,11 @@ class WorkoutService {
     private var workoutBuilder: HKWorkoutBuilder?
     private var routeBuilder: HKWorkoutRouteBuilder?
 
+    /// Set while `endWorkout` is in flight so a concurrent `cancelWorkout`
+    /// from a discard / dismiss path becomes a no-op instead of racing
+    /// `finishRoute` and tearing down builders mid-await.
+    private var isFinishing = false
+
     var isAvailable: Bool {
         HKHealthStore.isHealthDataAvailable()
     }
@@ -72,7 +77,9 @@ class WorkoutService {
         guard isRecording, let routeBuilder else { return }
 
         // Filter to only high-accuracy points
-        let filtered = locations.filter { $0.horizontalAccuracy >= 0 && $0.horizontalAccuracy < 50 }
+        let filtered = locations.filter {
+            $0.horizontalAccuracy >= 0 && $0.horizontalAccuracy < RideTuning.healthKitMaxAccuracyMeters
+        }
         guard !filtered.isEmpty else { return }
 
         routeBuilder.insertRouteData(filtered) { success, error in
@@ -82,48 +89,61 @@ class WorkoutService {
         }
     }
 
-    /// End the workout and save to HealthKit
-    func endWorkout(distance: Double, duration: TimeInterval) async {
-        guard isRecording, let builder = workoutBuilder else { return }
+    /// End the workout and save to HealthKit.
+    ///
+    /// `endDate` is the wall-clock end of the ride (typically the last accepted
+    /// `CLLocation.timestamp` from `RideSession`, not `Date()`). Paused
+    /// intervals are passed as `HKWorkoutEvent.pauseOrResume` records so
+    /// HealthKit subtracts them from the saved workout duration. Distance is
+    /// derived from the attached `HKWorkoutRoute`; the caller no longer needs
+    /// to pass a manual cumulative distance sample.
+    func endWorkout(endDate: Date,
+                    pauseEvents: [(date: Date, isPause: Bool)] = []) async {
+        guard isRecording, !isFinishing, let builder = workoutBuilder else { return }
+
+        // Snapshot the builders so an in-flight cancel can't pull the rug
+        // out from under us while we're awaiting `finishWorkout` / `finishRoute`.
+        let route = routeBuilder
+        isFinishing = true
+        defer {
+            isFinishing = false
+            isRecording = false
+            workoutBuilder = nil
+            routeBuilder = nil
+        }
 
         do {
-            // End collection
-            try await builder.endCollection(at: Date())
+            if !pauseEvents.isEmpty {
+                let events = pauseEvents.map { event in
+                    HKWorkoutEvent(
+                        type: event.isPause ? .pause : .resume,
+                        dateInterval: DateInterval(start: event.date, duration: 0),
+                        metadata: nil
+                    )
+                }
+                try await builder.addWorkoutEvents(events)
+            }
 
-            // Add distance sample
-            let distanceQuantity = HKQuantity(unit: .mile(), doubleValue: distance)
-            let distanceSample = HKQuantityType(.distanceCycling)
-            let startDate = builder.startDate ?? Date().addingTimeInterval(-duration)
-            let sample = HKCumulativeQuantitySample(
-                type: distanceSample,
-                quantity: distanceQuantity,
-                start: startDate,
-                end: Date()
-            )
-            try await builder.addSamples([sample])
+            try await builder.endCollection(at: endDate)
 
-            // Finish workout
             guard let workout = try await builder.finishWorkout() else {
-                isRecording = false
                 return
             }
 
-            // Attach route to workout
-            if let routeBuilder {
-                try await routeBuilder.finishRoute(with: workout, metadata: nil)
+            if let route {
+                try await route.finishRoute(with: workout, metadata: nil)
             }
 
-            isRecording = false
-            workoutBuilder = nil
-            self.routeBuilder = nil
             error = nil
         } catch {
             self.error = error.localizedDescription
-            isRecording = false
         }
     }
 
+    /// Discard the in-progress workout. No-op while `endWorkout` is running so
+    /// we don't race `finishRoute` and end up with a stale `HKWorkoutBuilder`.
     func cancelWorkout() {
+        guard !isFinishing else { return }
         workoutBuilder?.discardWorkout()
         workoutBuilder = nil
         routeBuilder = nil

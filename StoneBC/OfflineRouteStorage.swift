@@ -32,6 +32,40 @@ actor OfflineRouteStorage {
         let hasSnapshot: Bool
         let hasWeather: Bool
         let dataSizeBytes: Int
+
+        /// Whether the route's bbox is fully covered by the bundled
+        /// `MKTileOverlay` tile pack — surfaces "This route works fully
+        /// offline" in the UI. Defaults to false for legacy index entries.
+        let tilesAvailable: Bool
+
+        init(routeId: String,
+             routeName: String,
+             cachedAt: Date,
+             hasSnapshot: Bool,
+             hasWeather: Bool,
+             dataSizeBytes: Int,
+             tilesAvailable: Bool = false) {
+            self.routeId = routeId
+            self.routeName = routeName
+            self.cachedAt = cachedAt
+            self.hasSnapshot = hasSnapshot
+            self.hasWeather = hasWeather
+            self.dataSizeBytes = dataSizeBytes
+            self.tilesAvailable = tilesAvailable
+        }
+
+        // Custom decode so legacy index files (without `tilesAvailable`) keep
+        // loading without forcing a cache wipe.
+        init(from decoder: Decoder) throws {
+            let c = try decoder.container(keyedBy: CodingKeys.self)
+            self.routeId = try c.decode(String.self, forKey: .routeId)
+            self.routeName = try c.decode(String.self, forKey: .routeName)
+            self.cachedAt = try c.decode(Date.self, forKey: .cachedAt)
+            self.hasSnapshot = try c.decode(Bool.self, forKey: .hasSnapshot)
+            self.hasWeather = try c.decode(Bool.self, forKey: .hasWeather)
+            self.dataSizeBytes = try c.decode(Int.self, forKey: .dataSizeBytes)
+            self.tilesAvailable = try c.decodeIfPresent(Bool.self, forKey: .tilesAvailable) ?? false
+        }
     }
 
     /// Load the cache index
@@ -53,8 +87,10 @@ actor OfflineRouteStorage {
 
     // MARK: - Cache Route
 
-    /// Cache a route's trackpoints for offline navigation
-    func cacheRoute(_ route: Route) {
+    /// Cache a route's trackpoints for offline navigation. `tilesAvailable`
+    /// records whether the bundled tile pack covers this route's bbox so the
+    /// UI can surface "fully offline ready" without a runtime check.
+    func cacheRoute(_ route: Route, hasSnapshot snapshotOverride: Bool? = nil, tilesAvailable: Bool = false) {
         let routeDir = cacheDir.appendingPathComponent(route.id, isDirectory: true)
         try? FileManager.default.createDirectory(at: routeDir, withIntermediateDirectories: true)
 
@@ -72,7 +108,7 @@ actor OfflineRouteStorage {
             atPath: routeDir.appendingPathComponent("route.json").path
         )[.size] as? Int) ?? 0
 
-        let snapshotExists = FileManager.default.fileExists(
+        let snapshotExists = snapshotOverride ?? FileManager.default.fileExists(
             atPath: snapshotPath(for: route.id).path
         )
 
@@ -82,7 +118,8 @@ actor OfflineRouteStorage {
             cachedAt: Date(),
             hasSnapshot: snapshotExists,
             hasWeather: false,
-            dataSizeBytes: dataSize
+            dataSizeBytes: dataSize,
+            tilesAvailable: tilesAvailable
         ))
 
         saveIndex(index)
@@ -117,7 +154,8 @@ actor OfflineRouteStorage {
                 cachedAt: entry.cachedAt,
                 hasSnapshot: entry.hasSnapshot,
                 hasWeather: true,
-                dataSizeBytes: entry.dataSizeBytes
+                dataSizeBytes: entry.dataSizeBytes,
+                tilesAvailable: entry.tilesAvailable
             )
             saveIndex(index)
         }

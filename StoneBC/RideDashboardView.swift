@@ -256,7 +256,7 @@ struct RideDashboardView: View {
     private var topBar: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text(session.route.name)
+                Text(session.route?.name ?? "Free Ride")
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundColor(.white)
                     .lineLimit(1)

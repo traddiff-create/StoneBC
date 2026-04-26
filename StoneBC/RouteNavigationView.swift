@@ -24,6 +24,7 @@ struct RouteNavigationView: View {
     @State private var workoutService = WorkoutService()
     @State private var activityManager = RideActivityManager()
     @State private var session: RideSession
+    private var networkStatus = NetworkStatusService.shared
     @State private var position: MapCameraPosition = .automatic
     @State private var isFollowingUser = true
     @State private var showEndConfirm = false
@@ -42,7 +43,12 @@ struct RouteNavigationView: View {
     var body: some View {
         VStack(spacing: 0) {
             headerStrip       // A — slim, 16 pt + safe area
-            navigationMap     // F — hero, fills flex space
+            ZStack(alignment: .topTrailing) {
+                navigationMap     // F — hero, fills flex space
+                offlinePill       // OFFLINE indicator — top-right of map
+                    .padding(.top, 8)
+                    .padding(.trailing, 12)
+            }
             speedTile         // B — 180 pt
             progressTile      // C — 48 pt
             sensorStrip       // D — 80 pt
@@ -63,7 +69,9 @@ struct RouteNavigationView: View {
         .onAppear(perform: startRide)
         .task { await requestWorkoutAuthorization() }
         .onDisappear(perform: stopServices)
-        .onChange(of: locationService.userLocation?.latitude, onLocationTick)
+        .onChange(of: locationService.locationUpdateCount) { _, _ in
+            onLocationTick()
+        }
         .confirmationDialog(
             "End this ride?",
             isPresented: $showEndConfirm,
@@ -171,8 +179,8 @@ struct RouteNavigationView: View {
             Image(systemName: "arrow.up")
                 .font(.system(size: 20, weight: .light))
                 .foregroundStyle(BCColors.brandGreen)
-                .rotationEffect(.degrees(locationService.heading))
-                .animation(.easeInOut(duration: 0.3), value: locationService.heading)
+                .rotationEffect(.degrees(locationService.navigationHeading))
+                .animation(.easeInOut(duration: 0.3), value: locationService.navigationHeading)
         }
         .frame(width: 72, height: 72)
     }
@@ -286,6 +294,48 @@ struct RouteNavigationView: View {
     }()
 
     // MARK: - Zone E · Off-route banner
+
+    /// Small pill overlay on the navigation map. Shows when the rider is
+    /// offline AND/OR outside the bundled tile pack region — both states
+    /// degrade the live basemap, but the polyline + breadcrumb + cue sheet
+    /// keep working.
+    private var offlinePill: some View {
+        Group {
+            if let label = offlinePillLabel {
+                HStack(spacing: 6) {
+                    Image(systemName: "wifi.slash")
+                        .font(.system(size: 11, weight: .semibold))
+                    Text(label)
+                        .font(.system(size: 11, weight: .semibold))
+                        .tracking(1.2)
+                }
+                .foregroundStyle(.white)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(
+                    Capsule()
+                        .fill(Color.black.opacity(0.7))
+                )
+                .overlay(
+                    Capsule().stroke(Color.white.opacity(0.2), lineWidth: 0.5)
+                )
+                .transition(.opacity.combined(with: .scale))
+            }
+        }
+        .animation(.easeInOut(duration: 0.25), value: offlinePillLabel)
+    }
+
+    private var offlinePillLabel: String? {
+        let userCoord = locationService.userLocation
+        let outsideRegion = userCoord.map { !OfflineTileCoverage.contains(coordinate: $0) } ?? false
+
+        switch (networkStatus.isOnline, outsideRegion) {
+        case (false, false): return "OFFLINE"
+        case (false, true):  return "OFFLINE · NO TILES"
+        case (true, true):   return "OUT OF TILE PACK"
+        case (true, false):  return nil
+        }
+    }
 
     private var offRouteBanner: some View {
         let isCritical = session.isCriticallyOffRoute
@@ -447,7 +497,7 @@ struct RouteNavigationView: View {
             position = .camera(MapCamera(
                 centerCoordinate: loc,
                 distance: 1500,
-                heading: locationService.heading,
+                heading: locationService.navigationHeading,
                 pitch: 45
             ))
         }
@@ -460,15 +510,19 @@ struct RouteNavigationView: View {
             dismiss()
             return
         }
-        locationService.requestPermission()
-        locationService.startTracking()
-        altimeterService.start()
-        audioService.reset()
-        session.start()
-
         locationService.onFirstAltitude = { [altimeterService] gpsAltitude in
             altimeterService.calibrateWithGPS(altitudeMeters: gpsAltitude)
         }
+        // Feed barometer-fused altitude into the ride engine so ascent math
+        // beats GPS-only inflation in canyons.
+        session.altitudeProvider = { [altimeterService] in
+            altimeterService.fusedAltitudeMeters
+        }
+        locationService.requestPermission()
+        locationService.startTracking(mode: .ride)
+        altimeterService.start()
+        audioService.reset()
+        session.start()
 
         precomputedTurns = RouteAnalysisService.analyzeTurns(for: route)
         activityManager.startActivity(
@@ -497,15 +551,16 @@ struct RouteNavigationView: View {
             distance: session.distanceTraveledMiles,
             time: session.formattedElapsedTime
         )
+        let effectiveStart = session.effectiveStartedAt ?? Date()
         activityManager.endActivity(
             finalDistance: session.distanceTraveledMiles,
-            finalTime: session.formattedElapsedTime
+            rideStartedAt: effectiveStart,
+            pausedAt: session.pausedAt
         )
+        let endDate = session.lastLocation?.timestamp ?? Date()
+        let events = session.pauseEvents.map { (date: $0.date, isPause: $0.kind == .pause) }
         Task {
-            await workoutService.endWorkout(
-                distance: session.distanceTraveledMiles,
-                duration: session.elapsedSeconds
-            )
+            await workoutService.endWorkout(endDate: endDate, pauseEvents: events)
         }
         RideHistoryService.shared.recordRide(
             routeId: route.id,
@@ -525,10 +580,21 @@ struct RouteNavigationView: View {
 
     // MARK: - GPS tick — audio cues, breadcrumb, Live Activity update, camera follow
 
-    private func onLocationTick(_ oldLat: Double?, _ newLat: Double?) {
+    private func onLocationTick() {
         guard let loc = locationService.userLocation else { return }
 
-        session.updateLocation(loc, speed: locationService.speedMPS)
+        if let location = locationService.lastLocation {
+            // Drift correction — feed tight-vertical-accuracy GPS samples into
+            // the barometer baseline so fused altitude doesn't drift over a
+            // long climb.
+            altimeterService.recalibrateIfPossible(
+                gpsAltitudeMeters: location.altitude,
+                verticalAccuracy: location.verticalAccuracy
+            )
+            session.updateLocation(location)
+        } else {
+            session.updateLocation(loc, speed: locationService.speedMPS)
+        }
         EmergencySafetyService.shared.updateLocation(loc)
 
         // Breadcrumb every ~10 m
@@ -559,16 +625,24 @@ struct RouteNavigationView: View {
             totalMiles: route.distanceMiles
         )
 
-        // Live Activity
-        activityManager.updateActivity(
-            speedMPH: locationService.speedMPH,
-            distanceTraveled: session.distanceTraveledMiles,
-            distanceRemaining: session.distanceRemainingMiles,
-            elapsedTime: session.formattedElapsedTime,
-            progress: session.progressPercent,
-            isOffRoute: session.isOffRoute,
-            heading: locationService.heading
-        )
+        // Live Activity — the widget renders the timer via `Text(timerInterval:
+        // ..., pauseTime:)` keyed off `effectiveStartedAt`, so we don't push
+        // every-second updates. Throttle inside the manager. Force a push
+        // whenever the off-route flag flips so the banner doesn't lag.
+        let offRouteFlipped = (session.isOffRoute != wasOffRoute)
+        if let effectiveStart = session.effectiveStartedAt {
+            activityManager.updateActivity(
+                speedMPH: locationService.speedMPH,
+                distanceTraveled: session.distanceTraveledMiles,
+                distanceRemaining: session.distanceRemainingMiles,
+                rideStartedAt: effectiveStart,
+                pausedAt: session.pausedAt,
+                progress: session.progressPercent,
+                isOffRoute: session.isOffRoute,
+                heading: locationService.navigationHeading,
+                force: offRouteFlipped
+            )
+        }
 
         // HealthKit GPS feed every ~5 breadcrumbs
         if workoutService.isRecording && breadcrumbs.count % 5 == 0 {
@@ -597,7 +671,7 @@ struct RouteNavigationView: View {
                 position = .camera(MapCamera(
                     centerCoordinate: loc,
                     distance: 1500,
-                    heading: locationService.heading,
+                    heading: locationService.navigationHeading,
                     pitch: 45
                 ))
             }
