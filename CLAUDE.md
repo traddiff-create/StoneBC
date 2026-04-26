@@ -247,5 +247,16 @@ Multi-day ride guides with day picker, stops timeline, and ride recording checkl
 
 ---
 
-**Last Updated:** 2026-04-10
+**Last Updated:** 2026-04-25
 **Maintained By:** Rory Stone
+
+---
+
+## Codex Audit Prompts
+
+ChatGPT-5.5 / Codex audits run via a sentinel-guarded prompt library:
+- **Per-repo config:** [`prompts/codex/_repo-config.md`](prompts/codex/_repo-config.md) — sentinel tells, source paths, build commands. **Note:** Xcode project file is `app.xcodeproj`, not `StoneBC.xcodeproj`.
+- **Shared library:** [`/Applications/Apps/_shared/codex-prompts/`](../_shared/codex-prompts/) — 10 universal audit prompts (parity, Swift 6, security, a11y, perf, etc.) + DEPLOYMENT_MATRIX + EXECUTION_QUEUE.
+- **Per-repo onboarding for Codex:** [`AGENTS.md`](AGENTS.md) (already exists).
+
+To run: copy `_repo-config.md` values into a prompt's `{{...}}` placeholders, paste into a fresh ChatGPT-5.5 conversation, wait for pre-flight to confirm correct repo before providing source files.
