@@ -15,9 +15,17 @@ struct RouteMapView: View {
     private var routes: [Route] { appState.allRoutes }
     @State private var selectedRoute: Route?
     @State private var position: MapCameraPosition = .automatic
+    @State private var offlineRegion: MKCoordinateRegion
+    @State private var tilePackInfo: OfflineTilePackInfo?
+    @State private var offlineMapFollowsUser = false
     @State private var filterCategory: String?
     @State private var filterDifficulty: String?
     @State private var showFilters = false
+
+    init(focusedRoute: Route? = nil) {
+        self.focusedRoute = focusedRoute
+        self._offlineRegion = State(initialValue: Self.initialRegion(for: focusedRoute))
+    }
 
     private var filteredRoutes: [Route] {
         if let focused = focusedRoute {
@@ -50,27 +58,44 @@ struct RouteMapView: View {
         return BCColors.difficultyColor(route.difficulty)
     }
 
+    private func routeUIColor(_ route: Route) -> UIColor {
+        UIColor(BCColors.difficultyColor(route.difficulty))
+    }
+
     var body: some View {
         ZStack {
-            // Map
-            Map(position: $position) {
-                ForEach(filteredRoutes) { route in
-                    MapPolyline(coordinates: route.clTrackpoints)
-                        .stroke(routeColor(route), lineWidth: selectedRoute?.id == route.id ? 4 : 2.5)
+            if let focusedRoute {
+                OfflineCapableMapView(
+                    region: $offlineRegion,
+                    isFollowingUser: $offlineMapFollowsUser,
+                    routePolyline: focusedRoute.clTrackpoints,
+                    routeColor: routeUIColor(focusedRoute),
+                    tilePack: tilePackInfo
+                )
+                .task(id: focusedRoute.id) {
+                    tilePackInfo = await OfflineTilePackManager.shared.installedPack(forRouteId: focusedRoute.id)
+                }
+            } else {
+                // Map
+                Map(position: $position) {
+                    ForEach(filteredRoutes) { route in
+                        MapPolyline(coordinates: route.clTrackpoints)
+                            .stroke(routeColor(route), lineWidth: selectedRoute?.id == route.id ? 4 : 2.5)
 
-                    // Start pin
-                    if let first = route.clTrackpoints.first {
-                        Annotation(route.name, coordinate: first) {
-                            RouteMapPin(route: route, isSelected: selectedRoute?.id == route.id) {
-                                withAnimation(.spring(response: 0.3)) {
-                                    selectedRoute = selectedRoute?.id == route.id ? nil : route
+                        // Start pin
+                        if let first = route.clTrackpoints.first {
+                            Annotation(route.name, coordinate: first) {
+                                RouteMapPin(route: route, isSelected: selectedRoute?.id == route.id) {
+                                    withAnimation(.spring(response: 0.3)) {
+                                        selectedRoute = selectedRoute?.id == route.id ? nil : route
+                                    }
                                 }
                             }
                         }
                     }
                 }
+                .mapStyle(.standard(elevation: .realistic))
             }
-            .mapStyle(.standard(elevation: .realistic))
 
             // Controls overlay
             VStack {
@@ -122,11 +147,52 @@ struct RouteMapView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                Text(focusedRoute != nil ? focusedRoute!.name.uppercased() : "ROUTE MAP")
+                Text(focusedRoute?.name.uppercased() ?? "ROUTE MAP")
                     .font(.system(size: 11, weight: .medium))
                     .tracking(2)
             }
         }
+    }
+
+    private static func initialRegion(for route: Route?) -> MKCoordinateRegion {
+        guard let route else {
+            return MKCoordinateRegion(
+                center: CLLocationCoordinate2D(latitude: 44.0805, longitude: -103.2310),
+                span: MKCoordinateSpan(latitudeDelta: 0.4, longitudeDelta: 0.4)
+            )
+        }
+        return boundingRegion(for: route.clTrackpoints, padding: 1.3)
+    }
+
+    private static func boundingRegion(for coords: [CLLocationCoordinate2D], padding: Double) -> MKCoordinateRegion {
+        guard let first = coords.first else {
+            return MKCoordinateRegion(
+                center: CLLocationCoordinate2D(latitude: 44.0805, longitude: -103.2310),
+                span: MKCoordinateSpan(latitudeDelta: 0.4, longitudeDelta: 0.4)
+            )
+        }
+
+        var minLat = first.latitude
+        var maxLat = first.latitude
+        var minLon = first.longitude
+        var maxLon = first.longitude
+
+        for coord in coords {
+            minLat = min(minLat, coord.latitude)
+            maxLat = max(maxLat, coord.latitude)
+            minLon = min(minLon, coord.longitude)
+            maxLon = max(maxLon, coord.longitude)
+        }
+
+        let center = CLLocationCoordinate2D(
+            latitude: (minLat + maxLat) / 2,
+            longitude: (minLon + maxLon) / 2
+        )
+        let span = MKCoordinateSpan(
+            latitudeDelta: max((maxLat - minLat) * padding, 0.01),
+            longitudeDelta: max((maxLon - minLon) * padding, 0.01)
+        )
+        return MKCoordinateRegion(center: center, span: span)
     }
 
     // MARK: - Selected Route Card

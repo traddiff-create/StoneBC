@@ -25,7 +25,8 @@ struct RouteNavigationView: View {
     @State private var activityManager = RideActivityManager()
     @State private var session: RideSession
     private var networkStatus = NetworkStatusService.shared
-    @State private var position: MapCameraPosition = .automatic
+    @State private var mapRegion: MKCoordinateRegion
+    @State private var tilePackInfo: OfflineTilePackInfo?
     @State private var isFollowingUser = true
     @State private var showEndConfirm = false
     @State private var showConditionReport = false
@@ -38,6 +39,7 @@ struct RouteNavigationView: View {
     init(route: Route) {
         self.route = route
         self._session = State(initialValue: RideSession(route: route))
+        self._mapRegion = State(initialValue: Self.initialMapRegion(for: route))
     }
 
     var body: some View {
@@ -327,7 +329,12 @@ struct RouteNavigationView: View {
 
     private var offlinePillLabel: String? {
         let userCoord = locationService.userLocation
-        let outsideRegion = userCoord.map { !OfflineTileCoverage.contains(coordinate: $0) } ?? false
+        let outsideRegion = userCoord.map { coord in
+            if let tilePackInfo {
+                return !tilePackInfo.bounds.contains(coord)
+            }
+            return !OfflineTileCoverage.contains(coordinate: coord)
+        } ?? false
 
         switch (networkStatus.isOnline, outsideRegion) {
         case (false, false): return "OFFLINE"
@@ -388,48 +395,14 @@ struct RouteNavigationView: View {
     // MARK: - Zone F · Map + floating controls
 
     private var navigationMap: some View {
-        Map(position: $position) {
-            MapPolyline(coordinates: route.clTrackpoints)
-                .stroke(BCColors.brandBlue, lineWidth: 4)
-
-            if breadcrumbs.count >= 2 {
-                MapPolyline(coordinates: breadcrumbs)
-                    .stroke(.orange, style: StrokeStyle(lineWidth: 3, dash: [6, 4]))
-            }
-
-            if let first = route.clTrackpoints.first {
-                Annotation("Start", coordinate: first) {
-                    Circle()
-                        .fill(.green)
-                        .frame(width: 12, height: 12)
-                        .overlay(Circle().stroke(.white, lineWidth: 2))
-                }
-            }
-
-            if let last = route.clTrackpoints.last, route.clTrackpoints.count > 1 {
-                Annotation("End", coordinate: last) {
-                    Circle()
-                        .fill(.red)
-                        .frame(width: 12, height: 12)
-                        .overlay(Circle().stroke(.white, lineWidth: 2))
-                }
-            }
-
-            if let userLoc = locationService.userLocation {
-                Annotation("You", coordinate: userLoc) {
-                    ZStack {
-                        Circle()
-                            .fill(BCColors.brandBlue.opacity(0.2))
-                            .frame(width: 40, height: 40)
-                        Circle()
-                            .fill(BCColors.brandBlue)
-                            .frame(width: 20, height: 20)
-                            .overlay(Circle().stroke(.white, lineWidth: 3))
-                    }
-                }
-            }
-        }
-        .mapStyle(.standard(elevation: .realistic))
+        OfflineCapableMapView(
+            region: $mapRegion,
+            isFollowingUser: $isFollowingUser,
+            routePolyline: route.clTrackpoints,
+            breadcrumb: breadcrumbs,
+            routeColor: UIColor(BCColors.brandBlue),
+            tilePack: tilePackInfo
+        )
         .overlay(alignment: .bottomTrailing) {
             if !isFollowingUser {
                 Button {
@@ -491,15 +464,46 @@ struct RouteNavigationView: View {
             .first?.safeAreaInsets.bottom ?? 0
     }
 
+    private static func initialMapRegion(for route: Route) -> MKCoordinateRegion {
+        let coords = route.clTrackpoints
+        guard let first = coords.first else {
+            return MKCoordinateRegion(
+                center: route.clStartCoordinate,
+                span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+            )
+        }
+
+        var minLat = first.latitude
+        var maxLat = first.latitude
+        var minLon = first.longitude
+        var maxLon = first.longitude
+
+        for coord in coords {
+            minLat = min(minLat, coord.latitude)
+            maxLat = max(maxLat, coord.latitude)
+            minLon = min(minLon, coord.longitude)
+            maxLon = max(maxLon, coord.longitude)
+        }
+
+        return MKCoordinateRegion(
+            center: CLLocationCoordinate2D(
+                latitude: (minLat + maxLat) / 2,
+                longitude: (minLon + maxLon) / 2
+            ),
+            span: MKCoordinateSpan(
+                latitudeDelta: max((maxLat - minLat) * 1.3, 0.02),
+                longitudeDelta: max((maxLon - minLon) * 1.3, 0.02)
+            )
+        )
+    }
+
     private func recenterOnUser() {
         guard let loc = locationService.userLocation else { return }
         withAnimation(.easeInOut(duration: 0.4)) {
-            position = .camera(MapCamera(
-                centerCoordinate: loc,
-                distance: 1500,
-                heading: locationService.navigationHeading,
-                pitch: 45
-            ))
+            mapRegion = MKCoordinateRegion(
+                center: loc,
+                span: MKCoordinateSpan(latitudeDelta: 0.015, longitudeDelta: 0.015)
+            )
         }
     }
 
@@ -530,6 +534,9 @@ struct RouteNavigationView: View {
             distanceMiles: route.distanceMiles,
             category: route.category
         )
+        Task {
+            tilePackInfo = await OfflineTilePackManager.shared.installedPack(forRouteId: route.id)
+        }
     }
 
     private func stopServices() {
@@ -668,12 +675,10 @@ struct RouteNavigationView: View {
         // Camera follow
         if isFollowingUser {
             withAnimation(.easeInOut(duration: 0.5)) {
-                position = .camera(MapCamera(
-                    centerCoordinate: loc,
-                    distance: 1500,
-                    heading: locationService.navigationHeading,
-                    pitch: 45
-                ))
+                mapRegion = MKCoordinateRegion(
+                    center: loc,
+                    span: MKCoordinateSpan(latitudeDelta: 0.015, longitudeDelta: 0.015)
+                )
             }
         }
     }

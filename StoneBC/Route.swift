@@ -19,12 +19,34 @@ struct Route: Identifiable, Codable {
     let description: String
     let startCoordinate: Coordinate
     let trackpoints: [[Double]]     // [[lat, lon, ele], ...]
+    let cuePoints: [CuePoint]
     let gpxURL: String?             // Public URL for gpx.studio embed
     var isImported: Bool
 
-    struct Coordinate: Codable {
+    struct Coordinate: Codable, Hashable {
         let latitude: Double
         let longitude: Double
+    }
+
+    struct CuePoint: Codable, Identifiable, Hashable {
+        let id: String
+        let name: String
+        let description: String?
+        let coordinate: Coordinate
+
+        init(id: String = UUID().uuidString,
+             name: String,
+             description: String? = nil,
+             coordinate: Coordinate) {
+            self.id = id
+            self.name = name
+            self.description = description
+            self.coordinate = coordinate
+        }
+
+        var clCoordinate: CLLocationCoordinate2D {
+            CLLocationCoordinate2D(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        }
     }
 
     init(from decoder: Decoder) throws {
@@ -39,6 +61,7 @@ struct Route: Identifiable, Codable {
         description = try container.decode(String.self, forKey: .description)
         startCoordinate = try container.decode(Coordinate.self, forKey: .startCoordinate)
         trackpoints = try container.decode([[Double]].self, forKey: .trackpoints)
+        cuePoints = try container.decodeIfPresent([CuePoint].self, forKey: .cuePoints) ?? []
         gpxURL = try container.decodeIfPresent(String.self, forKey: .gpxURL)
         isImported = try container.decodeIfPresent(Bool.self, forKey: .isImported) ?? false
     }
@@ -46,7 +69,7 @@ struct Route: Identifiable, Codable {
     init(id: String, name: String, difficulty: String, category: String,
          distanceMiles: Double, elevationGainFeet: Int, region: String,
          description: String, startCoordinate: Coordinate, trackpoints: [[Double]],
-         gpxURL: String? = nil, isImported: Bool = false) {
+         cuePoints: [CuePoint] = [], gpxURL: String? = nil, isImported: Bool = false) {
         self.id = id
         self.name = name
         self.difficulty = difficulty
@@ -57,6 +80,7 @@ struct Route: Identifiable, Codable {
         self.description = description
         self.startCoordinate = startCoordinate
         self.trackpoints = trackpoints
+        self.cuePoints = cuePoints
         self.gpxURL = gpxURL
         self.isImported = isImported
     }
@@ -161,6 +185,7 @@ extension Route {
             description: result.description ?? "Imported from GPX file",
             startCoordinate: Coordinate(latitude: start[0], longitude: start[1]),
             trackpoints: trackpoints,
+            cuePoints: result.cuePoints,
             isImported: true
         )
     }

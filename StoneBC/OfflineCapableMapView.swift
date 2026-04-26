@@ -9,10 +9,8 @@
 //  this is the migration target.
 //
 //  Camera state is owned by the caller via a `Binding<MKCoordinateRegion>`;
-//  the wrapper sets the region only when the binding's value changes
-//  externally (handle drift / "recenter" buttons), and reports user-driven
-//  region changes back via the binding so the caller can detect "user is
-//  panning, stop following them."
+//  the wrapper reports user-driven region changes back through the binding so
+//  callers can detect panning and stop following automatically.
 //
 
 import SwiftUI
@@ -26,19 +24,25 @@ struct OfflineCapableMapView: UIViewRepresentable {
     let breadcrumb: [CLLocationCoordinate2D]
     let routeColor: UIColor
     let showsCompass: Bool
+    let tilePack: OfflineTilePackInfo?
+    let showsEndpointPins: Bool
 
     init(region: Binding<MKCoordinateRegion>,
          isFollowingUser: Binding<Bool> = .constant(true),
          routePolyline: [CLLocationCoordinate2D] = [],
          breadcrumb: [CLLocationCoordinate2D] = [],
          routeColor: UIColor = .systemOrange,
-         showsCompass: Bool = true) {
+         showsCompass: Bool = true,
+         tilePack: OfflineTilePackInfo? = nil,
+         showsEndpointPins: Bool = true) {
         self._region = region
         self._isFollowingUser = isFollowingUser
         self.routePolyline = routePolyline
         self.breadcrumb = breadcrumb
         self.routeColor = routeColor
         self.showsCompass = showsCompass
+        self.tilePack = tilePack
+        self.showsEndpointPins = showsEndpointPins
     }
 
     func makeUIView(context: Context) -> MKMapView {
@@ -50,25 +54,41 @@ struct OfflineCapableMapView: UIViewRepresentable {
         map.userTrackingMode = isFollowingUser ? .followWithHeading : .none
         map.region = region
 
-        // Bundled tile layers — USFS base + OSM Cycle overlay. Order matters:
-        // the base goes in first so the cycle layer renders on top of it.
-        map.addOverlay(USFSTileOverlay(), level: .aboveLabels)
-        map.addOverlay(OSMCycleTileOverlay(), level: .aboveLabels)
+        context.coordinator.syncTileOverlays(on: map)
 
         return map
     }
 
     func updateUIView(_ map: MKMapView, context: Context) {
+        context.coordinator.parent = self
+        context.coordinator.syncTileOverlays(on: map)
+
         // Refresh polylines — diff would be nicer but the polyline arrays are
         // small enough that re-adding is fine. Strip everything that isn't a
         // tile overlay, then re-add the route + breadcrumb.
-        let nonTileOverlays = map.overlays.filter { !($0 is BundledTileOverlay) }
+        let nonTileOverlays = map.overlays.filter {
+            !($0 is BundledTileOverlay) && !($0 is DownloadedRouteTileOverlay)
+        }
         map.removeOverlays(nonTileOverlays)
+        map.removeAnnotations(map.annotations.filter { !($0 is MKUserLocation) })
 
         if routePolyline.count >= 2 {
             let line = MKPolyline(coordinates: routePolyline, count: routePolyline.count)
             line.title = "route"
             map.addOverlay(line, level: .aboveLabels)
+
+            if showsEndpointPins, let first = routePolyline.first {
+                let start = MKPointAnnotation()
+                start.title = "Start"
+                start.coordinate = first
+                map.addAnnotation(start)
+            }
+            if showsEndpointPins, let last = routePolyline.last {
+                let end = MKPointAnnotation()
+                end.title = "End"
+                end.coordinate = last
+                map.addAnnotation(end)
+            }
         }
         if breadcrumb.count >= 2 {
             let crumbs = MKPolyline(coordinates: breadcrumb, count: breadcrumb.count)
@@ -90,12 +110,37 @@ struct OfflineCapableMapView: UIViewRepresentable {
 
     final class Coordinator: NSObject, MKMapViewDelegate {
         var parent: OfflineCapableMapView
+        private var tileOverlayKey: String?
 
         init(_ parent: OfflineCapableMapView) {
             self.parent = parent
         }
 
+        func syncTileOverlays(on map: MKMapView) {
+            let key = parent.tilePack.map { "\($0.routeId):\($0.sourceId):\($0.downloadedAt.timeIntervalSince1970)" } ?? "bundled"
+            guard key != tileOverlayKey else { return }
+
+            let tileOverlays = map.overlays.filter {
+                $0 is BundledTileOverlay || $0 is DownloadedRouteTileOverlay
+            }
+            map.removeOverlays(tileOverlays)
+
+            if let tilePack = parent.tilePack {
+                map.addOverlay(DownloadedRouteTileOverlay(tilePack: tilePack), level: .aboveLabels)
+            } else {
+                map.addOverlay(USFSTileOverlay(), level: .aboveLabels)
+                map.addOverlay(OSMCycleTileOverlay(), level: .aboveLabels)
+            }
+
+            tileOverlayKey = key
+        }
+
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+            if let downloaded = overlay as? DownloadedRouteTileOverlay {
+                let renderer = MKTileOverlayRenderer(tileOverlay: downloaded)
+                renderer.alpha = CGFloat(downloaded.tilePack.source.overlayAlpha)
+                return renderer
+            }
             if let cycleTile = overlay as? OSMCycleTileOverlay {
                 let renderer = MKTileOverlayRenderer(tileOverlay: cycleTile)
                 renderer.alpha = 0.6
@@ -119,6 +164,19 @@ struct OfflineCapableMapView: UIViewRepresentable {
                 return renderer
             }
             return MKOverlayRenderer(overlay: overlay)
+        }
+
+        func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+            guard !(annotation is MKUserLocation) else { return nil }
+            let identifier = "routeEndpoint"
+            let view = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
+                ?? MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+            view.annotation = annotation
+            if let marker = view as? MKMarkerAnnotationView {
+                marker.markerTintColor = annotation.title == "Start" ? .systemGreen : .systemRed
+                marker.glyphImage = UIImage(systemName: annotation.title == "Start" ? "play.fill" : "flag.checkered")
+            }
+            return view
         }
 
         // Detect user pan so the caller can stop following.

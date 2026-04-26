@@ -128,6 +128,8 @@
 		R00003000000000000000003 /* OfflineTileCoverage.swift in Sources */ = {isa = PBXBuildFile; fileRef = R10003000000000000000003 /* OfflineTileCoverage.swift */; };
 		R00004000000000000000004 /* RideMapTileOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = R10004000000000000000004 /* RideMapTileOverlay.swift */; };
 		R00005000000000000000005 /* OfflineCapableMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = R10005000000000000000005 /* OfflineCapableMapView.swift */; };
+		R00006000000000000000006 /* OfflineTileSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = R10006000000000000000006 /* OfflineTileSource.swift */; };
+		R00007000000000000000007 /* OfflineTilePackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = R10007000000000000000007 /* OfflineTilePackManager.swift */; };
 		P00002000000000000000002 /* UserRouteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = P10002000000000000000002 /* UserRouteStore.swift */; };
 		P00003000000000000000003 /* RouteRecordingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = P10003000000000000000003 /* RouteRecordingView.swift */; };
 		P00004000000000000000004 /* RecordTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = P10004000000000000000004 /* RecordTabView.swift */; };
@@ -262,6 +264,8 @@
 		R10003000000000000000003 /* OfflineTileCoverage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineTileCoverage.swift; sourceTree = "<group>"; };
 		R10004000000000000000004 /* RideMapTileOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideMapTileOverlay.swift; sourceTree = "<group>"; };
 		R10005000000000000000005 /* OfflineCapableMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineCapableMapView.swift; sourceTree = "<group>"; };
+		R10006000000000000000006 /* OfflineTileSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineTileSource.swift; sourceTree = "<group>"; };
+		R10007000000000000000007 /* OfflineTilePackManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineTilePackManager.swift; sourceTree = "<group>"; };
 		P10002000000000000000002 /* UserRouteStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRouteStore.swift; sourceTree = "<group>"; };
 		P10003000000000000000003 /* RouteRecordingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteRecordingView.swift; sourceTree = "<group>"; };
 		P10004000000000000000004 /* RecordTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordTabView.swift; sourceTree = "<group>"; };
@@ -379,6 +383,8 @@
 				R10003000000000000000003 /* OfflineTileCoverage.swift */,
 				R10004000000000000000004 /* RideMapTileOverlay.swift */,
 				R10005000000000000000005 /* OfflineCapableMapView.swift */,
+				R10006000000000000000006 /* OfflineTileSource.swift */,
+				R10007000000000000000007 /* OfflineTilePackManager.swift */,
 				P10002000000000000000002 /* UserRouteStore.swift */,
 				P10003000000000000000003 /* RouteRecordingView.swift */,
 				P10004000000000000000004 /* RecordTabView.swift */,
@@ -614,6 +620,8 @@
 				R00003000000000000000003 /* OfflineTileCoverage.swift in Sources */,
 				R00004000000000000000004 /* RideMapTileOverlay.swift in Sources */,
 				R00005000000000000000005 /* OfflineCapableMapView.swift in Sources */,
+				R00006000000000000000006 /* OfflineTileSource.swift in Sources */,
+				R00007000000000000000007 /* OfflineTilePackManager.swift in Sources */,
 				P00002000000000000000002 /* UserRouteStore.swift in Sources */,
 				P00003000000000000000003 /* RouteRecordingView.swift in Sources */,
 				P00004000000000000000004 /* RecordTabView.swift in Sources */,

@@ -2,8 +2,7 @@
 //  OfflineMapService.swift
 //  StoneBC
 //
-//  Pre-renders static map snapshots for each route so maps work offline.
-//  Also provides a "Prepare for Offline" tile-warming function.
+//  Pre-renders static map snapshots for offline route detail previews.
 //
 
 import MapKit
@@ -12,12 +11,17 @@ import SwiftUI
 actor OfflineMapService {
     static let shared = OfflineMapService()
 
-    private let cacheDir: URL = {
-        let dir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+    private let storageDir: URL = {
+        let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("StoneBC", isDirectory: true)
             .appendingPathComponent("RouteSnapshots", isDirectory: true)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         return dir
     }()
+
+    init() {
+        Self.migrateLegacySnapshotsIfNeeded(to: storageDir)
+    }
 
     // MARK: - Snapshot Cache
 
@@ -77,7 +81,7 @@ actor OfflineMapService {
     // MARK: - Private Helpers
 
     private func snapshotPath(for routeId: String) -> URL {
-        cacheDir.appendingPathComponent("\(routeId).png")
+        storageDir.appendingPathComponent("\(routeId).png")
     }
 
     private func boundingRegion(for coords: [CLLocationCoordinate2D], padding: Double) -> MKCoordinateRegion {
@@ -169,6 +173,35 @@ actor OfflineMapService {
         case "road": return UIColor(red: 0.34, green: 0.65, blue: 1.0, alpha: 1)      // blue
         case "fatbike": return UIColor(red: 0.64, green: 0.44, blue: 0.97, alpha: 1)  // purple
         default: return UIColor(red: 0.34, green: 0.65, blue: 1.0, alpha: 1)
+        }
+    }
+
+    private static func migrateLegacySnapshotsIfNeeded(to storageDir: URL) {
+        let legacyDir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("RouteSnapshots", isDirectory: true)
+        guard FileManager.default.fileExists(atPath: legacyDir.path),
+              let files = try? FileManager.default.contentsOfDirectory(
+                at: legacyDir,
+                includingPropertiesForKeys: nil
+              ) else {
+            return
+        }
+
+        var didFail = false
+        for file in files where file.pathExtension.lowercased() == "png" {
+            let destination = storageDir.appendingPathComponent(file.lastPathComponent)
+            if FileManager.default.fileExists(atPath: destination.path) {
+                continue
+            }
+            do {
+                try FileManager.default.moveItem(at: file, to: destination)
+            } catch {
+                didFail = true
+            }
+        }
+
+        if !didFail {
+            try? FileManager.default.removeItem(at: legacyDir)
         }
     }
 }

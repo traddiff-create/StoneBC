@@ -66,3 +66,34 @@ final class OSMCycleTileOverlay: BundledTileOverlay {
         self.canReplaceMapContent = false
     }
 }
+
+final class DownloadedRouteTileOverlay: MKTileOverlay {
+    let tilePack: OfflineTilePackInfo
+    private let packDirectory: URL
+
+    init(tilePack: OfflineTilePackInfo) {
+        self.tilePack = tilePack
+        self.packDirectory = OfflineTilePackManager.packDirectory(
+            routeId: tilePack.routeId,
+            sourceId: tilePack.sourceId
+        )
+        super.init(urlTemplate: nil)
+        self.tileSize = CGSize(width: tilePack.source.tileSize, height: tilePack.source.tileSize)
+        self.minimumZ = tilePack.minZoom
+        self.maximumZ = tilePack.maxZoom
+        self.canReplaceMapContent = tilePack.source.canReplaceMapContent
+    }
+
+    override func loadTile(at path: MKTileOverlayPath,
+                           result: @escaping (Data?, Error?) -> Void) {
+        let url = packDirectory
+            .appendingPathComponent("\(path.z)", isDirectory: true)
+            .appendingPathComponent("\(path.x)", isDirectory: true)
+            .appendingPathComponent("\(path.y).png")
+        guard let data = try? Data(contentsOf: url) else {
+            result(nil, nil)
+            return
+        }
+        result(data, nil)
+    }
+}

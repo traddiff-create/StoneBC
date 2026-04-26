@@ -11,17 +11,24 @@ import Foundation
 actor OfflineRouteStorage {
     static let shared = OfflineRouteStorage()
 
-    private let cacheDir: URL = {
-        let dir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+    private let storageDir: URL = {
+        let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("StoneBC", isDirectory: true)
             .appendingPathComponent("OfflineRoutes", isDirectory: true)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         return dir
     }()
 
-    private let indexFile: URL = {
-        FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("OfflineRoutes/index.json")
-    }()
+    private var indexFile: URL {
+        storageDir.appendingPathComponent("index.json")
+    }
+
+    init() {
+        Self.migrateLegacyCacheIfNeeded(
+            to: storageDir,
+            indexFile: storageDir.appendingPathComponent("index.json")
+        )
+    }
 
     // MARK: - Index
 
@@ -91,7 +98,7 @@ actor OfflineRouteStorage {
     /// records whether the bundled tile pack covers this route's bbox so the
     /// UI can surface "fully offline ready" without a runtime check.
     func cacheRoute(_ route: Route, hasSnapshot snapshotOverride: Bool? = nil, tilesAvailable: Bool = false) {
-        let routeDir = cacheDir.appendingPathComponent(route.id, isDirectory: true)
+        let routeDir = storageDir.appendingPathComponent(route.id, isDirectory: true)
         try? FileManager.default.createDirectory(at: routeDir, withIntermediateDirectories: true)
 
         // Save route data (trackpoints, metadata)
@@ -127,7 +134,7 @@ actor OfflineRouteStorage {
 
     /// Cache weather data for a route
     func cacheWeather(_ weather: RouteWeather, routeId: String) {
-        let routeDir = cacheDir.appendingPathComponent(routeId, isDirectory: true)
+        let routeDir = storageDir.appendingPathComponent(routeId, isDirectory: true)
         try? FileManager.default.createDirectory(at: routeDir, withIntermediateDirectories: true)
 
         // Store weather as simple JSON
@@ -170,7 +177,7 @@ actor OfflineRouteStorage {
 
     /// Load a cached route
     func loadCachedRoute(routeId: String) -> Route? {
-        let routeFile = cacheDir
+        let routeFile = storageDir
             .appendingPathComponent(routeId, isDirectory: true)
             .appendingPathComponent("route.json")
 
@@ -182,7 +189,7 @@ actor OfflineRouteStorage {
 
     /// Remove a cached route
     func evict(routeId: String) {
-        let routeDir = cacheDir.appendingPathComponent(routeId, isDirectory: true)
+        let routeDir = storageDir.appendingPathComponent(routeId, isDirectory: true)
         try? FileManager.default.removeItem(at: routeDir)
 
         // Also remove snapshot
@@ -197,7 +204,7 @@ actor OfflineRouteStorage {
     /// Total cache size in bytes
     func totalCacheSize() -> Int {
         guard let enumerator = FileManager.default.enumerator(
-            at: cacheDir,
+            at: storageDir,
             includingPropertiesForKeys: [.fileSizeKey]
         ) else { return 0 }
 
@@ -220,7 +227,48 @@ actor OfflineRouteStorage {
     // MARK: - Helpers
 
     private func snapshotPath(for routeId: String) -> URL {
-        FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("RouteSnapshots/\(routeId).png")
+        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("StoneBC/RouteSnapshots/\(routeId).png")
+    }
+
+    private static func migrateLegacyCacheIfNeeded(to storageDir: URL, indexFile: URL) {
+        let legacyDir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("OfflineRoutes", isDirectory: true)
+        guard FileManager.default.fileExists(atPath: legacyDir.path) else { return }
+
+        try? FileManager.default.createDirectory(at: storageDir, withIntermediateDirectories: true)
+        var didFail = false
+        let legacyIndex = legacyDir.appendingPathComponent("index.json")
+        if FileManager.default.fileExists(atPath: legacyIndex.path),
+           !FileManager.default.fileExists(atPath: indexFile.path) {
+            do {
+                try FileManager.default.moveItem(at: legacyIndex, to: indexFile)
+            } catch {
+                didFail = true
+            }
+        }
+
+        guard let children = try? FileManager.default.contentsOfDirectory(
+            at: legacyDir,
+            includingPropertiesForKeys: [.isDirectoryKey]
+        ) else {
+            return
+        }
+
+        for child in children where child.lastPathComponent != "index.json" {
+            let destination = storageDir.appendingPathComponent(child.lastPathComponent, isDirectory: child.hasDirectoryPath)
+            if FileManager.default.fileExists(atPath: destination.path) {
+                continue
+            }
+            do {
+                try FileManager.default.moveItem(at: child, to: destination)
+            } catch {
+                didFail = true
+            }
+        }
+
+        if !didFail {
+            try? FileManager.default.removeItem(at: legacyDir)
+        }
     }
 }

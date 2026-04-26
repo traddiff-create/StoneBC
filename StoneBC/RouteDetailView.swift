@@ -16,10 +16,23 @@ struct RouteDetailView: View {
     @State private var showShareCard = false
     @State private var isPreparing = false
     @State private var isCachedOffline = false
+    @State private var offlineStorageSize = ""
+    @State private var tileSources: [OfflineTileSource] = []
+    @State private var selectedTileSource: OfflineTileSource?
+    @State private var tilePackInfo: OfflineTilePackInfo?
+    @State private var tileDownloadProgress: OfflineTileDownloadProgress?
+    @State private var tileDownloadTask: Task<Void, Never>?
+    @State private var isDownloadingTiles = false
+    @State private var tileDownloadError: String?
     @State private var stravaSegments: [StravaSegment] = []
     @State private var trailClosures: [TrailClosure] = []
     @State private var isFavorite = false
     @State private var isTimeTrial = false
+    private var networkStatus = NetworkStatusService.shared
+
+    init(route: Route) {
+        self.route = route
+    }
 
     var body: some View {
         ScrollView {
@@ -142,7 +155,7 @@ struct RouteDetailView: View {
         .task {
             let gpx = GPXService.exportGPX(route)
             gpxFileURL = GPXService.writeToTempFile(gpx, name: route.name)
-            isCachedOffline = await OfflineRouteStorage.shared.isCached(routeId: route.id)
+            await refreshOfflineState()
             isFavorite = EventNotificationService.shared.isFavorite(routeId: route.id)
             isTimeTrial = TimeTrialService.shared.isPreset(routeId: route.id)
 
@@ -159,6 +172,9 @@ struct RouteDetailView: View {
         }
         .sheet(isPresented: $showShareCard) {
             ShareCardSheet(route: route)
+        }
+        .onDisappear {
+            tileDownloadTask?.cancel()
         }
         .fullScreenCover(isPresented: $showFullMap) {
             NavigationStack {
@@ -312,39 +328,23 @@ struct RouteDetailView: View {
 
     // MARK: - Offline & Coverage Tools
     private var offlineToolsSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 10) {
             Text("RIDE TOOLS")
                 .font(.system(size: 10, weight: .semibold))
                 .tracking(1)
                 .foregroundColor(.secondary)
 
-            HStack(spacing: 12) {
-                NavigationLink(destination: CellCoverageView(route: route)) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "antenna.radiowaves.left.and.right")
-                            .font(.system(size: 12))
-                            .foregroundColor(.orange)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Cell Coverage")
-                                .font(.system(size: 12, weight: .medium))
-                                .foregroundColor(.primary)
-                            Text("See dead zones on route")
-                                .font(.system(size: 10))
-                                .foregroundColor(.secondary)
-                        }
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 10))
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(BCSpacing.sm)
-                    .background(BCColors.cardBackground.opacity(0.5))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                }
-                .buttonStyle(.plain)
+            NavigationLink(destination: CellCoverageView(route: route)) {
+                toolRow(
+                    icon: "antenna.radiowaves.left.and.right",
+                    iconColor: .orange,
+                    title: "Cell Coverage",
+                    subtitle: "See dead zones on route",
+                    trailing: "chevron.right"
+                )
             }
+            .buttonStyle(.plain)
 
-            // Prepare for Offline button
             Button {
                 isPreparing = true
                 Task {
@@ -365,43 +365,268 @@ struct RouteDetailView: View {
 
                     isPreparing = false
                     isCachedOffline = true
+                    offlineStorageSize = await OfflineRouteStorage.shared.formattedCacheSize()
                 }
             } label: {
-                HStack(spacing: 8) {
-                    if isPreparing {
-                        ProgressView()
-                            .scaleEffect(0.7)
-                            .frame(width: 12, height: 12)
-                    } else {
-                        Image(systemName: isCachedOffline ? "checkmark.circle.fill" : "arrow.down.circle")
-                            .font(.system(size: 12))
-                            .foregroundColor(isCachedOffline ? BCColors.brandGreen : BCColors.brandBlue)
-                    }
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(isCachedOffline ? "Saved for Offline" : "Prepare for Offline")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(.primary)
-                        Text(isCachedOffline ? "Route, map, and weather cached" : "Cache route data and map tiles")
-                            .font(.system(size: 10))
-                            .foregroundColor(.secondary)
-                    }
-                    Spacer()
-                    if !isPreparing {
-                        Image(systemName: "icloud.and.arrow.down")
-                            .font(.system(size: 10))
-                            .foregroundColor(.secondary)
-                    }
-                }
-                .padding(BCSpacing.sm)
-                .background(BCColors.cardBackground.opacity(0.5))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                offlineRouteCacheRow
             }
             .buttonStyle(.plain)
             .disabled(isPreparing)
+
+            tileDownloadSection
         }
         .padding(BCSpacing.md)
         .background(BCColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    private var offlineRouteCacheRow: some View {
+        HStack(spacing: 8) {
+            if isPreparing {
+                ProgressView()
+                    .scaleEffect(0.7)
+                    .frame(width: 12, height: 12)
+            } else {
+                Image(systemName: isCachedOffline ? "checkmark.circle.fill" : "arrow.down.circle")
+                    .font(.system(size: 12))
+                    .foregroundColor(isCachedOffline ? BCColors.brandGreen : BCColors.brandBlue)
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                Text(isCachedOffline ? "Route Saved Offline" : "Save Route Offline")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.primary)
+                Text(isCachedOffline ? "Route data, preview, and weather cached · \(offlineStorageSize)" : "Cache route data, preview, and weather")
+                    .font(.system(size: 10))
+                    .foregroundColor(.secondary)
+                    .lineLimit(2)
+            }
+            Spacer()
+            if !isPreparing {
+                Image(systemName: "icloud.and.arrow.down")
+                    .font(.system(size: 10))
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(BCSpacing.sm)
+        .background(BCColors.cardBackground.opacity(0.5))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    private var tileDownloadSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if tileSources.count > 1 {
+                Picker("Tile Source", selection: Binding(
+                    get: { selectedTileSource?.id ?? "" },
+                    set: { id in selectedTileSource = tileSources.first { $0.id == id } }
+                )) {
+                    ForEach(tileSources) { source in
+                        Text(source.name).tag(source.id)
+                    }
+                }
+                .pickerStyle(.menu)
+                .font(.system(size: 12))
+            }
+
+            if let tilePackInfo {
+                HStack(spacing: 8) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 12))
+                        .foregroundColor(BCColors.brandGreen)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Offline Tiles Installed")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.primary)
+                        Text("\(tilePackInfo.source.name) · \(tilePackInfo.formattedSize) · \(tilePackInfo.tileCount) tiles")
+                            .font(.system(size: 10))
+                            .foregroundColor(.secondary)
+                            .lineLimit(2)
+                    }
+                    Spacer()
+                    Button("Delete") {
+                        deleteTilePack()
+                    }
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(.red)
+                }
+                .padding(BCSpacing.sm)
+                .background(BCColors.cardBackground.opacity(0.5))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            } else if isDownloadingTiles {
+                tileProgressRow
+            } else {
+                Button {
+                    startTileDownload()
+                } label: {
+                    toolRow(
+                        icon: tileDownloadIcon,
+                        iconColor: tileDownloadColor,
+                        title: "Download Tiles for Offline",
+                        subtitle: tileDownloadSubtitle,
+                        trailing: tileSources.isEmpty || !networkStatus.isOnline ? nil : "arrow.down.circle"
+                    )
+                }
+                .buttonStyle(.plain)
+                .disabled(tileSources.isEmpty || !networkStatus.isOnline)
+            }
+
+            if let selectedTileSource {
+                Text("\(selectedTileSource.attribution) · \(selectedTileSource.licenseNotes)")
+                    .font(.system(size: 9))
+                    .foregroundColor(.secondary)
+                    .lineLimit(3)
+            }
+
+            if let tileDownloadError {
+                Text(tileDownloadError)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundColor(.red)
+            }
+        }
+    }
+
+    private var tileProgressRow: some View {
+        HStack(spacing: 8) {
+            ProgressView(value: tileDownloadProgress?.fractionCompleted ?? 0)
+                .frame(width: 42)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Downloading Offline Tiles")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.primary)
+                Text(tileProgressText)
+                    .font(.system(size: 10))
+                    .foregroundColor(.secondary)
+            }
+            Spacer()
+            Button("Cancel") {
+                tileDownloadTask?.cancel()
+            }
+            .font(.system(size: 11, weight: .semibold))
+            .foregroundColor(.red)
+        }
+        .padding(BCSpacing.sm)
+        .background(BCColors.cardBackground.opacity(0.5))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    private var tileProgressText: String {
+        guard let tileDownloadProgress else { return "Preparing..." }
+        return "\(tileDownloadProgress.completedTiles)/\(tileDownloadProgress.totalTiles) tiles · \(tileDownloadProgress.formattedBytes)"
+    }
+
+    private var tileDownloadIcon: String {
+        if tileSources.isEmpty { return "lock.slash" }
+        return networkStatus.isOnline ? "map" : "wifi.slash"
+    }
+
+    private var tileDownloadColor: Color {
+        if tileSources.isEmpty || !networkStatus.isOnline { return .secondary }
+        return BCColors.brandBlue
+    }
+
+    private var tileDownloadSubtitle: String {
+        if tileSources.isEmpty {
+            return "No approved tile source configured"
+        }
+        if !networkStatus.isOnline {
+            return "Connect to the internet to download map tiles"
+        }
+        let sourceName = selectedTileSource?.name ?? "approved source"
+        return "Opt-in local map pack from \(sourceName)"
+    }
+
+    private func toolRow(icon: String, iconColor: Color, title: String, subtitle: String, trailing: String?) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.system(size: 12))
+                .foregroundColor(iconColor)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.primary)
+                Text(subtitle)
+                    .font(.system(size: 10))
+                    .foregroundColor(.secondary)
+                    .lineLimit(2)
+            }
+            Spacer()
+            if let trailing {
+                Image(systemName: trailing)
+                    .font(.system(size: 10))
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(BCSpacing.sm)
+        .background(BCColors.cardBackground.opacity(0.5))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    @MainActor
+    private func refreshOfflineState() async {
+        isCachedOffline = await OfflineRouteStorage.shared.isCached(routeId: route.id)
+        offlineStorageSize = await OfflineRouteStorage.shared.formattedCacheSize()
+        tileSources = await OfflineTilePackManager.shared.approvedSources()
+        tilePackInfo = await OfflineTilePackManager.shared.installedPack(forRouteId: route.id)
+
+        if let tilePackInfo {
+            selectedTileSource = tileSources.first { $0.id == tilePackInfo.sourceId } ?? tilePackInfo.source
+        } else if selectedTileSource == nil {
+            selectedTileSource = tileSources.first
+        }
+    }
+
+    private func startTileDownload() {
+        guard let selectedTileSource else { return }
+        tileDownloadTask?.cancel()
+        isDownloadingTiles = true
+        tileDownloadError = nil
+        tileDownloadProgress = OfflineTileDownloadProgress(completedTiles: 0, totalTiles: 1, bytesDownloaded: 0)
+
+        tileDownloadTask = Task {
+            do {
+                let info = try await OfflineTilePackManager.shared.downloadPack(
+                    for: route,
+                    source: selectedTileSource
+                ) { progress in
+                    await MainActor.run {
+                        tileDownloadProgress = progress
+                    }
+                }
+                await MainActor.run {
+                    tilePackInfo = info
+                    isDownloadingTiles = false
+                    tileDownloadProgress = nil
+                    tileDownloadTask = nil
+                }
+            } catch is CancellationError {
+                await MainActor.run {
+                    isDownloadingTiles = false
+                    tileDownloadProgress = nil
+                    tileDownloadTask = nil
+                    tileDownloadError = "Tile download canceled."
+                }
+            } catch {
+                await MainActor.run {
+                    isDownloadingTiles = false
+                    tileDownloadProgress = nil
+                    tileDownloadTask = nil
+                    tileDownloadError = error.localizedDescription
+                }
+            }
+        }
+    }
+
+    private func deleteTilePack() {
+        guard let tilePackInfo else { return }
+        Task {
+            await OfflineTilePackManager.shared.deletePack(
+                routeId: route.id,
+                sourceId: tilePackInfo.sourceId
+            )
+            await MainActor.run {
+                self.tilePackInfo = nil
+                self.tileDownloadError = nil
+            }
+        }
     }
 
     // MARK: - gpx.studio Link

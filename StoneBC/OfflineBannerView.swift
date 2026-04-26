@@ -3,7 +3,7 @@
 //  StoneBC
 //
 //  Compact banner shown when the device has no network connectivity.
-//  Reassures riders that GPS navigation, compass, and barometer still work.
+//  Reassures riders that GPS navigation, compass, and saved routes still work.
 //
 
 import SwiftUI
@@ -15,7 +15,7 @@ struct OfflineBannerView: View {
                 .font(.system(size: 11, weight: .semibold))
                 .foregroundColor(.orange)
 
-            Text("Offline — GPS, compass & maps still work")
+            Text("Offline — GPS, compass & saved routes still work")
                 .font(.system(size: 11, weight: .medium))
                 .foregroundColor(.orange)
 

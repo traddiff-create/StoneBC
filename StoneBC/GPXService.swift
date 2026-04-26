@@ -24,6 +24,22 @@ enum GPXService {
             <desc>\(escapeXML(route.description))</desc>
             <time>\(iso8601Now())</time>
           </metadata>
+
+        """
+
+        for cue in route.cuePoints {
+            xml += """
+          <wpt lat="\(cue.coordinate.latitude)" lon="\(cue.coordinate.longitude)">
+            <name>\(escapeXML(cue.name))</name>
+
+        """
+            if let description = cue.description, !description.isEmpty {
+                xml += "    <desc>\(escapeXML(description))</desc>\n"
+            }
+            xml += "  </wpt>\n"
+        }
+
+        xml += """
           <trk>
             <name>\(escapeXML(route.name))</name>
             <trkseg>
@@ -80,7 +96,8 @@ enum GPXService {
         return GPXResult(
             name: delegate.routeName,
             description: delegate.routeDescription,
-            trackpoints: delegate.trackpoints
+            trackpoints: delegate.trackpoints,
+            cuePoints: delegate.cuePoints
         )
     }
 
@@ -106,6 +123,7 @@ struct GPXResult {
     let name: String?
     let description: String?
     let trackpoints: [[Double]] // [[lat, lon, ele], ...]
+    let cuePoints: [Route.CuePoint]
 }
 
 // MARK: - GPX Errors
@@ -126,6 +144,7 @@ enum GPXError: LocalizedError {
 
 private class GPXParserDelegate: NSObject, XMLParserDelegate {
     var trackpoints: [[Double]] = []
+    var cuePoints: [Route.CuePoint] = []
     var routeName: String?
     var routeDescription: String?
 
@@ -134,8 +153,16 @@ private class GPXParserDelegate: NSObject, XMLParserDelegate {
     private var currentLat: Double?
     private var currentLon: Double?
     private var currentEle: Double?
+    private var currentWaypointName: String?
+    private var currentWaypointDescription: String?
+    private var currentPointKind: PointKind?
     private var inTrack = false
     private var inMetadata = false
+
+    private enum PointKind {
+        case track
+        case waypoint
+    }
 
     func parser(_ parser: XMLParser, didStartElement elementName: String,
                 namespaceURI: String?, qualifiedName: String?,
@@ -154,6 +181,17 @@ private class GPXParserDelegate: NSObject, XMLParserDelegate {
                 currentLat = lat
                 currentLon = lon
                 currentEle = nil
+                currentPointKind = .track
+            }
+        case "wpt":
+            if let latStr = attributes["lat"], let lonStr = attributes["lon"],
+               let lat = Double(latStr), let lon = Double(lonStr) {
+                currentLat = lat
+                currentLon = lon
+                currentEle = nil
+                currentWaypointName = nil
+                currentWaypointDescription = nil
+                currentPointKind = .waypoint
             }
         default:
             break
@@ -172,13 +210,17 @@ private class GPXParserDelegate: NSObject, XMLParserDelegate {
         case "ele":
             currentEle = Double(text)
         case "name":
-            if inMetadata && routeName == nil {
+            if currentPointKind == .waypoint {
+                currentWaypointName = text
+            } else if inMetadata && routeName == nil {
                 routeName = text
-            } else if inTrack && routeName == nil {
+            } else if inTrack && currentPointKind == nil && routeName == nil {
                 routeName = text
             }
         case "desc":
-            if inMetadata && routeDescription == nil {
+            if currentPointKind == .waypoint {
+                currentWaypointDescription = text
+            } else if inMetadata && routeDescription == nil {
                 routeDescription = text
             }
         case "trkpt", "rtept":
@@ -192,6 +234,22 @@ private class GPXParserDelegate: NSObject, XMLParserDelegate {
             currentLat = nil
             currentLon = nil
             currentEle = nil
+            currentPointKind = nil
+        case "wpt":
+            if let lat = currentLat, let lon = currentLon {
+                let name = currentWaypointName.flatMap { $0.isEmpty ? nil : $0 } ?? "Cue"
+                cuePoints.append(Route.CuePoint(
+                    name: name,
+                    description: currentWaypointDescription,
+                    coordinate: Route.Coordinate(latitude: lat, longitude: lon)
+                ))
+            }
+            currentLat = nil
+            currentLon = nil
+            currentEle = nil
+            currentWaypointName = nil
+            currentWaypointDescription = nil
+            currentPointKind = nil
         case "metadata":
             inMetadata = false
         case "trk", "rte":
