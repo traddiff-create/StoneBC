@@ -35,14 +35,33 @@ class PermissionService: NSObject, CLLocationManagerDelegate {
         microphoneGranted = AVAudioApplication.shared.recordPermission == .granted
     }
 
+    func refreshPermissionStates() async {
+        await MainActor.run {
+            locationStatus = locationManager.authorizationStatus
+            microphoneGranted = AVAudioApplication.shared.recordPermission == .granted
+        }
+    }
+
     // MARK: - Location
 
     var locationGranted: Bool {
         locationStatus == .authorizedWhenInUse || locationStatus == .authorizedAlways
     }
 
+    var locationAlwaysGranted: Bool {
+        locationStatus == .authorizedAlways
+    }
+
     func requestLocation() {
         locationManager.requestWhenInUseAuthorization()
+    }
+
+    func requestAlwaysLocation() {
+        if locationStatus == .notDetermined {
+            locationManager.requestWhenInUseAuthorization()
+        } else if locationStatus == .authorizedWhenInUse {
+            locationManager.requestAlwaysAuthorization()
+        }
     }
 
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {

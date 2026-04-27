@@ -135,6 +135,10 @@ struct ExpeditionTimelineView: View {
                         Label("Map View", systemImage: "map")
                     }
 
+                    NavigationLink(destination: JourneyConsoleView(journal: journal)) {
+                        Label("Journey Console", systemImage: "map.fill")
+                    }
+
                     Button {
                         exportPDF()
                     } label: {

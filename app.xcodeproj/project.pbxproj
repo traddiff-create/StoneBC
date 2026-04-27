@@ -138,6 +138,11 @@
 		P00006000000000000000006 /* MemberAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = P10006000000000000000006 /* MemberAuthService.swift */; };
 		AA0001000000000000000001 /* RouteInterchangeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1001000000000000000001 /* RouteInterchangeService.swift */; };
 		AA0002000000000000000002 /* RouteProviderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1002000000000000000002 /* RouteProviderService.swift */; };
+		JY0001000000000000000001 /* Journey.swift in Sources */ = {isa = PBXBuildFile; fileRef = JY1001000000000000000001 /* Journey.swift */; };
+		JY0002000000000000000002 /* JourneyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = JY1002000000000000000002 /* JourneyStore.swift */; };
+		JY0003000000000000000003 /* JourneyReadinessService.swift in Sources */ = {isa = PBXBuildFile; fileRef = JY1003000000000000000003 /* JourneyReadinessService.swift */; };
+		JY0004000000000000000004 /* JourneyConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = JY1004000000000000000004 /* JourneyConsoleView.swift */; };
+		JY0005000000000000000005 /* JourneyAppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = JY1005000000000000000005 /* JourneyAppIntents.swift */; };
 		Z10001000000000000000001 /* StardosStencil-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = Z20001000000000000000001 /* StardosStencil-Bold.ttf */; };
 		Z10002000000000000000002 /* JetBrainsMono.ttf in Resources */ = {isa = PBXBuildFile; fileRef = Z20002000000000000000002 /* JetBrainsMono.ttf */; };
 		Z10003000000000000000003 /* Archivo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = Z20003000000000000000003 /* Archivo.ttf */; };
@@ -280,6 +285,11 @@
 		P10006000000000000000006 /* MemberAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberAuthService.swift; sourceTree = "<group>"; };
 		AA1001000000000000000001 /* RouteInterchangeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteInterchangeService.swift; sourceTree = "<group>"; };
 		AA1002000000000000000002 /* RouteProviderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteProviderService.swift; sourceTree = "<group>"; };
+		JY1001000000000000000001 /* Journey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Journey.swift; sourceTree = "<group>"; };
+		JY1002000000000000000002 /* JourneyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JourneyStore.swift; sourceTree = "<group>"; };
+		JY1003000000000000000003 /* JourneyReadinessService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JourneyReadinessService.swift; sourceTree = "<group>"; };
+		JY1004000000000000000004 /* JourneyConsoleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JourneyConsoleView.swift; sourceTree = "<group>"; };
+		JY1005000000000000000005 /* JourneyAppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JourneyAppIntents.swift; sourceTree = "<group>"; };
 		Z20001000000000000000001 /* StardosStencil-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "StardosStencil-Bold.ttf"; sourceTree = "<group>"; };
 		Z20002000000000000000002 /* JetBrainsMono.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = JetBrainsMono.ttf; sourceTree = "<group>"; };
 		Z20003000000000000000003 /* Archivo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Archivo.ttf; sourceTree = "<group>"; };
@@ -353,6 +363,11 @@
 				F10001000000000000000001 /* GPXService.swift */,
 				AA1001000000000000000001 /* RouteInterchangeService.swift */,
 				AA1002000000000000000002 /* RouteProviderService.swift */,
+				JY1001000000000000000001 /* Journey.swift */,
+				JY1002000000000000000002 /* JourneyStore.swift */,
+				JY1003000000000000000003 /* JourneyReadinessService.swift */,
+				JY1004000000000000000004 /* JourneyConsoleView.swift */,
+				JY1005000000000000000005 /* JourneyAppIntents.swift */,
 				F10002000000000000000002 /* GPXImportView.swift */,
 				F10003000000000000000003 /* LocationService.swift */,
 				F10004000000000000000004 /* RouteNavigationView.swift */,
@@ -611,6 +626,11 @@
 				F00001000000000000000001 /* GPXService.swift in Sources */,
 				AA0001000000000000000001 /* RouteInterchangeService.swift in Sources */,
 				AA0002000000000000000002 /* RouteProviderService.swift in Sources */,
+				JY0001000000000000000001 /* Journey.swift in Sources */,
+				JY0002000000000000000002 /* JourneyStore.swift in Sources */,
+				JY0003000000000000000003 /* JourneyReadinessService.swift in Sources */,
+				JY0004000000000000000004 /* JourneyConsoleView.swift in Sources */,
+				JY0005000000000000000005 /* JourneyAppIntents.swift in Sources */,
 				F00002000000000000000002 /* GPXImportView.swift in Sources */,
 				F00003000000000000000003 /* LocationService.swift in Sources */,
 				F00004000000000000000004 /* RouteNavigationView.swift in Sources */,
@@ -826,6 +846,7 @@
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "StoneBC reads your cycling workouts to show ride history.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "StoneBC saves your rides as cycling workouts in Apple Health.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Rally Radio discovers nearby riders on your local network.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "StoneBC can keep journey tracking active when the screen is locked so riders can preserve route, safety, and check-in status during remote trips.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "StoneBC uses your location during active rides to show maps, record routes, and keep tracking if the phone locks.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Rally Radio uses your microphone for group voice chat during rides.";
 				INFOPLIST_KEY_NSMotionUsageDescription = "StoneBC uses your iPhone's barometer to show altitude, climb rate, and elevation gain during rides.";
@@ -867,6 +888,7 @@
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "StoneBC reads your cycling workouts to show ride history.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "StoneBC saves your rides as cycling workouts in Apple Health.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Rally Radio discovers nearby riders on your local network.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "StoneBC can keep journey tracking active when the screen is locked so riders can preserve route, safety, and check-in status during remote trips.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "StoneBC uses your location during active rides to show maps, record routes, and keep tracking if the phone locks.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Rally Radio uses your microphone for group voice chat during rides.";
 				INFOPLIST_KEY_NSMotionUsageDescription = "StoneBC uses your iPhone's barometer to show altitude, climb rate, and elevation gain during rides.";

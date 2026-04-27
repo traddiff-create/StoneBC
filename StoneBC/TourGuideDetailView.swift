@@ -433,6 +433,17 @@ struct TourGuideDetailView: View {
                 .tracking(1)
                 .foregroundColor(.secondary)
 
+            NavigationLink(destination: JourneyConsoleView(route: currentRoute, guide: guide)) {
+                toolRow(
+                    icon: "map.fill",
+                    iconColor: BCColors.brandBlue,
+                    title: "Journey Console",
+                    subtitle: "Day readiness, safety, power, and camp review",
+                    trailing: "chevron.right"
+                )
+            }
+            .buttonStyle(.plain)
+
             if let route = currentRoute {
                 NavigationLink(destination: RouteNavigationView(route: route)) {
                     toolRow(

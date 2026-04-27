@@ -20,6 +20,7 @@ struct RecordTabView: View {
             ScrollView {
                 VStack(spacing: BCSpacing.lg) {
                     recordingModeSection
+                    journeyConsoleSection
 
                     if selectedMode == .follow {
                         routePickerSection
@@ -47,6 +48,28 @@ struct RecordTabView: View {
                 RouteRecordingView(route: selectedMode == .follow ? selectedRoute : nil, recordingMode: selectedMode)
             }
         }
+    }
+
+    private var journeyConsoleSection: some View {
+        NavigationLink(destination: JourneyConsoleView(route: selectedRoute)) {
+            HStack(spacing: 12) {
+                BCIconTile(icon: "map.fill", color: BCColors.brandGreen, size: 42)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Journey Console")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(BCColors.primaryText)
+                    Text("Safety, offline readiness, power, and camp review")
+                        .font(.bcCaption)
+                        .foregroundStyle(BCColors.secondaryText)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(BCColors.secondaryText)
+            }
+            .bcInstrumentCard()
+        }
+        .buttonStyle(.plain)
     }
 
     private var recordingModeSection: some View {

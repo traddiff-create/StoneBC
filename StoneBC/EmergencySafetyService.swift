@@ -13,6 +13,7 @@
 import Foundation
 import CoreLocation
 import UIKit
+import UserNotifications
 
 @Observable
 class EmergencySafetyService {
@@ -103,6 +104,7 @@ class EmergencySafetyService {
         lastCheckInAt = date
         checkInDeadline = date.addingTimeInterval(checkInInterval)
         checkInState = .active
+        scheduleCheckInNotification()
     }
 
     func stopCheckInTimer() {
@@ -128,6 +130,27 @@ class EmergencySafetyService {
         guard remaining > 0 else { return "OVERDUE" }
         let minutes = Int(ceil(remaining / 60))
         return "\(minutes)m"
+    }
+
+    func scheduleCheckInNotification() {
+        guard checkInState != .inactive, let deadline = checkInDeadline else { return }
+
+        let content = UNMutableNotificationContent()
+        content.title = "Journey Check-In"
+        content.body = activeRouteName.map { "Confirm you are OK on \($0)." } ?? "Confirm you are OK."
+        content.sound = .default
+        content.categoryIdentifier = "JOURNEY_CHECK_IN"
+
+        let interval = max(5, deadline.timeIntervalSinceNow)
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: interval, repeats: false)
+        let request = UNNotificationRequest(
+            identifier: "journey-check-in",
+            content: content,
+            trigger: trigger
+        )
+
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["journey-check-in"])
+        UNUserNotificationCenter.current().add(request)
     }
 
     /// Format last known location for emergency text

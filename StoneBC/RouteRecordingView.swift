@@ -836,6 +836,12 @@ struct RecordingSaveSheet: View {
                     }
                 }
 
+                Section("Journey") {
+                    NavigationLink(destination: JourneyConsoleView(route: sourceRoute)) {
+                        Label("Open Camp Review", systemImage: "tent")
+                    }
+                }
+
                 Section {
                     Toggle("Save to My Rides", isOn: $saveToHistory)
                 } footer: {

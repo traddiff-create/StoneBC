@@ -572,6 +572,17 @@ struct RouteDetailView: View {
                 .tracking(1)
                 .foregroundColor(.secondary)
 
+            NavigationLink(destination: JourneyConsoleView(route: route)) {
+                toolRow(
+                    icon: "map.fill",
+                    iconColor: BCColors.brandBlue,
+                    title: "Journey Console",
+                    subtitle: "Offline readiness, safety, power, and camp review",
+                    trailing: "chevron.right"
+                )
+            }
+            .buttonStyle(.plain)
+
             NavigationLink(destination: RouteNavigationView(route: route, ridePreferences: ridePreferences)) {
                 toolRow(
                     icon: "location.fill",
