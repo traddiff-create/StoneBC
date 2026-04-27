@@ -30,6 +30,7 @@ final class RideRecordingCoordinator {
     let audioService = NavigationAudioService()
     let workoutService = WorkoutService()
     let activityManager = RideActivityManager()
+    let alertService = RideAlertService.shared
     let safetyService = EmergencySafetyService.shared
     let recording: RideSession
 
@@ -198,6 +199,7 @@ final class RideRecordingCoordinator {
         altimeterService.start()
         audioService.configure(for: powerMode)
         audioService.reset()
+        alertService.startSession()
         recording.onAutoPause = { [audioService] in audioService.announcePaused() }
         recording.onAutoResume = { [audioService] in audioService.announceResumed() }
 
@@ -338,6 +340,7 @@ final class RideRecordingCoordinator {
     private func stopActiveSensors() {
         locationService.stopTracking()
         altimeterService.stop()
+        alertService.endSession()
         safetyService.stopCheckInTimer()
     }
 
@@ -358,6 +361,10 @@ final class RideRecordingCoordinator {
     }
 
     private func handleRouteFollowEvents() {
+        alertService.tick(
+            elapsedSeconds: recording.elapsedSeconds,
+            distanceMiles: recording.distanceMiles
+        )
         guard route != nil else { return }
         let offRouteFlipped = recording.isOffRoute != wasOffRoute
 

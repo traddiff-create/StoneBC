@@ -42,10 +42,14 @@ class WeatherService {
         let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
 
         do {
-            let (current, hourly) = try await service.weather(
+            let (current, hourly, daily) = try await service.weather(
                 for: location,
-                including: .current, .hourly
+                including: .current, .hourly, .daily
             )
+
+            let today = daily.forecast.first { Calendar.current.isDateInToday($0.date) }
+                ?? daily.forecast.first
+            let tomorrow = daily.forecast.first { Calendar.current.isDateInTomorrow($0.date) }
 
             let result = RouteWeather(
                 temperature: current.temperature.converted(to: .fahrenheit).value,
@@ -58,6 +62,9 @@ class WeatherService {
                 symbolName: current.symbolName,
                 uvIndex: current.uvIndex.value,
                 precipitationChance: hourly.forecast.first?.precipitationChance ?? 0,
+                sunriseToday: today?.sun.sunrise,
+                sunsetToday: today?.sun.sunset,
+                sunriseTomorrow: tomorrow?.sun.sunrise,
                 hourlyForecast: hourly.forecast.prefix(24).map { hour in
                     HourForecast(
                         date: hour.date,
@@ -234,7 +241,17 @@ struct RouteWeather {
     let symbolName: String          // SF Symbol name
     let uvIndex: Int
     let precipitationChance: Double // 0-1
+    let sunriseToday: Date?
+    let sunsetToday: Date?
+    let sunriseTomorrow: Date?
     let hourlyForecast: [HourForecast]
+
+    /// Time remaining until today's sunset, or nil if sunset already passed or unknown.
+    var secondsUntilSunset: TimeInterval? {
+        guard let sunset = sunsetToday else { return nil }
+        let delta = sunset.timeIntervalSinceNow
+        return delta > 0 ? delta : nil
+    }
 }
 
 struct HourForecast {

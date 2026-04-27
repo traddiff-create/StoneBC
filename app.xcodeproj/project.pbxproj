@@ -147,6 +147,9 @@
 		JY0003000000000000000003 /* JourneyReadinessService.swift in Sources */ = {isa = PBXBuildFile; fileRef = JY1003000000000000000003 /* JourneyReadinessService.swift */; };
 		JY0004000000000000000004 /* JourneyConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = JY1004000000000000000004 /* JourneyConsoleView.swift */; };
 		JY0005000000000000000005 /* JourneyAppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = JY1005000000000000000005 /* JourneyAppIntents.swift */; };
+		Q00001000000000000000001 /* SunsetPillView.swift in Sources */ = {isa = PBXBuildFile; fileRef = Q10001000000000000000001 /* SunsetPillView.swift */; };
+		Q00002000000000000000002 /* RideAlertService.swift in Sources */ = {isa = PBXBuildFile; fileRef = Q10002000000000000000002 /* RideAlertService.swift */; };
+		Q00003000000000000000003 /* RideAlertsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = Q10003000000000000000003 /* RideAlertsSettingsView.swift */; };
 		Z10001000000000000000001 /* StardosStencil-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = Z20001000000000000000001 /* StardosStencil-Bold.ttf */; };
 		Z10002000000000000000002 /* JetBrainsMono.ttf in Resources */ = {isa = PBXBuildFile; fileRef = Z20002000000000000000002 /* JetBrainsMono.ttf */; };
 		Z10003000000000000000003 /* Archivo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = Z20003000000000000000003 /* Archivo.ttf */; };
@@ -309,6 +312,9 @@
 		JY1003000000000000000003 /* JourneyReadinessService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JourneyReadinessService.swift; sourceTree = "<group>"; };
 		JY1004000000000000000004 /* JourneyConsoleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JourneyConsoleView.swift; sourceTree = "<group>"; };
 		JY1005000000000000000005 /* JourneyAppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JourneyAppIntents.swift; sourceTree = "<group>"; };
+		Q10001000000000000000001 /* SunsetPillView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunsetPillView.swift; sourceTree = "<group>"; };
+		Q10002000000000000000002 /* RideAlertService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideAlertService.swift; sourceTree = "<group>"; };
+		Q10003000000000000000003 /* RideAlertsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideAlertsSettingsView.swift; sourceTree = "<group>"; };
 		Z20001000000000000000001 /* StardosStencil-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "StardosStencil-Bold.ttf"; sourceTree = "<group>"; };
 		Z20002000000000000000002 /* JetBrainsMono.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = JetBrainsMono.ttf; sourceTree = "<group>"; };
 		Z20003000000000000000003 /* Archivo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Archivo.ttf; sourceTree = "<group>"; };
@@ -458,6 +464,9 @@
 				G10008000000000000000008 /* cell_towers.json */,
 				H10001000000000000000001 /* WeatherService.swift */,
 				H10002000000000000000002 /* RouteWeatherView.swift */,
+				Q10001000000000000000001 /* SunsetPillView.swift */,
+				Q10002000000000000000002 /* RideAlertService.swift */,
+				Q10003000000000000000003 /* RideAlertsSettingsView.swift */,
 				H10003000000000000000003 /* NavigationAudioService.swift */,
 				H10004000000000000000004 /* WorkoutService.swift */,
 				H10005000000000000000005 /* RideActivityAttributes.swift */,
@@ -692,6 +701,9 @@
 				JY0003000000000000000003 /* JourneyReadinessService.swift in Sources */,
 				JY0004000000000000000004 /* JourneyConsoleView.swift in Sources */,
 				JY0005000000000000000005 /* JourneyAppIntents.swift in Sources */,
+				Q00001000000000000000001 /* SunsetPillView.swift in Sources */,
+				Q00002000000000000000002 /* RideAlertService.swift in Sources */,
+				Q00003000000000000000003 /* RideAlertsSettingsView.swift in Sources */,
 				F00002000000000000000002 /* GPXImportView.swift in Sources */,
 				F00003000000000000000003 /* LocationService.swift in Sources */,
 				F00004000000000000000004 /* RouteNavigationView.swift in Sources */,

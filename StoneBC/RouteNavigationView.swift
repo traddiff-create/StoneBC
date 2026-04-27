@@ -34,6 +34,7 @@ struct RouteNavigationView: View {
     @State private var pulsePhase = false
     @State private var lastCameraUpdateAt: Date = .distantPast
     @State private var lastCameraLocation: CLLocation?
+    @State private var weather: RouteWeather?
     @Environment(\.dismiss) var dismiss
     @Environment(\.scenePhase) private var scenePhase
 
@@ -100,6 +101,7 @@ struct RouteNavigationView: View {
             }
         }
         .onAppear(perform: startRide)
+        .task { await loadWeather() }
         .onDisappear(perform: stopServices)
         .onChange(of: locationService.locationUpdateCount) { _, _ in
             onLocationTick()
@@ -304,6 +306,9 @@ struct RouteNavigationView: View {
                 label: "AVG",
                 valueColor: .white
             )
+            Divider().frame(width: 1).background(Color.white.opacity(0.1))
+
+            SunsetPillView(weather: weather, style: .sensorTile)
         }
         .bcNavTile(height: 80)
     }
@@ -709,6 +714,10 @@ struct RouteNavigationView: View {
 
     private func stopServices() {
         coordinator.handleDisappear()
+    }
+
+    private func loadWeather() async {
+        weather = await WeatherService.shared.weather(for: route.clStartCoordinate)
     }
 
     private func endRide() {
