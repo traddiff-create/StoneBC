@@ -23,7 +23,7 @@ object StravaService {
     private const val AUTH_URL = "https://www.strava.com/oauth/mobile/authorize"
     private const val TOKEN_URL = "https://www.strava.com/api/v3/oauth/token"
     private const val SEGMENTS_URL = "https://www.strava.com/api/v3/segments/explore"
-    private const val REDIRECT_URI = "com.traddiff.stonebc://oauth2callback"
+    private const val REDIRECT_URI = "com.stonebicyclecoalition.stonebc://oauth2callback"
     private const val PREFS_NAME = "stonebc_strava"
     private const val KEY_ACCESS_TOKEN = "access_token"
     private const val KEY_REFRESH_TOKEN = "refresh_token"

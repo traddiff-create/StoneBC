@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import android.net.Uri
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -58,6 +59,7 @@ enum class Tab(val route: String, val label: String, val icon: ImageVector) {
 
 private const val ROUTE_DETAIL_TEMPLATE = "route_detail/{routeId}"
 private const val BIKE_DETAIL_TEMPLATE = "bike_detail/{bikeId}"
+private const val RECORD_TEMPLATE = "record?routeId={routeId}"
 
 @Composable
 fun MainNavHost() {
@@ -96,8 +98,18 @@ fun MainNavHost() {
             modifier = Modifier.padding(padding)
         ) {
             composable(Tab.Home.route) { HomeScreen() }
-            composable(Tab.Record.route) {
-                RecordScreen(onNavigateToRides = { navController.navigate("rides") })
+            composable(
+                route = RECORD_TEMPLATE,
+                arguments = listOf(navArgument("routeId") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                })
+            ) { entry ->
+                RecordScreen(
+                    initialRouteId = entry.arguments?.getString("routeId"),
+                    onNavigateToRides = { navController.navigate("rides") }
+                )
             }
             composable("rides") { RidesScreen(onBack = { navController.popBackStack() }) }
 
@@ -110,7 +122,16 @@ fun MainNavHost() {
             ) { entry ->
                 RouteDetailScreen(
                     routeId = entry.arguments?.getString("routeId").orEmpty(),
-                    onBack = { navController.popBackStack() }
+                    onBack = { navController.popBackStack() },
+                    onStartRide = { routeId ->
+                        navController.navigate("${Tab.Record.route}?routeId=${Uri.encode(routeId)}") {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
                 )
             }
 
@@ -192,7 +213,7 @@ private fun isInTabFamily(tab: Tab, currentRoute: String?): Boolean {
     if (currentRoute == null) return false
     return when (tab) {
         Tab.Routes -> currentRoute.startsWith("route_detail/")
-        Tab.Record -> currentRoute == "rides"
+        Tab.Record -> currentRoute == "rides" || currentRoute.startsWith("record?")
         Tab.Bikes -> currentRoute.startsWith("bike_detail/")
         Tab.More -> currentRoute in setOf(
             "community", "events", "programs", "gallery", "guides", "volunteer", "donate",

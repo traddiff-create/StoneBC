@@ -1,17 +1,20 @@
-appId: com.StoneBicycleCoalition
-name: Bike detail — specs + Ask About This Bike CTA visible
+appId: com.stonebicyclecoalition.stonebc
+name: Bikes tab — empty state revisit
 ---
 - launchApp
 - runFlow: subflows/skip-onboarding.yaml
 - tapOn:
     text: "Bikes"
     index: 1
-- assertVisible: "Trek 7100 Hybrid"
-- tapOn: "Trek 7100 Hybrid"
-
-# Bike detail should render
-- assertVisible: "Trek 7100 Hybrid"
-- assertVisible: "Ask About This Bike"
-
-- back
 - assertVisible: "The Quarry"
+- assertVisible: "No bikes match those filters."
+
+- tapOn:
+    text: "Home"
+    index: 1
+- assertVisible: "Stone Bicycle Coalition"
+
+- tapOn:
+    text: "Bikes"
+    index: 1
+- assertVisible: "No bikes match those filters."

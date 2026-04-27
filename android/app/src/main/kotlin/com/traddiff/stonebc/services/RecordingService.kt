@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat
 import com.traddiff.stonebc.MainActivity
 import com.traddiff.stonebc.R
 import com.traddiff.stonebc.data.models.RideSession
+import com.traddiff.stonebc.data.models.RouteRecordingMode
 import com.traddiff.stonebc.data.models.Trackpoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -46,7 +47,7 @@ class RecordingService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
-            ACTION_START -> startRecording()
+            ACTION_START -> startRecording(intent)
             ACTION_STOP -> stopRecording()
         }
         return START_STICKY
@@ -57,12 +58,20 @@ class RecordingService : Service() {
         serviceScope.cancel()
     }
 
-    private fun startRecording() {
+    private fun startRecording(intent: Intent) {
         startForegroundInCompatMode()
+
+        val mode = runCatching {
+            RouteRecordingMode.valueOf(intent.getStringExtra(EXTRA_RECORDING_MODE) ?: RouteRecordingMode.free.name)
+        }.getOrDefault(RouteRecordingMode.free)
 
         val session = RideSession(
             id = UUID.randomUUID().toString(),
-            startTimestamp = System.currentTimeMillis()
+            startTimestamp = System.currentTimeMillis(),
+            recordingMode = mode,
+            routeId = intent.getStringExtra(EXTRA_ROUTE_ID),
+            routeName = intent.getStringExtra(EXTRA_ROUTE_NAME),
+            routeCategory = intent.getStringExtra(EXTRA_ROUTE_CATEGORY)
         )
         _sessionFlow.value = session
         lastMotionMillis = session.startTimestamp
@@ -145,6 +154,10 @@ class RecordingService : Service() {
     companion object {
         const val ACTION_START = "com.traddiff.stonebc.RECORDING_START"
         const val ACTION_STOP = "com.traddiff.stonebc.RECORDING_STOP"
+        private const val EXTRA_RECORDING_MODE = "recording_mode"
+        private const val EXTRA_ROUTE_ID = "route_id"
+        private const val EXTRA_ROUTE_NAME = "route_name"
+        private const val EXTRA_ROUTE_CATEGORY = "route_category"
         private const val CHANNEL_ID = "stonebc_recording"
         private const val NOTIFICATION_ID = 1001
         private const val AUTO_PAUSE_MILLIS = 7_000L
@@ -153,8 +166,19 @@ class RecordingService : Service() {
         private val _sessionFlow = MutableStateFlow<RideSession?>(null)
         val sessionFlow: StateFlow<RideSession?> = _sessionFlow.asStateFlow()
 
-        fun start(context: Context) {
-            val intent = Intent(context, RecordingService::class.java).setAction(ACTION_START)
+        fun start(
+            context: Context,
+            mode: RouteRecordingMode = RouteRecordingMode.free,
+            routeId: String? = null,
+            routeName: String? = null,
+            routeCategory: String? = null
+        ) {
+            val intent = Intent(context, RecordingService::class.java)
+                .setAction(ACTION_START)
+                .putExtra(EXTRA_RECORDING_MODE, mode.name)
+                .putExtra(EXTRA_ROUTE_ID, routeId)
+                .putExtra(EXTRA_ROUTE_NAME, routeName)
+                .putExtra(EXTRA_ROUTE_CATEGORY, routeCategory)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(intent)
             } else {

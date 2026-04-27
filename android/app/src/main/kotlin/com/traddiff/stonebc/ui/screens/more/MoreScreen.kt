@@ -90,7 +90,7 @@ fun MoreScreen(onNavigate: (String) -> Unit) {
         }
         Spacer(Modifier.height(BCSpacing.md))
         Text(
-            text = "${state.config.coalitionName} · v0.87",
+            text = "${state.config.coalitionName} · v0.8",
             fontSize = 11.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = BCSpacing.md)

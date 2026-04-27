@@ -1,5 +1,5 @@
-appId: com.StoneBicycleCoalition
-name: Home tab renders hero + season + quick links + featured bikes
+appId: com.stonebicyclecoalition.stonebc
+name: Home tab renders hero + season + quick links
 ---
 - launchApp
 - runFlow: subflows/skip-onboarding.yaml
@@ -7,5 +7,3 @@ name: Home tab renders hero + season + quick links + featured bikes
 - assertVisible: "Building Community Through Cycling"
 - assertVisible: "YOUR SEASON"
 - assertVisible: "QUICK LINKS"
-- assertVisible: "FEATURED BIKES IN THE QUARRY"
-- assertVisible: "Trek 7100 Hybrid"

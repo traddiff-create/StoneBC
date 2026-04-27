@@ -38,7 +38,7 @@ import com.traddiff.stonebc.ui.theme.BCColors
 import com.traddiff.stonebc.ui.theme.BCSpacing
 
 @Composable
-fun RouteDetailScreen(routeId: String, onBack: () -> Unit) {
+fun RouteDetailScreen(routeId: String, onBack: () -> Unit, onStartRide: (String) -> Unit) {
     val state = LocalAppState.current
     val route = state.routes.firstOrNull { it.id == routeId }
 
@@ -85,7 +85,7 @@ fun RouteDetailScreen(routeId: String, onBack: () -> Unit) {
         }
         Spacer(Modifier.height(BCSpacing.lg))
         Button(
-            onClick = { /* Phase 4: navigate to recording with this route */ },
+            onClick = { onStartRide(route.id) },
             colors = ButtonDefaults.buttonColors(containerColor = BCColors.BrandBlue),
             modifier = Modifier
                 .fillMaxWidth()

@@ -21,7 +21,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.StoneBicycleCoalition"
+        applicationId = "com.stonebicyclecoalition.stonebc"
         minSdk = 26
         targetSdk = 35
         versionCode = 2

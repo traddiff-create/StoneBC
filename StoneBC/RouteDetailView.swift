@@ -11,6 +11,7 @@ import MapKit
 
 struct RouteDetailView: View {
     let route: Route
+    @Environment(AppState.self) private var appState
     @State private var showFullMap = false
     @State private var gpxFileURL: URL?
     @State private var routeDeviceBundleURL: URL?
@@ -45,6 +46,10 @@ struct RouteDetailView: View {
         let preferences = RouteRidePreferences.load(route: route)
         self._ridePreferences = State(initialValue: preferences)
         self._recordingMode = State(initialValue: preferences.defaultRecordingMode == .free ? .follow : preferences.defaultRecordingMode)
+    }
+
+    private var routeGuidance: RouteGuidance? {
+        RouteGuidanceResolver.guidance(for: route, guides: appState.guides)
     }
 
     var body: some View {
@@ -237,6 +242,7 @@ struct RouteDetailView: View {
             elevationProfile
             mapPreview
             descriptionSection
+            guidedStopSummarySection
 
             if let gpxURL = route.gpxURL {
                 VStack(alignment: .leading, spacing: 8) {
@@ -263,6 +269,7 @@ struct RouteDetailView: View {
     private var prepContent: some View {
         VStack(alignment: .leading, spacing: BCSpacing.lg) {
             routeReadinessSection
+            guidedDataCheckSection
             RouteWeatherSection(route: route)
             trailIntelligenceSection
             offlineToolsSection
@@ -273,6 +280,7 @@ struct RouteDetailView: View {
     private var rideContent: some View {
         VStack(alignment: .leading, spacing: BCSpacing.lg) {
             rideActionsSection
+            guidedRideProgressionSection
             rideOverlaySection
             mapPreview
             if StravaService.shared.isConfigured {
@@ -425,6 +433,237 @@ struct RouteDetailView: View {
         .padding(BCSpacing.md)
         .background(BCColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    // MARK: - Guided Stops
+
+    @ViewBuilder
+    private var guidedStopSummarySection: some View {
+        if let guidance = routeGuidance {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text("GUIDED STOPS")
+                        .font(.system(size: 10, weight: .semibold))
+                        .tracking(1)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Text("\(guidance.stops.count) STOPS")
+                        .font(.system(size: 9, weight: .bold))
+                        .tracking(1)
+                        .foregroundColor(BCColors.brandAmber)
+                }
+
+                Text("\(guidance.guideName) / \(guidance.dayName)")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.secondary)
+
+                ForEach(guidance.stops) { stop in
+                    guidedStopRow(stop)
+                }
+            }
+            .padding(BCSpacing.md)
+            .background(BCColors.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel("Guided stops for \(guidance.dayName)")
+        }
+    }
+
+    @ViewBuilder
+    private var guidedDataCheckSection: some View {
+        if let guidance = routeGuidance {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text("GUIDED DATA CHECK")
+                        .font(.system(size: 10, weight: .semibold))
+                        .tracking(1)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Text(guidance.hasIssues ? "\(guidance.issues.count) NOTES" : "READY")
+                        .font(.system(size: 9, weight: .bold))
+                        .tracking(1)
+                        .foregroundColor(guidance.hasIssues ? BCColors.brandAmber : BCColors.brandGreen)
+                }
+
+                if guidance.issues.isEmpty {
+                    HStack(alignment: .top, spacing: 8) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 12))
+                            .foregroundColor(BCColors.brandGreen)
+                        Text("Guided stops match the route geometry and are ready for ride-time progression.")
+                            .font(.system(size: 12))
+                            .foregroundColor(.primary)
+                            .lineSpacing(3)
+                    }
+                    .padding(BCSpacing.sm)
+                    .background(BCColors.cardBackground.opacity(0.5))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                } else {
+                    ForEach(guidance.issues) { issue in
+                        HStack(alignment: .top, spacing: 8) {
+                            Image(systemName: issue.icon)
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundColor(BCColors.brandAmber)
+                                .frame(width: 18)
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(issue.title)
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundColor(.primary)
+                                Text(issue.detail)
+                                    .font(.system(size: 10))
+                                    .foregroundColor(.secondary)
+                                    .lineSpacing(2)
+                            }
+
+                            Spacer(minLength: 0)
+                        }
+                        .padding(BCSpacing.sm)
+                        .background(BCColors.cardBackground.opacity(0.5))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                }
+            }
+            .padding(BCSpacing.md)
+            .background(BCColors.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+    }
+
+    @ViewBuilder
+    private var guidedRideProgressionSection: some View {
+        if let guidance = routeGuidance {
+            let progress = RouteGuidanceResolver.progress(for: guidance, routeProgress: 0)
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text("GUIDED PROGRESSION")
+                        .font(.system(size: 10, weight: .semibold))
+                        .tracking(1)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Text("ROUTE MILES")
+                        .font(.system(size: 9, weight: .bold))
+                        .tracking(1)
+                        .foregroundColor(BCColors.brandBlue)
+                }
+
+                if let nextStop = progress.nextStop {
+                    HStack(alignment: .center, spacing: 10) {
+                        Image(systemName: nextStop.icon)
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundColor(.white)
+                            .frame(width: 30, height: 30)
+                            .background(guidedStopColor(nextStop.type))
+                            .clipShape(Circle())
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("First guided stop")
+                                .font(.system(size: 9, weight: .bold))
+                                .tracking(1)
+                                .foregroundColor(.secondary)
+                            Text(nextStop.name)
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundColor(.primary)
+                        }
+
+                        Spacer()
+
+                        Text(formattedRouteMile(nextStop.routeMile))
+                            .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                            .foregroundColor(BCColors.brandBlue)
+                    }
+                    .padding(BCSpacing.sm)
+                    .background(BCColors.cardBackground.opacity(0.5))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+
+                VStack(spacing: 8) {
+                    ForEach(guidance.stops) { stop in
+                        guidedProgressRow(stop)
+                    }
+                }
+            }
+            .padding(BCSpacing.md)
+            .background(BCColors.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+    }
+
+    private func guidedStopRow(_ stop: RouteGuidedStop) -> some View {
+        HStack(alignment: .top, spacing: 10) {
+            Text("\(stop.sequence)")
+                .font(.system(size: 10, weight: .bold, design: .monospaced))
+                .foregroundColor(.white)
+                .frame(width: 24, height: 24)
+                .background(guidedStopColor(stop.type))
+                .clipShape(Circle())
+
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(stop.name)
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(.primary)
+                    Spacer()
+                    Text(formattedRouteMile(stop.routeMile))
+                        .font(.system(size: 10, weight: .medium, design: .monospaced))
+                        .foregroundColor(BCColors.brandBlue)
+                }
+
+                if let detail = stop.description {
+                    Text(detail)
+                        .font(.system(size: 11))
+                        .foregroundColor(.secondary)
+                        .lineSpacing(2)
+                }
+
+                HStack(spacing: 8) {
+                    if let context = stop.context {
+                        Label(context, systemImage: stop.icon)
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(BCColors.brandAmber)
+                    }
+                }
+            }
+        }
+        .padding(BCSpacing.sm)
+        .background(BCColors.cardBackground.opacity(0.5))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    private func guidedProgressRow(_ stop: RouteGuidedStop) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: stop.icon)
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundColor(guidedStopColor(stop.type))
+                .frame(width: 16)
+            Text(stop.name)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundColor(.primary)
+                .lineLimit(1)
+            Spacer()
+            Text(formattedRouteMile(stop.routeMile))
+                .font(.system(size: 10, weight: .medium, design: .monospaced))
+                .foregroundColor(.secondary)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Stop \(stop.sequence), \(stop.name), \(formattedRouteMile(stop.routeMile))")
+    }
+
+    private func guidedStopColor(_ type: TourStop.StopType) -> Color {
+        switch type {
+        case .start: BCColors.brandGreen
+        case .finish: .red
+        case .sag, .resupply: .orange
+        case .brewery: .brown
+        case .trailhead, .camp: BCColors.brandGreen
+        case .pointOfInterest: BCColors.brandBlue
+        case .water: .cyan
+        case .safety: .red
+        }
+    }
+
+    private func formattedRouteMile(_ mile: Double) -> String {
+        String(format: "mi %.1f", mile)
     }
 
     // MARK: - Readiness
@@ -1452,4 +1691,5 @@ struct ShareCardSheet: View {
     NavigationStack {
         RouteDetailView(route: .preview)
     }
+    .environment(AppState())
 }

@@ -35,6 +35,7 @@ struct RouteNavigationView: View {
     @State private var lastCameraUpdateAt: Date = .distantPast
     @State private var lastCameraLocation: CLLocation?
     @State private var weather: RouteWeather?
+    @Environment(AppState.self) private var appState
     @Environment(\.dismiss) var dismiss
     @Environment(\.scenePhase) private var scenePhase
 
@@ -43,6 +44,9 @@ struct RouteNavigationView: View {
     private var audioService: NavigationAudioService { coordinator.audioService }
     private var safetyService: EmergencySafetyService { coordinator.safetyService }
     private var session: RideSession { coordinator.recording }
+    private var routeGuidance: RouteGuidance? {
+        RouteGuidanceResolver.guidance(for: route, guides: appState.guides)
+    }
 
     init(route: Route, ridePreferences: RouteRidePreferences? = nil) {
         self.route = route
@@ -73,6 +77,9 @@ struct RouteNavigationView: View {
                     }
                     speedTile         // B — 180 pt
                     progressTile      // C — 48 pt
+                    if let routeGuidance {
+                        guidedStopTile(routeGuidance)
+                    }
                     sensorStrip       // D — 80 pt
                     if session.isOffRoute, ridePreferences.enabledOverlays.contains(.offRouteAlerts) {
                         offRouteBanner // E — 40 pt, conditional
@@ -281,6 +288,88 @@ struct RouteNavigationView: View {
             .padding(.bottom, 6)
         }
         .bcNavTile(height: 48)
+    }
+
+    private func guidedStopTile(_ guidance: RouteGuidance) -> some View {
+        let stopProgress = RouteGuidanceResolver.progress(for: guidance, routeProgress: session.progressPercent)
+        let focusStop = stopProgress.nextStop ?? stopProgress.currentStop
+        let title = stopProgress.nextStop == nil ? "GUIDED STOPS COMPLETE" : "NEXT GUIDED STOP"
+        let detail = guidedStopDetail(stopProgress, totalStops: guidance.stops.count)
+
+        return HStack(spacing: 12) {
+            Image(systemName: focusStop?.icon ?? "mappin.and.ellipse")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(.white)
+                .frame(width: 34, height: 34)
+                .background(guidedStopColor(focusStop?.type), in: Circle())
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.system(size: 9, weight: .bold))
+                    .tracking(1.4)
+                    .foregroundStyle(.white.opacity(0.45))
+
+                Text(focusStop?.name ?? guidance.dayName)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+
+                guidedStopProgressDots(guidance: guidance, routeProgress: stopProgress.routeProgress)
+            }
+
+            Spacer(minLength: 0)
+
+            Text(detail)
+                .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                .foregroundStyle(.white.opacity(0.65))
+                .multilineTextAlignment(.trailing)
+                .lineLimit(2)
+        }
+        .padding(.horizontal, 16)
+        .bcNavTile(height: 64)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(guidedStopAccessibilityLabel(stopProgress, guidance: guidance))
+    }
+
+    private func guidedStopProgressDots(guidance: RouteGuidance, routeProgress: Double) -> some View {
+        HStack(spacing: 4) {
+            ForEach(guidance.stops) { stop in
+                Rectangle()
+                    .fill(stop.progress <= routeProgress + 0.0001 ? BCColors.brandGreen : Color.white.opacity(0.18))
+                    .frame(width: 18, height: 3)
+            }
+        }
+    }
+
+    private func guidedStopDetail(_ progress: RouteGuidanceProgress, totalStops: Int) -> String {
+        if let remaining = progress.remainingMilesToNext {
+            return "\(String(format: "%.1f", remaining)) mi\n\(progress.completedCount)/\(totalStops)"
+        }
+        return "\(progress.completedCount)/\(totalStops)\nDONE"
+    }
+
+    private func guidedStopAccessibilityLabel(_ progress: RouteGuidanceProgress, guidance: RouteGuidance) -> String {
+        if let nextStop = progress.nextStop, let remaining = progress.remainingMilesToNext {
+            return "Next guided stop, \(nextStop.name), \(String(format: "%.1f", remaining)) miles ahead. \(progress.completedCount) of \(guidance.stops.count) stops complete."
+        }
+        if let currentStop = progress.currentStop {
+            return "Guided stops complete at \(currentStop.name). \(progress.completedCount) of \(guidance.stops.count) stops complete."
+        }
+        return "Guided stops for \(guidance.dayName)"
+    }
+
+    private func guidedStopColor(_ type: TourStop.StopType?) -> Color {
+        switch type {
+        case .start: BCColors.brandGreen
+        case .finish: .red
+        case .sag, .resupply: .orange
+        case .brewery: .brown
+        case .trailhead, .camp: BCColors.brandGreen
+        case .pointOfInterest: BCColors.brandBlue
+        case .water: .cyan
+        case .safety: .red
+        case nil: BCColors.brandBlue
+        }
     }
 
     // MARK: - Zone D · Sensor strip
@@ -901,4 +990,5 @@ struct ConditionReportSheet: View {
     NavigationStack {
         RouteNavigationView(route: .preview)
     }
+    .environment(AppState())
 }

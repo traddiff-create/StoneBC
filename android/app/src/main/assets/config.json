@@ -25,7 +25,8 @@
     "enableEvents": true,
     "enableGallery": true,
     "enableRadio": true,
-    "enableWeather": true
+    "enableWeather": true,
+    "enableRideAlerts": true
   },
   "dataURLs": {
     "wordpressBase": "https://stonebicyclecoalition.com/wp-json/wp/v2",
@@ -38,6 +39,9 @@
     "trailforksAppSecret": null,
     "stravaClientId": null,
     "stravaClientSecret": null,
+    "garminClientId": null,
+    "wahooClientId": null,
+    "rideWithGPSClientId": null,
     "openWeatherApiKey": null
   }
 }

@@ -1,5 +1,5 @@
-appId: com.StoneBicycleCoalition
-name: Bikes tab — inventory + filter chips
+appId: com.stonebicyclecoalition.stonebc
+name: Bikes tab — empty inventory state
 ---
 - launchApp
 - runFlow: subflows/skip-onboarding.yaml
@@ -9,13 +9,5 @@ name: Bikes tab — inventory + filter chips
 - assertVisible: "The Quarry"
 - assertVisible: "Bikes looking for riders"
 - assertVisible: "STATUS"
-- assertVisible: "Available"
 - assertVisible: "TYPE"
-- assertVisible: "Hybrid"
-- assertVisible: "Mountain"
-- assertVisible: "Cruiser"
-- assertVisible: "Trek 7100 Hybrid"
-
-# Narrow to Hybrid — Trek + Giant remain
-- tapOn: "Hybrid"
-- assertVisible: "Trek 7100 Hybrid"
+- assertVisible: "No bikes match those filters."

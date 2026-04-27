@@ -1,4 +1,4 @@
-appId: com.StoneBicycleCoalition
+appId: com.stonebicyclecoalition.stonebc
 ---
 # Subflow: if onboarding is showing, power through it.
 # Used by every non-onboarding flow via `- runFlow: _skip-onboarding.yaml`.
