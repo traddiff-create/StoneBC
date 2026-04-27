@@ -2,6 +2,8 @@
 
 Compose + Material3, single-Activity with a NavHost. `@Stable` state holder in `data/AppState.kt` drives every screen via `CompositionLocal`. All data is bundled JSON (no backend call on launch); Room powers the Expedition Journal; DataStore persists onboarding flag + ride history summaries.
 
+Cross-platform data contracts live in `:shared` (`android/shared/src/commonMain/...`). The Android app's `data.models` package intentionally contains compatibility aliases so screen code keeps its existing imports while shared KMP models become the source of truth.
+
 ## Entry path
 
 ```
@@ -95,6 +97,7 @@ Used by Expedition Journal photo capture — writes GPS lat/lng + timestamp into
 | DataStore Preferences | `storage/RideHistoryStore.kt` | Persisted `RideSession` list for Record tab "Recent Rides" |
 | Room | `data/database/` | Expedition Journal: journals, days, entries, contributions (4 entities + DAO) |
 | Filesystem | `files/` + `FileProvider` | GPX exports, HTML expedition exports, captured photos. Served via `FileProvider` for share-sheet intents. |
+| Android Keystore | `services/StravaService.kt` | Encrypted Strava OAuth token values, with legacy plain prefs migrated then cleared. |
 
 ## Maps — MapLibre
 

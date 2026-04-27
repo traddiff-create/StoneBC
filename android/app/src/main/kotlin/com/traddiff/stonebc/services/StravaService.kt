@@ -2,12 +2,22 @@ package com.traddiff.stonebc.services
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
+import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyProperties
+import android.util.Base64
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import java.nio.charset.StandardCharsets
 import java.io.OutputStreamWriter
+import java.security.KeyStore
+import javax.crypto.Cipher
+import javax.crypto.KeyGenerator
+import javax.crypto.SecretKey
+import javax.crypto.spec.GCMParameterSpec
 import java.net.URL
 import java.net.HttpURLConnection
 
@@ -24,7 +34,9 @@ object StravaService {
     private const val TOKEN_URL = "https://www.strava.com/api/v3/oauth/token"
     private const val SEGMENTS_URL = "https://www.strava.com/api/v3/segments/explore"
     private const val REDIRECT_URI = "com.stonebicyclecoalition.stonebc://oauth2callback"
-    private const val PREFS_NAME = "stonebc_strava"
+    private const val LEGACY_PREFS_NAME = "stonebc_strava"
+    private const val SECURE_PREFS_NAME = "stonebc_strava_secure"
+    private const val KEY_ALIAS = "stonebc_strava_token_key"
     private const val KEY_ACCESS_TOKEN = "access_token"
     private const val KEY_REFRESH_TOKEN = "refresh_token"
     private const val KEY_ATHLETE_NAME = "athlete_name"
@@ -48,10 +60,10 @@ object StravaService {
     }
 
     fun isAuthenticated(context: Context): Boolean =
-        prefs(context).getString(KEY_ACCESS_TOKEN, null) != null
+        securePrefs(context)?.getSecureString(KEY_ACCESS_TOKEN) != null
 
     fun athleteName(context: Context): String? =
-        prefs(context).getString(KEY_ATHLETE_NAME, null)
+        securePrefs(context)?.getSecureString(KEY_ATHLETE_NAME)
 
     fun startAuth(context: Context) {
         val id = clientId ?: return
@@ -81,10 +93,11 @@ object StravaService {
                 OutputStreamWriter(conn.outputStream).use { it.write(body) }
                 val text = conn.inputStream.bufferedReader().readText()
                 val response = json.decodeFromString<StravaTokenResponse>(text)
-                prefs(context).edit()
-                    .putString(KEY_ACCESS_TOKEN, response.access_token)
-                    .putString(KEY_REFRESH_TOKEN, response.refresh_token)
-                    .putString(KEY_ATHLETE_NAME, "${response.athlete.firstname} ${response.athlete.lastname}".trim())
+                val prefs = securePrefs(context) ?: return@withContext false
+                prefs.edit()
+                    .putSecureString(KEY_ACCESS_TOKEN, response.access_token)
+                    .putSecureString(KEY_REFRESH_TOKEN, response.refresh_token)
+                    .putSecureString(KEY_ATHLETE_NAME, "${response.athlete.firstname} ${response.athlete.lastname}".trim())
                     .apply()
                 true
             } catch (_: Exception) {
@@ -94,7 +107,7 @@ object StravaService {
     }
 
     suspend fun segments(lat: Double, lon: Double, routeId: String, context: Context): List<StravaSegment>? {
-        val token = prefs(context).getString(KEY_ACCESS_TOKEN, null) ?: return null
+        val token = securePrefs(context)?.getSecureString(KEY_ACCESS_TOKEN) ?: return null
         val cached = segmentCache[routeId]
         if (cached != null && System.currentTimeMillis() - cached.fetchedAt < CACHE_EXPIRY_MS) {
             return cached.segments
@@ -127,12 +140,69 @@ object StravaService {
     }
 
     fun disconnect(context: Context) {
-        prefs(context).edit().clear().apply()
+        securePrefs(context)?.edit()?.clear()?.apply()
+        context.getSharedPreferences(LEGACY_PREFS_NAME, Context.MODE_PRIVATE).edit().clear().apply()
         segmentCache.clear()
     }
 
-    private fun prefs(context: Context) =
-        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private fun securePrefs(context: Context): SharedPreferences? =
+        runCatching {
+            context.getSharedPreferences(SECURE_PREFS_NAME, Context.MODE_PRIVATE)
+                .also { migrateLegacyPrefs(context, it) }
+        }.getOrNull()
+
+    private fun migrateLegacyPrefs(context: Context, securePrefs: SharedPreferences) {
+        val legacy = context.getSharedPreferences(LEGACY_PREFS_NAME, Context.MODE_PRIVATE)
+        if (legacy.all.isEmpty()) return
+        securePrefs.edit().apply {
+            listOf(KEY_ACCESS_TOKEN, KEY_REFRESH_TOKEN, KEY_ATHLETE_NAME).forEach { key ->
+                legacy.getString(key, null)?.let { putString(key, encrypt(it)) }
+            }
+            apply()
+        }
+        legacy.edit().clear().apply()
+    }
+
+    private fun SharedPreferences.getSecureString(key: String): String? =
+        getString(key, null)?.let { decrypt(it) }
+
+    private fun SharedPreferences.Editor.putSecureString(key: String, value: String): SharedPreferences.Editor =
+        putString(key, encrypt(value))
+
+    private fun encrypt(value: String): String {
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        cipher.init(Cipher.ENCRYPT_MODE, getOrCreateSecretKey())
+        val ciphertext = cipher.doFinal(value.toByteArray(StandardCharsets.UTF_8))
+        val combined = cipher.iv + ciphertext
+        return Base64.encodeToString(combined, Base64.NO_WRAP)
+    }
+
+    private fun decrypt(value: String): String? =
+        runCatching {
+            val combined = Base64.decode(value, Base64.NO_WRAP)
+            val iv = combined.copyOfRange(0, 12)
+            val ciphertext = combined.copyOfRange(12, combined.size)
+            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+            cipher.init(Cipher.DECRYPT_MODE, getOrCreateSecretKey(), GCMParameterSpec(128, iv))
+            String(cipher.doFinal(ciphertext), StandardCharsets.UTF_8)
+        }.getOrNull()
+
+    private fun getOrCreateSecretKey(): SecretKey {
+        val keyStore = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
+        (keyStore.getKey(KEY_ALIAS, null) as? SecretKey)?.let { return it }
+
+        val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
+        val keySpec = KeyGenParameterSpec.Builder(
+            KEY_ALIAS,
+            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+        )
+            .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+            .setRandomizedEncryptionRequired(true)
+            .build()
+        keyGenerator.init(keySpec)
+        return keyGenerator.generateKey()
+    }
 
     @Serializable private data class StravaTokenResponse(
         val access_token: String,
