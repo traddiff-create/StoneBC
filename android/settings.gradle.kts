@@ -15,4 +15,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "StoneBC"
+include(":shared")
 include(":app")
