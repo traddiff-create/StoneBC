@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="Stone Bicycle Coalition — Building Community Through Cycling. Rapid City, SD.">
+    <title>Stone Bicycle Coalition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --green: #059669;
+            --green-light: #d1fae5;
+            --blue: #2563eb;
+            --amber: #f59e0b;
+            --gray: #6b7280;
+            --gray-light: #f3f4f6;
+            --text: #111827;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0fdf4;
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 4px 24px rgba(5, 150, 105, 0.12), 0 1px 4px rgba(0,0,0,0.06);
+            max-width: 400px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: var(--green);
+            padding: 32px 28px 28px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .card-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+            display: block;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+        }
+
+        .card-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 22px;
+            letter-spacing: 0.02em;
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+
+        .card-tagline {
+            font-size: 14px;
+            opacity: 0.88;
+            font-weight: 500;
+        }
+
+        .card-body {
+            padding: 24px 28px;
+        }
+
+        .contact-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 20px;
+        }
+
+        .contact-list a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text);
+            font-size: 15px;
+            font-weight: 500;
+            transition: background 0.15s;
+        }
+
+        .contact-list a:hover,
+        .contact-list a:active {
+            background: var(--gray-light);
+        }
+
+        .contact-list .icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .icon-email  { background: #dbeafe; }
+        .icon-web    { background: var(--green-light); }
+        .icon-insta  { background: #fce7f3; }
+        .icon-map    { background: #fef3c7; }
+
+        .contact-list .label {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .contact-list .label span {
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1px;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--gray-light);
+            margin: 4px 0 20px;
+        }
+
+        .mission {
+            background: var(--green-light);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #065f46;
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        .btn-save {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 14px;
+            background: var(--green);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.15s, transform 0.1s;
+        }
+
+        .btn-save:hover { background: #047857; }
+        .btn-save:active { transform: scale(0.98); }
+
+        .card-footer {
+            padding: 16px 28px 24px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .card-footer strong {
+            color: var(--green);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="card-header">
+            <span class="card-icon">🚲</span>
+            <div class="card-name">Stone Bicycle Coalition</div>
+            <div class="card-tagline">Building Community Through Cycling</div>
+        </div>
+
+        <div class="card-body">
+            <ul class="contact-list">
+                <li>
+                    <a href="mailto:info@stonebicyclecoalition.com">
+                        <span class="icon icon-email">✉️</span>
+                        <span class="label">
+                            <span>Email</span>
+                            info@stonebicyclecoalition.com
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://stonebicyclecoalition.com" target="_blank" rel="noopener">
+                        <span class="icon icon-web">🌐</span>
+                        <span class="label">
+                            <span>Website</span>
+                            stonebicyclecoalition.com
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://instagram.com/stone_bicycle_coalition" target="_blank" rel="noopener">
+                        <span class="icon icon-insta">📸</span>
+                        <span class="label">
+                            <span>Instagram</span>
+                            @stone_bicycle_coalition
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://maps.apple.com/?address=315+N+4th+St,Rapid+City,SD+57701" target="_blank" rel="noopener">
+                        <span class="icon icon-map">📍</span>
+                        <span class="label">
+                            <span>Location</span>
+                            315 N 4th St · Rapid City, SD
+                        </span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="divider"></div>
+
+            <div class="mission">
+                "Our founders believe biking is the purest form of fun and one of the easiest ways to build community. Our mission is to make biking, bike repairs, and education accessible to all."
+            </div>
+
+            <button class="btn-save" onclick="saveContact()">
+                <span>⬇</span> Save Contact
+            </button>
+        </div>
+
+        <div class="card-footer">
+            <strong>stonebikeco.com</strong>
+        </div>
+    </div>
+
+    <script>
+        function saveContact() {
+            const vcard = [
+                'BEGIN:VCARD',
+                'VERSION:3.0',
+                'FN:Stone Bicycle Coalition',
+                'ORG:Stone Bicycle Coalition',
+                'EMAIL;TYPE=INTERNET:info@stonebicyclecoalition.com',
+                'URL:https://stonebicyclecoalition.com',
+                'ADR;TYPE=WORK:;;315 N 4th St;Rapid City;SD;57701;USA',
+                'X-SOCIALPROFILE;TYPE=instagram:stone_bicycle_coalition',
+                'NOTE:Building Community Through Cycling',
+                'END:VCARD'
+            ].join('\r\n');
+
+            const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'stone-bicycle-coalition.vcf';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

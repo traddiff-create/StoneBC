@@ -60,9 +60,7 @@ struct GalleryView: View {
                 if filteredPhotos.isEmpty {
                     VStack(spacing: BCSpacing.md) {
                         Spacer().frame(height: 80)
-                        Image(systemName: "photo.on.rectangle")
-                            .font(.system(size: 32))
-                            .foregroundColor(.secondary)
+                        BCIconTile(icon: "photo.on.rectangle", color: BCColors.brandBlue, size: 52)
                         Text("Photos coming soon")
                             .font(.bcPrimaryText)
                         Text("GALLERY IN DEVELOPMENT")
@@ -71,6 +69,7 @@ struct GalleryView: View {
                             .foregroundColor(.secondary)
                     }
                     .frame(maxWidth: .infinity)
+                    .padding(.horizontal, BCSpacing.md)
                 } else {
                     LazyVGrid(columns: columns, spacing: BCSpacing.sm) {
                         ForEach(Array(filteredPhotos.enumerated()), id: \.element.id) { index, photo in
@@ -138,7 +137,7 @@ struct PhotoPlaceholder: View {
                     }
             } else {
                 Rectangle()
-                    .fill(BCColors.overlayMedium)
+                    .fill(BCColors.instrumentInset)
                     .aspectRatio(1, contentMode: .fit)
                     .overlay {
                         VStack(spacing: 4) {
@@ -153,7 +152,11 @@ struct PhotoPlaceholder: View {
                     }
             }
         }
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay {
+            RoundedRectangle(cornerRadius: BCRadius.card, style: .continuous)
+                .stroke(BCColors.hairline, lineWidth: 1)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: BCRadius.card, style: .continuous))
         .accessibilityLabel(photo.title)
     }
 }

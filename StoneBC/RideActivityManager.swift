@@ -77,6 +77,7 @@ class RideActivityManager {
         progress: Double,
         isOffRoute: Bool,
         heading: Double,
+        powerMode: RidePowerMode = .balanced,
         force: Bool = false
     ) {
         guard let activity, isActivityActive else { return }
@@ -84,8 +85,8 @@ class RideActivityManager {
         let now = Date()
         let elapsedSinceLast = now.timeIntervalSince(lastUpdatePushedAt)
         let metersSinceLast = max(0, distanceTraveled - lastPushedCumulativeMiles) * 1609.344
-        let underTimeFloor = elapsedSinceLast < RideTuning.liveActivityUpdateIntervalSeconds
-        let underDistanceFloor = metersSinceLast < RideTuning.liveActivityUpdateMinDistanceMeters
+        let underTimeFloor = elapsedSinceLast < powerMode.liveActivityUpdateInterval
+        let underDistanceFloor = metersSinceLast < powerMode.liveActivityUpdateDistanceMeters
 
         if !force && underTimeFloor && underDistanceFloor {
             return

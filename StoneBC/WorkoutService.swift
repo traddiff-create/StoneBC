@@ -18,6 +18,10 @@ class WorkoutService {
     private let store = HKHealthStore()
     private var workoutBuilder: HKWorkoutBuilder?
     private var routeBuilder: HKWorkoutRouteBuilder?
+    private var pendingRouteLocations: [CLLocation] = []
+    private var lastQueuedRouteTimestamp: Date?
+    private var lastRouteFlushAt: Date = .distantPast
+    private var lastRouteFlushLocation: CLLocation?
 
     /// Set while `endWorkout` is in flight so a concurrent `cancelWorkout`
     /// from a discard / dismiss path becomes a no-op instead of racing
@@ -65,6 +69,10 @@ class WorkoutService {
 
             self.workoutBuilder = builder
             self.routeBuilder = HKWorkoutRouteBuilder(healthStore: store, device: .local())
+            self.pendingRouteLocations = []
+            self.lastQueuedRouteTimestamp = nil
+            self.lastRouteFlushAt = Date()
+            self.lastRouteFlushLocation = nil
             self.isRecording = true
             self.error = nil
         } catch {
@@ -73,16 +81,58 @@ class WorkoutService {
     }
 
     /// Feed GPS locations during the ride
-    func addRouteData(_ locations: [CLLocation]) {
+    func addRouteData(_ locations: [CLLocation],
+                      powerMode: RidePowerMode = .balanced,
+                      force: Bool = false) {
         guard isRecording, let routeBuilder else { return }
 
         // Filter to only high-accuracy points
         let filtered = locations.filter {
             $0.horizontalAccuracy >= 0 && $0.horizontalAccuracy < RideTuning.healthKitMaxAccuracyMeters
+        }.filter {
+            guard let lastQueuedRouteTimestamp else { return true }
+            return $0.timestamp > lastQueuedRouteTimestamp
         }
         guard !filtered.isEmpty else { return }
 
-        routeBuilder.insertRouteData(filtered) { success, error in
+        pendingRouteLocations.append(contentsOf: filtered)
+        lastQueuedRouteTimestamp = pendingRouteLocations.last?.timestamp ?? lastQueuedRouteTimestamp
+
+        guard force || shouldFlushRouteData(powerMode: powerMode) else {
+            return
+        }
+
+        flushRouteData(using: routeBuilder)
+    }
+
+    private func shouldFlushRouteData(powerMode: RidePowerMode) -> Bool {
+        guard !pendingRouteLocations.isEmpty else { return false }
+        if Date().timeIntervalSince(lastRouteFlushAt) >= powerMode.healthKitBatchInterval {
+            return true
+        }
+
+        let latest = pendingRouteLocations.last
+        let distanceSinceFlush: CLLocationDistance
+        if let lastRouteFlushLocation, let latest {
+            distanceSinceFlush = latest.distance(from: lastRouteFlushLocation)
+        } else if let first = pendingRouteLocations.first, let latest {
+            distanceSinceFlush = latest.distance(from: first)
+        } else {
+            distanceSinceFlush = 0
+        }
+
+        return distanceSinceFlush >= powerMode.healthKitBatchDistanceMeters
+    }
+
+    private func flushRouteData(using routeBuilder: HKWorkoutRouteBuilder) {
+        let batch = pendingRouteLocations
+        guard !batch.isEmpty else { return }
+
+        pendingRouteLocations.removeAll()
+        lastRouteFlushAt = Date()
+        lastRouteFlushLocation = batch.last
+
+        routeBuilder.insertRouteData(batch) { _, error in
             if let error {
                 self.error = error.localizedDescription
             }
@@ -110,9 +160,16 @@ class WorkoutService {
             isRecording = false
             workoutBuilder = nil
             routeBuilder = nil
+            pendingRouteLocations = []
+            lastQueuedRouteTimestamp = nil
+            lastRouteFlushLocation = nil
         }
 
         do {
+            if let route {
+                try await flushPendingRouteData(using: route)
+            }
+
             if !pauseEvents.isEmpty {
                 let events = pauseEvents.map { event in
                     HKWorkoutEvent(
@@ -140,6 +197,33 @@ class WorkoutService {
         }
     }
 
+    private func flushPendingRouteData(using routeBuilder: HKWorkoutRouteBuilder) async throws {
+        let batch = pendingRouteLocations
+        guard !batch.isEmpty else { return }
+
+        pendingRouteLocations.removeAll()
+        lastRouteFlushAt = Date()
+        lastRouteFlushLocation = batch.last
+
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            routeBuilder.insertRouteData(batch) { success, error in
+                if let error {
+                    continuation.resume(throwing: error)
+                } else if success {
+                    continuation.resume()
+                } else {
+                    continuation.resume(
+                        throwing: NSError(
+                            domain: "StoneBC.WorkoutService",
+                            code: 1,
+                            userInfo: [NSLocalizedDescriptionKey: "HealthKit rejected route data."]
+                        )
+                    )
+                }
+            }
+        }
+    }
+
     /// Discard the in-progress workout. No-op while `endWorkout` is running so
     /// we don't race `finishRoute` and end up with a stale `HKWorkoutBuilder`.
     func cancelWorkout() {
@@ -147,6 +231,9 @@ class WorkoutService {
         workoutBuilder?.discardWorkout()
         workoutBuilder = nil
         routeBuilder = nil
+        pendingRouteLocations = []
+        lastQueuedRouteTimestamp = nil
+        lastRouteFlushLocation = nil
         isRecording = false
     }
 }

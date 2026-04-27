@@ -15,6 +15,12 @@ struct ExpeditionTimelineView: View {
     @State private var showImportGPX = false
     @State private var showContributions = false
     @State private var editingSummary = false
+    @State private var locationService = LocationService()
+    @State private var saveTask: Task<Void, Never>?
+    @State private var isExportingPDF = false
+    @State private var exportedPDFURL: URL?
+    @State private var showPDFShareSheet = false
+    @State private var exportError: String?
 
     private var currentDay: JournalDay? {
         journal.days.first { $0.dayNumber == selectedDay }
@@ -27,7 +33,10 @@ struct ExpeditionTimelineView: View {
                 HStack(spacing: BCSpacing.sm) {
                     ForEach(journal.days) { day in
                         Button {
-                            withAnimation(.spring(response: 0.3)) { selectedDay = day.dayNumber }
+                            withAnimation(.spring(response: 0.3)) {
+                                selectedDay = day.dayNumber
+                                editingSummary = false
+                            }
                         } label: {
                             VStack(spacing: 4) {
                                 Text("DAY \(day.dayNumber)")
@@ -62,8 +71,14 @@ struct ExpeditionTimelineView: View {
             if let day = currentDay {
                 ScrollView {
                     VStack(alignment: .leading, spacing: BCSpacing.md) {
+                        // Expedition tracking
+                        trackingControlSection
+
                         // Day stats
                         dayStatsBar(day)
+
+                        // Field logistics
+                        dayFieldLogSection
 
                         // Summary editor
                         daySummarySection(day)
@@ -120,9 +135,18 @@ struct ExpeditionTimelineView: View {
                         Label("Map View", systemImage: "map")
                     }
 
+                    Button {
+                        exportPDF()
+                    } label: {
+                        Label(isExportingPDF ? "Generating PDF..." : "Share PDF Log", systemImage: "doc.richtext")
+                    }
+                    .disabled(isExportingPDF)
+
                     if journal.status == .active {
                         Button {
                             journal.status = .completed
+                            journal.endDate = Date()
+                            scheduleSave()
                         } label: {
                             Label("Mark Complete", systemImage: "checkmark.circle")
                         }
@@ -136,22 +160,114 @@ struct ExpeditionTimelineView: View {
             ExpeditionCaptureView(
                 journalId: journal.id,
                 dayNumber: selectedDay,
-                currentLocation: nil // wire to LocationService in integration
+                currentLocation: locationService.userLocation
             ) { entry in
-                if var day = journal.days.first(where: { $0.dayNumber == selectedDay }),
-                   let idx = journal.days.firstIndex(where: { $0.dayNumber == selectedDay }) {
-                    day.entries.append(entry)
-                    journal.days[idx] = day
-                }
+                appendEntry(entry)
             }
+        }
+        .sheet(isPresented: $showPDFShareSheet) {
+            if let exportedPDFURL {
+                ShareSheet(activityItems: [exportedPDFURL])
+            }
+        }
+        .alert("PDF Export", isPresented: Binding(
+            get: { exportError != nil },
+            set: { if !$0 { exportError = nil } }
+        )) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(exportError ?? "")
+        }
+        .task {
+            startLocationTracking()
+        }
+        .onChange(of: journal.trackingMode?.rawValue) {
+            startLocationTracking()
+        }
+        .onDisappear {
+            saveTask?.cancel()
+            saveNow()
+            locationService.stopTracking()
         }
     }
 
     // MARK: - Subviews
 
+    private var trackingControlSection: some View {
+        let mode = journal.trackingMode ?? .balanced
+
+        return VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .center, spacing: 8) {
+                Label("Follow My Expedition", systemImage: "location.north.line")
+                    .font(.system(size: 13, weight: .semibold))
+                Spacer()
+                Text(journal.status.rawValue.uppercased())
+                    .font(.system(size: 8, weight: .bold))
+                    .tracking(0.5)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(statusColor(journal.status).opacity(0.15))
+                    .foregroundColor(statusColor(journal.status))
+                    .clipShape(Capsule())
+            }
+
+            HStack(spacing: 10) {
+                Image(systemName: mode.systemImage)
+                    .font(.system(size: 14))
+                    .foregroundColor(BCColors.brandBlue)
+                    .frame(width: 28, height: 28)
+                    .background(BCColors.brandBlue.opacity(0.1))
+                    .clipShape(Circle())
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(mode.label)
+                        .font(.system(size: 12, weight: .medium))
+                    Text(mode.subtitle)
+                        .font(.system(size: 10))
+                        .foregroundColor(.secondary)
+                }
+
+                Spacer()
+
+                Menu {
+                    ForEach(ExpeditionTrackingMode.allCases) { candidate in
+                        Button {
+                            journal.trackingMode = candidate
+                            scheduleSave()
+                            startLocationTracking()
+                        } label: {
+                            Label(candidate.label, systemImage: candidate.systemImage)
+                        }
+                    }
+                } label: {
+                    Image(systemName: "slider.horizontal.3")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(BCColors.brandBlue)
+                        .frame(width: 32, height: 32)
+                }
+            }
+
+            if let location = locationService.userLocation {
+                Label(
+                    String(format: "GPS %.4f, %.4f", location.latitude, location.longitude),
+                    systemImage: "location.fill"
+                )
+                .font(.system(size: 10, design: .monospaced))
+                .foregroundColor(.secondary)
+            } else {
+                Label("Waiting for GPS fix", systemImage: "location.slash")
+                    .font(.system(size: 10))
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(BCSpacing.md)
+        .background(BCColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
     private func dayStatsBar(_ day: JournalDay) -> some View {
         HStack(spacing: 16) {
-            statPill(icon: "note.text", value: "\(day.entries.filter { $0.isTextOnly }.count)", label: "Notes")
+            statPill(icon: "note.text", value: "\(day.entries.filter { $0.mediaType == nil }.count)", label: "Notes")
             statPill(icon: "photo", value: "\(day.photoCount)", label: "Photos")
             statPill(icon: "mic", value: "\(day.audioCount)", label: "Audio")
             statPill(icon: "video", value: "\(day.videoCount)", label: "Video")
@@ -160,6 +276,109 @@ struct ExpeditionTimelineView: View {
                 statPill(icon: "road.lanes", value: String(format: "%.1f", miles), label: "Miles")
             }
         }
+    }
+
+    private var dayFieldLogSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("FIELD LOG")
+                .font(.system(size: 10, weight: .semibold))
+                .tracking(1)
+                .foregroundColor(.secondary)
+
+            LazyVGrid(
+                columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)],
+                spacing: 10
+            ) {
+                metricField(
+                    icon: "road.lanes",
+                    title: "Miles",
+                    placeholder: "0.0",
+                    text: dayDoubleBinding(\.actualMiles)
+                )
+                metricField(
+                    icon: "mountain.2",
+                    title: "Elevation",
+                    placeholder: "Feet",
+                    text: dayIntBinding(\.actualElevation)
+                )
+            }
+
+            fieldNoteInput(
+                icon: "drop",
+                title: "Water",
+                placeholder: "Sources, liters, filter status",
+                text: dayStringBinding(\.waterNote)
+            )
+            fieldNoteInput(
+                icon: "fork.knife",
+                title: "Food",
+                placeholder: "Meals, calories, resupply notes",
+                text: dayStringBinding(\.foodNote)
+            )
+            fieldNoteInput(
+                icon: "tent",
+                title: "Shelter",
+                placeholder: "Camp, bivy, wind, ground conditions",
+                text: dayStringBinding(\.shelterNote)
+            )
+            fieldNoteInput(
+                icon: "sunset",
+                title: "Sunset",
+                placeholder: "Light, photos, final miles",
+                text: dayStringBinding(\.sunsetNote)
+            )
+            fieldNoteInput(
+                icon: "cloud.sun",
+                title: "Weather",
+                placeholder: "Temp, wind, storms, exposure",
+                text: dayStringBinding(\.weatherNote)
+            )
+        }
+        .padding(BCSpacing.md)
+        .background(BCColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    private func metricField(icon: String, title: String, placeholder: String, text: Binding<String>) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.system(size: 12))
+                .foregroundColor(BCColors.brandBlue)
+                .frame(width: 20)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title.uppercased())
+                    .font(.system(size: 8, weight: .semibold))
+                    .tracking(0.7)
+                    .foregroundColor(.secondary)
+                TextField(placeholder, text: text)
+                    .font(.system(size: 13, weight: .medium, design: .monospaced))
+                    .keyboardType(.decimalPad)
+            }
+        }
+        .padding(10)
+        .background(BCColors.tertiaryBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    private func fieldNoteInput(icon: String, title: String, placeholder: String, text: Binding<String>) -> some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: icon)
+                .font(.system(size: 12))
+                .foregroundColor(BCColors.brandBlue)
+                .frame(width: 20, height: 20)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title.uppercased())
+                    .font(.system(size: 8, weight: .semibold))
+                    .tracking(0.7)
+                    .foregroundColor(.secondary)
+                TextField(placeholder, text: text, axis: .vertical)
+                    .font(.system(size: 12))
+                    .lineLimit(1...3)
+            }
+        }
+        .padding(10)
+        .background(BCColors.tertiaryBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
     private func statPill(icon: String, value: String, label: String) -> some View {
@@ -186,6 +405,7 @@ struct ExpeditionTimelineView: View {
                 Spacer()
                 Button(editingSummary ? "Done" : "Edit") {
                     editingSummary.toggle()
+                    scheduleSave()
                 }
                 .font(.system(size: 11, weight: .medium))
             }
@@ -196,6 +416,7 @@ struct ExpeditionTimelineView: View {
                     set: { newValue in
                         if let idx = journal.days.firstIndex(where: { $0.dayNumber == selectedDay }) {
                             journal.days[idx].summary = newValue.isEmpty ? nil : newValue
+                            scheduleSave()
                         }
                     }
                 ))
@@ -276,6 +497,117 @@ struct ExpeditionTimelineView: View {
         }
         .frame(maxWidth: .infinity)
     }
+
+    private func appendEntry(_ entry: JournalEntry) {
+        updateSelectedDay { day in
+            day.entries.append(entry)
+        }
+    }
+
+    private func updateSelectedDay(_ update: (inout JournalDay) -> Void) {
+        guard let idx = journal.days.firstIndex(where: { $0.dayNumber == selectedDay }) else { return }
+        update(&journal.days[idx])
+        scheduleSave()
+    }
+
+    private func dayStringBinding(_ keyPath: WritableKeyPath<JournalDay, String?>) -> Binding<String> {
+        Binding(
+            get: { currentDay?[keyPath: keyPath] ?? "" },
+            set: { newValue in
+                updateSelectedDay { day in
+                    day[keyPath: keyPath] = newValue.isEmpty ? nil : newValue
+                }
+            }
+        )
+    }
+
+    private func dayDoubleBinding(_ keyPath: WritableKeyPath<JournalDay, Double?>) -> Binding<String> {
+        Binding(
+            get: {
+                guard let value = currentDay?[keyPath: keyPath] else { return "" }
+                return value.truncatingRemainder(dividingBy: 1) == 0
+                    ? String(format: "%.0f", value)
+                    : String(format: "%.1f", value)
+            },
+            set: { newValue in
+                let cleaned = newValue.replacingOccurrences(of: ",", with: "")
+                updateSelectedDay { day in
+                    day[keyPath: keyPath] = cleaned.isEmpty ? nil : Double(cleaned)
+                }
+            }
+        )
+    }
+
+    private func dayIntBinding(_ keyPath: WritableKeyPath<JournalDay, Int?>) -> Binding<String> {
+        Binding(
+            get: {
+                guard let value = currentDay?[keyPath: keyPath] else { return "" }
+                return "\(value)"
+            },
+            set: { newValue in
+                let digits = newValue.filter { $0.isNumber }
+                updateSelectedDay { day in
+                    day[keyPath: keyPath] = digits.isEmpty ? nil : Int(digits)
+                }
+            }
+        )
+    }
+
+    private func startLocationTracking() {
+        guard journal.status == .active else {
+            locationService.stopTracking()
+            return
+        }
+        locationService.startTracking(mode: (journal.trackingMode ?? .balanced).locationMode)
+    }
+
+    private func scheduleSave() {
+        let snapshot = journal
+        saveTask?.cancel()
+        saveTask = Task {
+            try? await Task.sleep(nanoseconds: 600_000_000)
+            guard !Task.isCancelled else { return }
+            await ExpeditionStorage.shared.save(snapshot)
+        }
+    }
+
+    private func saveNow() {
+        let snapshot = journal
+        Task {
+            await ExpeditionStorage.shared.save(snapshot)
+        }
+    }
+
+    private func exportPDF() {
+        guard !isExportingPDF else { return }
+
+        saveTask?.cancel()
+        let snapshot = journal
+        isExportingPDF = true
+
+        Task {
+            await ExpeditionStorage.shared.save(snapshot)
+            let url = await ExpeditionExporter.savePDF(journal: snapshot)
+
+            await MainActor.run {
+                isExportingPDF = false
+                if let url {
+                    exportedPDFURL = url
+                    showPDFShareSheet = true
+                } else {
+                    exportError = "Could not create the expedition PDF log."
+                }
+            }
+        }
+    }
+
+    private func statusColor(_ status: JournalStatus) -> Color {
+        switch status {
+        case .active: BCColors.brandGreen
+        case .completed: BCColors.brandBlue
+        case .published: BCColors.brandAmber
+        }
+    }
 }
 
 // MARK: - Entry Card
@@ -306,6 +638,16 @@ struct EntryCard: View {
                 }
 
                 Spacer()
+
+                if let moment = entry.momentKind {
+                    Label(moment.label, systemImage: moment.systemImage)
+                        .font(.system(size: 8, weight: .medium))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(BCColors.brandGreen.opacity(0.12))
+                        .foregroundColor(BCColors.brandGreen)
+                        .clipShape(Capsule())
+                }
 
                 Text(entry.source.label)
                     .font(.system(size: 8, weight: .medium))

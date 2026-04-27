@@ -89,7 +89,7 @@ StoneBC/
 │       ├── programs.json        # Community programs
 │       └── photos.json          # Gallery metadata
 │
-├── StoneBC.xcodeproj/
+├── app.xcodeproj/
 ├── docs/                        # Technical documentation
 │   ├── ARCHITECTURE.md          # App architecture overview
 │   ├── DESIGN_SYSTEM.md         # BCDesignSystem reference
@@ -149,7 +149,7 @@ StoneBC/
 | Strava | StravaService | OAuth2, segments, leaderboards |
 | Conditions | RouteConditionReporter | Crowdsourced reports + quick-tap UI |
 | Emergency | EmergencySafetyService | Satellite SOS, emergency contacts, 911 |
-| Ride Export | RideExportService | GPX 1.1 with timestamps/elevation |
+| Ride Export | RouteInterchangeService / RideExportService | GPX, TCX, FIT, KML, and device bundles |
 | Ride History | RideHistoryService | Persistent log + season summary |
 | Route Search | RouteIndexService | SQLite FTS5 full-text search |
 | Notifications | EventNotificationService | Local notifications for events + ride windows |
@@ -169,11 +169,11 @@ Lewis & Clark-style ride documentation. One leader curates, all riders contribut
 | PhotoGeotaggingService.swift | EXIF GPS + Garmin timestamp matching |
 | ExpeditionTimelineView.swift | Day-by-day editor with media cards |
 | ExpeditionMapView.swift | GPS track + media pins on satellite map |
-| ExpeditionExporter.swift | HTML report generation |
+| ExpeditionExporter.swift | HTML + PDF report generation |
 | ExpeditionListView.swift | Browse/create journals from tour guides |
 | MediaCaptureService.swift | Camera, voice memo, video wrappers |
 
-**Flow:** More tab → My Expeditions → Create from tour guide → Capture during ride → Curate after → Export HTML.
+**Flow:** More tab → Follow My Expedition → Create from tour guide → Capture during ride → Curate after → Export PDF/HTML.
 
 **Collaboration:** iCloud Drive `8o7/` folder for media drops. Rally Radio `0x50` prefix for P2P photo sharing.
 
@@ -195,7 +195,7 @@ Multi-day ride guides with day picker, stops timeline, and ride recording checkl
 - **Brewvet** — 3-day brewery bike tour (Sept 25-27), sag stops with beer pairings
 - **8 Over 7** — 3-day bikepacking trip (May 15-17), Spearfish → Sylvan → Custer → Deerfield → Spearfish
 
-**Data pipeline:** Routes in GPX/ → process_routes.py → routes.json (for Routes tab). Guides in guides.json (separate, richer data model with stops/checklist).
+**Data pipeline:** Routes in GPX/ → process_routes.py → routes.json (for Routes tab). Runtime route files use RouteInterchangeService for GPX/TCX/FIT/KML/KMZ/ZIP import/export. Guides live in guides.json (separate, richer data model with stops/checklist).
 
 ---
 
@@ -213,7 +213,7 @@ Multi-day ride guides with day picker, stops timeline, and ride recording checkl
 - **Config-driven:** `config.json` controls name, colors, features, data URLs
 - **Local-first data:** All JSON bundled; optional WordPress sync on launch
 - **Feature flags:** `enableMarketplace`, `enableRadio`, `enableRoutes`, etc.
-- **No auth:** Read-only for users; owner manages content via CLI/Claude
+- **Public-first:** Most features require no account; optional member login stores a local token
 - **Open source:** `CUSTOMIZE_ME/` has templates for other co-ops to fork
 
 ---

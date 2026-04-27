@@ -19,10 +19,8 @@ struct ExpeditionListView: View {
             } else {
                 ScrollView {
                     LazyVStack(spacing: BCSpacing.sm) {
-                        ForEach(journals) { journal in
-                            NavigationLink(destination: ExpeditionTimelineView(
-                                journal: .constant(journal) // TODO: bind to storage
-                            )) {
+                        ForEach($journals) { $journal in
+                            NavigationLink(destination: ExpeditionTimelineView(journal: $journal)) {
                                 expeditionCard(journal)
                             }
                             .buttonStyle(.plain)
@@ -33,7 +31,7 @@ struct ExpeditionListView: View {
                 }
             }
         }
-        .navigationTitle("Expeditions")
+        .navigationTitle("Follow My Expedition")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -66,7 +64,7 @@ struct ExpeditionListView: View {
                 .foregroundColor(.secondary)
             Text("No Expeditions Yet")
                 .font(.system(size: 16, weight: .medium))
-            Text("Document your rides like Lewis & Clark.\nPhotos, audio, video, GPS — all in one journal.")
+            Text("Build an offline field record with photos, audio, video, GPS, water, food, shelter, and sunset notes.")
                 .font(.system(size: 13))
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -146,7 +144,8 @@ struct NewExpeditionSheet: View {
     private var selectedGuideId: String? { selectedGuide?.id }
     @State private var expeditionName = ""
     @State private var startDate = Date()
-    @State private var leaderName = "Rory Stone"
+    @State private var leaderName = "Solo"
+    @State private var trackingMode: ExpeditionTrackingMode = .balanced
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
@@ -182,6 +181,22 @@ struct NewExpeditionSheet: View {
                     DatePicker("Start Date", selection: $startDate, displayedComponents: .date)
                     TextField("Leader Name", text: $leaderName)
                 }
+
+                Section("Battery") {
+                    Picker("Tracking", selection: $trackingMode) {
+                        ForEach(ExpeditionTrackingMode.allCases) { mode in
+                            Text(mode.label).tag(mode)
+                        }
+                    }
+
+                    HStack(alignment: .top, spacing: 8) {
+                        Image(systemName: trackingMode.systemImage)
+                            .foregroundColor(BCColors.brandBlue)
+                        Text(trackingMode.subtitle)
+                            .font(.system(size: 12))
+                            .foregroundColor(.secondary)
+                    }
+                }
             }
             .navigationTitle("New Expedition")
             .navigationBarTitleDisplayMode(.inline)
@@ -197,6 +212,7 @@ struct NewExpeditionSheet: View {
                             leaderName: leaderName,
                             startDate: startDate
                         )
+                        journal.trackingMode = trackingMode
                         if !expeditionName.isEmpty {
                             // Use custom name
                             journal = ExpeditionJournal(
@@ -205,6 +221,7 @@ struct NewExpeditionSheet: View {
                                 name: expeditionName,
                                 leaderName: leaderName,
                                 status: .active,
+                                trackingMode: trackingMode,
                                 startDate: startDate,
                                 endDate: nil,
                                 days: journal.days,

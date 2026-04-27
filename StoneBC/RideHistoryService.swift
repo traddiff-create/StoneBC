@@ -73,6 +73,15 @@ class RideHistoryService {
         persistRides()
     }
 
+    func importRide(_ ride: CompletedRide) {
+        rides.removeAll { $0.id == ride.id }
+        rides.insert(ride, at: 0)
+        if rides.count > maxRides {
+            rides = Array(rides.prefix(maxRides))
+        }
+        persistRides()
+    }
+
     func update(_ ride: CompletedRide) {
         guard let idx = rides.firstIndex(where: { $0.id == ride.id }) else { return }
         rides[idx] = ride

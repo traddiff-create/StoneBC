@@ -40,7 +40,9 @@ class AppState {
     private static let syncInterval: TimeInterval = 5 * 60 // 5 minutes
 
     init() {
+        BCColors.configure(with: config.colors)
         loadData()
+        RouteProviderManager.shared.configure(config: config)
         if let session = MemberAuthService.loadSession() {
             memberEmail = session.email
             memberToken = session.token
@@ -99,25 +101,27 @@ class AppState {
     // MARK: - Imported Routes
 
     func addImportedRoute(_ route: Route) {
-        importedRoutes.append(route)
-        persistImportedRoutes()
+        UserRouteStore.shared.save(route)
+        importedRoutes = UserRouteStore.shared.routes
     }
 
     func removeImportedRoute(id: String) {
-        importedRoutes.removeAll { $0.id == id }
-        persistImportedRoutes()
+        UserRouteStore.shared.delete(id: id)
+        importedRoutes = UserRouteStore.shared.routes
     }
 
     private func loadImportedRoutes() {
-        guard let data = UserDefaults.standard.data(forKey: Self.importedRoutesKey),
-              let decoded = try? JSONDecoder().decode([Route].self, from: data) else { return }
-        importedRoutes = decoded
+        if let data = UserDefaults.standard.data(forKey: Self.importedRoutesKey),
+           let decoded = try? JSONDecoder().decode([Route].self, from: data),
+           !decoded.isEmpty {
+            UserRouteStore.shared.mergeMigratedRoutes(decoded)
+            UserDefaults.standard.removeObject(forKey: Self.importedRoutesKey)
+        }
+        importedRoutes = UserRouteStore.shared.routes
     }
 
     private func persistImportedRoutes() {
-        if let encoded = try? JSONEncoder().encode(importedRoutes) {
-            UserDefaults.standard.set(encoded, forKey: Self.importedRoutesKey)
-        }
+        UserRouteStore.shared.replaceAll(importedRoutes)
     }
 
     // MARK: - WordPress Sync

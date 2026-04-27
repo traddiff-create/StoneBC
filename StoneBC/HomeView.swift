@@ -9,7 +9,6 @@ import SwiftUI
 
 struct HomeView: View {
     @Environment(AppState.self) var appState
-    @State private var appeared = false
 
     var body: some View {
         NavigationStack {
@@ -46,37 +45,41 @@ struct HomeView: View {
     // MARK: - Hero
 
     private var heroSection: some View {
-        VStack(spacing: BCSpacing.md) {
-            Spacer().frame(height: BCSpacing.lg)
+        VStack(alignment: .leading, spacing: BCSpacing.md) {
+            HStack(alignment: .top) {
+                BCIconTile(icon: "bicycle", color: BCColors.brandBlue, size: 52, filled: true)
 
-            Image(systemName: "bicycle")
-                .font(.system(size: 36, weight: .thin))
-                .foregroundColor(BCColors.brandBlue)
-                .opacity(appeared ? 1 : 0)
-                .offset(y: appeared ? 0 : -10)
-                .animation(.easeOut(duration: 0.6).delay(0.1), value: appeared)
+                Spacer()
 
-            VStack(spacing: 8) {
+                if let location = appState.config.location {
+                    BCStatusPill(text: "\(location.city), \(location.state)", icon: "location", color: BCColors.brandGreen)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
                 Text(appState.config.coalitionName.uppercased())
-                    .font(.system(size: 20, weight: .light))
-                    .tracking(4)
-                    .multilineTextAlignment(.center)
-
-                Rectangle()
-                    .fill(BCColors.brandBlue)
-                    .frame(width: 40, height: 2)
+                    .font(.bcHero)
+                    .tracking(1.4)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.74)
 
                 Text(appState.config.tagline)
-                    .font(.system(size: 12, weight: .regular))
-                    .foregroundColor(.secondary)
-                    .tracking(1)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(BCColors.secondaryText)
+                    .lineLimit(2)
+            }
+
+            BCHairline()
+
+            HStack(spacing: BCSpacing.sm) {
+                BCStatusPill(text: appState.config.shortName, icon: "gauge.with.dots.needle.bottom.50percent", color: BCColors.brandBlue)
+                BCStatusPill(text: "Routes \(appState.routes.count)", icon: "map", color: BCColors.brandAmber)
+                Spacer()
             }
         }
-        .opacity(appeared ? 1 : 0)
-        .animation(.easeOut(duration: 0.6), value: appeared)
-        .onAppear {
-            withAnimation { appeared = true }
-        }
+        .bcInstrumentCard(padding: BCSpacing.lg)
+        .padding(.horizontal, BCSpacing.md)
+        .padding(.top, BCSpacing.md)
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(appState.config.coalitionName). \(appState.config.tagline)")
     }
@@ -90,31 +93,25 @@ struct HomeView: View {
             ForEach(appState.featuredBikes) { bike in
                 NavigationLink(destination: BikeDetailView(bike: bike)) {
                     HStack(spacing: 12) {
-                        Image(systemName: bike.type.icon)
-                            .font(.system(size: 18))
-                            .foregroundColor(BCColors.brandBlue)
-                            .frame(width: 40, height: 40)
-                            .background(BCColors.brandBlue.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                        BCIconTile(icon: bike.type.icon, color: BCColors.brandBlue, size: 42)
 
-                        VStack(alignment: .leading, spacing: 2) {
+                        VStack(alignment: .leading, spacing: 3) {
                             Text(bike.model)
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.primary)
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(BCColors.primaryText)
+                                .lineLimit(1)
                             Text("\(bike.type.label) · \(bike.frameSize)")
-                                .font(.system(size: 11))
-                                .foregroundColor(.secondary)
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundColor(BCColors.secondaryText)
                         }
 
                         Spacer()
 
                         Text(bike.formattedPrice)
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(.bcCaption)
                             .foregroundColor(BCColors.brandGreen)
                     }
-                    .padding(BCSpacing.md)
-                    .background(BCColors.cardBackground)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .bcInstrumentCard()
                 }
                 .buttonStyle(.plain)
             }
@@ -132,31 +129,26 @@ struct HomeView: View {
                 NavigationLink(destination: PostDetailView(post: post)) {
                     VStack(alignment: .leading, spacing: 6) {
                         Text(post.title)
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.primary)
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(BCColors.primaryText)
                             .lineLimit(1)
 
                         Text(post.excerpt)
-                            .font(.system(size: 12))
-                            .foregroundColor(.secondary)
+                            .font(.system(size: 12, weight: .regular))
+                            .foregroundColor(BCColors.secondaryText)
                             .lineLimit(2)
 
                         HStack {
                             if let category = post.category {
-                                Text(category.label.uppercased())
-                                    .font(.system(size: 8, weight: .bold))
-                                    .tracking(0.5)
-                                    .foregroundColor(category.color)
+                                BCStatusPill(text: category.label, color: category.color)
                             }
                             Spacer()
                             Text(post.formattedDate)
-                                .font(.system(size: 10))
+                                .font(.bcMicro)
                                 .foregroundColor(BCColors.tertiaryText)
                         }
                     }
-                    .padding(BCSpacing.md)
-                    .background(BCColors.cardBackground)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .bcInstrumentCard()
                 }
                 .buttonStyle(.plain)
             }
@@ -171,32 +163,12 @@ struct HomeView: View {
             // Rally Radio CTA
             if appState.config.features.enableRadio {
                 NavigationLink(destination: RadioView()) {
-                    HStack(spacing: 12) {
-                        Image(systemName: "antenna.radiowaves.left.and.right")
-                            .font(.system(size: 18, weight: .medium))
-                            .foregroundColor(.white)
-                            .frame(width: 44, height: 44)
-                            .background(BCColors.brandBlue)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Rally Radio")
-                                .font(.system(size: 15, weight: .semibold))
-                                .foregroundColor(.primary)
-                            Text("Push-to-talk for group rides")
-                                .font(.system(size: 11))
-                                .foregroundColor(.secondary)
-                        }
-
-                        Spacer()
-
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 12))
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(BCSpacing.md)
-                    .background(BCColors.cardBackground)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    BCPrimaryAction(
+                        title: "Rally Radio",
+                        subtitle: "Push-to-talk for group rides",
+                        icon: "antenna.radiowaves.left.and.right",
+                        color: BCColors.brandBlue
+                    )
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Rally Radio. Push-to-talk voice chat for group rides.")
@@ -206,41 +178,18 @@ struct HomeView: View {
 
             VStack(spacing: 1) {
                 quickLink(title: "Black Hills Routes", subtitle: "\(appState.routes.count) routes", icon: "map")
+                BCHairline()
                 quickLink(title: "Events & Programs", subtitle: "\(appState.events.count) upcoming", icon: "calendar")
+                BCHairline()
                 quickLink(title: "Get Involved", subtitle: "Volunteer · Donate · Connect", icon: "hand.raised")
             }
-            .background(BCColors.cardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .bcPanelList()
         }
         .padding(.horizontal, BCSpacing.md)
     }
 
     private func quickLink(title: String, subtitle: String, icon: String) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.system(size: 14))
-                .foregroundColor(BCColors.brandBlue)
-                .frame(width: 28, height: 28)
-                .background(BCColors.brandBlue.opacity(0.1))
-                .clipShape(Circle())
-
-            VStack(alignment: .leading, spacing: 1) {
-                Text(title)
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundColor(.primary)
-                Text(subtitle)
-                    .font(.system(size: 10))
-                    .foregroundColor(.secondary)
-            }
-
-            Spacer()
-
-            Image(systemName: "chevron.right")
-                .font(.system(size: 10))
-                .foregroundColor(BCColors.tertiaryText)
-        }
-        .padding(.horizontal, BCSpacing.md)
-        .padding(.vertical, 12)
+        BCDisclosureRow(title: title, subtitle: subtitle, icon: icon)
     }
 
     // MARK: - Season Summary
@@ -252,15 +201,16 @@ struct HomeView: View {
             sectionHeader("\(summary.year) SEASON", icon: "chart.bar")
 
             if summary.rideCount > 0 {
-                HStack(spacing: 1) {
-                    seasonStat(value: "\(summary.rideCount)", label: "RIDES", icon: "figure.outdoor.cycle")
-                    seasonStat(value: summary.formattedMiles, label: "MILES", icon: "road.lanes")
-                    seasonStat(value: summary.formattedElevation.replacingOccurrences(of: " ft", with: ""), label: "ELEVATION", icon: "arrow.up")
-                    seasonStat(value: summary.formattedTime, label: "MOVING", icon: "clock")
-                }
-                .padding(BCSpacing.sm)
-                .background(BCColors.cardBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                BCMetricStrip(metrics: [
+                    BCMetric(value: "\(summary.rideCount)", label: "Rides", icon: "figure.outdoor.cycle"),
+                    BCMetric(value: summary.formattedMiles, label: "Miles", icon: "road.lanes"),
+                    BCMetric(
+                        value: summary.formattedElevation.replacingOccurrences(of: " ft", with: ""),
+                        label: "Elevation",
+                        icon: "arrow.up"
+                    ),
+                    BCMetric(value: summary.formattedTime, label: "Moving", icon: "clock")
+                ])
 
                 if let favorite = summary.favoriteRoute {
                     HStack(spacing: 6) {
@@ -274,22 +224,17 @@ struct HomeView: View {
                 }
             } else {
                 HStack(spacing: 10) {
-                    Image(systemName: "figure.outdoor.cycle")
-                        .font(.system(size: 18))
-                        .foregroundColor(BCColors.brandBlue.opacity(0.5))
+                    BCIconTile(icon: "figure.outdoor.cycle", color: BCColors.brandBlue, size: 40)
                     VStack(alignment: .leading, spacing: 2) {
                         Text("No rides yet this season")
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundColor(.primary)
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundColor(BCColors.primaryText)
                         Text("Navigate a route to start tracking")
                             .font(.system(size: 11))
-                            .foregroundColor(.secondary)
+                            .foregroundColor(BCColors.secondaryText)
                     }
                 }
-                .padding(BCSpacing.md)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(BCColors.cardBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .bcInstrumentCard()
             }
         }
         .padding(.horizontal, BCSpacing.md)
@@ -331,14 +276,7 @@ struct HomeView: View {
     // MARK: - Helpers
 
     private func sectionHeader(_ title: String, icon: String) -> some View {
-        HStack(spacing: 6) {
-            Image(systemName: icon)
-                .font(.system(size: 10))
-            Text(title)
-                .font(.system(size: 10, weight: .semibold))
-                .tracking(1)
-        }
-        .foregroundColor(.secondary)
+        BCSectionHeader(title, icon: icon)
     }
 }
 

@@ -1,18 +1,26 @@
-# Stone Bicycle Coalition — iOS App
+# Stone Bicycle Coalition
 
-A forkable iOS app for community bicycle cooperatives. Built with SwiftUI.
+A forkable local-first bike co-op app. The primary app is a SwiftUI iOS app; an Android port lives under `android/`.
 
-**Features:** Bike marketplace, community feed, cycling routes, events, and programs — all config-driven so any bike co-op can make it their own.
+**Features:** offline route import/export, navigation, ride recording, ride history, bike marketplace, community content, events, Rally Radio, tour guides, and Follow My Expedition.
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/your-fork/StoneBC.git
 cd StoneBC
-open StoneBC.xcodeproj
+open app.xcodeproj
 ```
 
-Build and run on any iOS 17+ simulator or device.
+Build and run scheme `StoneBC` on an iOS 17+ simulator or device.
+
+CLI build:
+
+```bash
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
+xcodebuild build \
+  -scheme StoneBC \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max'
+```
 
 ## For Your Co-op
 
@@ -22,7 +30,7 @@ Build and run on any iOS 17+ simulator or device.
 4. **Change bundle ID** in Xcode (Signing & Capabilities)
 5. **Build & submit** to the App Store
 
-See `CUSTOMIZE_ME/BUILD_CHECKLIST.md` for the full walkthrough and `CUSTOMIZE_ME/` for template data files.
+See `CUSTOMIZE_ME/BUILD_CHECKLIST.md` for the owner walkthrough and `CUSTOMIZE_ME/` for template data files.
 
 ## Architecture
 
@@ -31,23 +39,24 @@ See `CUSTOMIZE_ME/BUILD_CHECKLIST.md` for the full walkthrough and `CUSTOMIZE_ME
 | UI | SwiftUI, iOS 17+ |
 | State | `@Observable` AppState (MVVM) |
 | Data | Bundled JSON (local-first) + optional WordPress REST API sync |
-| Navigation | TabView (Home, Routes, Bikes, Community, More) |
+| Navigation | TabView (Home, Routes, Record, Rides, More) |
 | Config | `config.json` — feature flags, branding, contact info |
 
 ## App Structure
 
 ```
 StoneBC/
-├── Models:     Bike, Post, Event, Route, Program, AppConfig
-├── State:      AppState (@Observable), WordPressService
-├── Tabs:       TabContainerView → 5 tabs
-├── Home:       Dashboard with featured bikes + posts + quick links
-├── Bikes:      MarketplaceView → BikeDetailView (filter by status/type)
-├── Community:  CommunityFeedView → PostDetailView (markdown)
-├── Routes:     RoutesView → RouteDetailView (map + elevation)
-├── More:       Events, Programs, Gallery, Contact, About
-├── Design:     BCDesignSystem (colors, typography, components)
-└── Data:       config.json, bikes.json, posts.json, events.json, routes.json
+├── App shell:      StoneBCApp, ContentView, TabContainerView
+├── State:          AppState (@Observable)
+├── Routes:         List/map browsing, route prep, navigation, route interop services
+├── Recording:      Free/Follow/Scout modes, RouteRecordingView, RideSession, WorkoutService
+├── Rides:          RidesTabView, RideHistoryService, RideJournalService
+├── Marketplace:    MarketplaceView, BikeDetailView, inventory JSON
+├── More:           events, programs, gallery, contact, tour guides, expeditions
+├── Expedition:     Follow My Expedition capture, timeline, map, PDF/HTML export
+├── Radio:          Rally Radio MultipeerConnectivity stack
+├── Design:         BCDesignSystem tokens and reusable components
+└── Data:           config.json, bikes.json, posts.json, events.json, routes.json, guides.json
 ```
 
 ## Data Files
@@ -58,22 +67,40 @@ StoneBC/
 | `bikes.json` | Bike inventory from The Quarry POS | `{ "bikes": [...] }` |
 | `posts.json` | Community bulletin board posts | `[...]` with markdown body |
 | `events.json` | Events and workshops | `[...]` with category/recurring |
-| `routes.json` | Cycling routes with GPX trackpoints | `[...]` with coordinates |
+| `routes.json` | Cycling routes with GPX trackpoints and optional ride defaults | `[...]` with coordinates |
+| `guides.json` | Multi-day tour guides | `[...]` with days, stops, overlays |
+
+Runtime route import/export supports GPX, TCX, FIT, KML/KMZ, and ZIP device bundles through the Files app and native share sheet. Garmin, Wahoo, and Ride with GPS actions are provider-gated; local file workflows remain the offline fallback. Rider route preferences are local, per-route settings for overlays, prep state, and post-ride save defaults.
 
 ## WordPress Integration (Optional)
 
 Set `dataURLs.wordpressBase` in `config.json` to your WordPress REST API URL. The app will sync bikes, posts, and events on launch, falling back to bundled JSON if the network is unavailable.
 
-Requires:
+Expected WordPress setup:
 - Custom post types: `sbc_bike`, `sbc_event` with ACF fields
 - Standard `posts` endpoint for community feed
 
-## No Auth, No Payments
+## Documentation
 
-This app is read-only for users. The co-op owner manages content via:
-- Editing JSON files directly (bikes, posts, events)
-- Optional WordPress CMS for live updates
-- Contact via email link (no in-app payments)
+Start with [docs/README.md](docs/README.md).
+
+Core engineering docs:
+
+- [Getting Started](docs/GETTING_STARTED.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Build, Test, Release](docs/BUILD_TEST_RELEASE.md)
+- [Configuration](docs/CONFIGURATION.md)
+- [Data Model](docs/DATA_MODEL.md)
+- [Permissions & Services](docs/PERMISSIONS_SERVICES.md)
+- [Offline Storage](docs/OFFLINE_STORAGE.md)
+- [Routes & Route Interop](docs/ROUTES.md)
+- [Follow My Expedition](docs/FOLLOW_MY_EXPEDITION.md)
+
+## Auth, Payments, Data
+
+The app has no in-app payments and no analytics. Most user flows are local-only. Optional member login exists for member-specific flows, and the token is stored locally by `MemberAuthService`.
+
+The co-op owner manages public content by editing JSON, exporting inventory, or configuring optional WordPress public content sync.
 
 ## License
 

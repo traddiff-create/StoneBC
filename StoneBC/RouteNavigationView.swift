@@ -17,12 +17,14 @@ import CoreLocation
 
 struct RouteNavigationView: View {
     let route: Route
+    let ridePreferences: RouteRidePreferences
 
     @State private var locationService = LocationService()
     @State private var altimeterService = AltimeterService()
     @State private var audioService = NavigationAudioService()
     @State private var workoutService = WorkoutService()
     @State private var activityManager = RideActivityManager()
+    @State private var safetyService = EmergencySafetyService.shared
     @State private var session: RideSession
     private var networkStatus = NetworkStatusService.shared
     @State private var mapRegion: MKCoordinateRegion
@@ -30,14 +32,20 @@ struct RouteNavigationView: View {
     @State private var isFollowingUser = true
     @State private var showEndConfirm = false
     @State private var showConditionReport = false
+    @State private var showEnduranceLock = false
+    @State private var powerMode: RidePowerMode = .endurance
     @State private var wasOffRoute = false
     @State private var breadcrumbs: [CLLocationCoordinate2D] = []
     @State private var precomputedTurns: [TurnPoint] = []
     @State private var pulsePhase = false
+    @State private var lastCameraUpdateAt: Date = .distantPast
+    @State private var lastCameraLocation: CLLocation?
     @Environment(\.dismiss) var dismiss
+    @Environment(\.scenePhase) private var scenePhase
 
-    init(route: Route) {
+    init(route: Route, ridePreferences: RouteRidePreferences? = nil) {
         self.route = route
+        self.ridePreferences = ridePreferences ?? RouteRidePreferences.load(route: route)
         self._session = State(initialValue: RideSession(route: route))
         self._mapRegion = State(initialValue: Self.initialMapRegion(for: route))
     }
@@ -54,8 +62,12 @@ struct RouteNavigationView: View {
             speedTile         // B — 180 pt
             progressTile      // C — 48 pt
             sensorStrip       // D — 80 pt
-            if session.isOffRoute {
+            if session.isOffRoute, ridePreferences.enabledOverlays.contains(.offRouteAlerts) {
                 offRouteBanner // E — 40 pt, conditional
+                    .transition(.move(edge: .top).combined(with: .opacity))
+            }
+            if safetyService.checkInState == .overdue, ridePreferences.enabledOverlays.contains(.safetyCheckIn) {
+                checkInBanner
                     .transition(.move(edge: .top).combined(with: .opacity))
             }
             bottomControlBar  // Audio + END RIDE — 56 pt, thumb-reachable
@@ -68,11 +80,20 @@ struct RouteNavigationView: View {
         .toolbar(.hidden, for: .navigationBar)
         .animation(.easeInOut(duration: 0.25), value: session.isOffRoute)
         .animation(.easeInOut(duration: 0.25), value: session.isCriticallyOffRoute)
+        .overlay {
+            if showEnduranceLock {
+                enduranceLockOverlay
+                    .transition(.opacity)
+            }
+        }
         .onAppear(perform: startRide)
         .task { await requestWorkoutAuthorization() }
         .onDisappear(perform: stopServices)
         .onChange(of: locationService.locationUpdateCount) { _, _ in
             onLocationTick()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            locationService.setInterfaceActive(newPhase == .active)
         }
         .confirmationDialog(
             "End this ride?",
@@ -168,7 +189,7 @@ struct RouteNavigationView: View {
 
     private var ambientCompass: some View {
         ZStack {
-            Circle()
+            Rectangle()
                 .stroke(.white.opacity(0.2), lineWidth: 1)
 
             // Red north tick at 12 o'clock (ring is fixed north-up)
@@ -230,7 +251,7 @@ struct RouteNavigationView: View {
     private var sensorStrip: some View {
         HStack(spacing: 0) {
             sensorTile(
-                value: String(format: "%@", numberFormatter.string(from: NSNumber(value: Int(altimeterService.fusedAltitudeFeet))) ?? "0"),
+                value: altitudeValue,
                 label: "FT",
                 valueColor: .white
             )
@@ -295,6 +316,11 @@ struct RouteNavigationView: View {
         return f
     }()
 
+    private var altitudeValue: String {
+        guard let feet = altimeterService.bestAltitudeFeet else { return "--" }
+        return numberFormatter.string(from: NSNumber(value: Int(feet))) ?? "\(Int(feet))"
+    }
+
     // MARK: - Zone E · Off-route banner
 
     /// Small pill overlay on the navigation map. Shows when the rider is
@@ -303,7 +329,7 @@ struct RouteNavigationView: View {
     /// keep working.
     private var offlinePill: some View {
         Group {
-            if let label = offlinePillLabel {
+            if ridePreferences.enabledOverlays.contains(.offlineStatus), let label = offlinePillLabel {
                 HStack(spacing: 6) {
                     Image(systemName: "wifi.slash")
                         .font(.system(size: 11, weight: .semibold))
@@ -315,11 +341,11 @@ struct RouteNavigationView: View {
                 .padding(.horizontal, 10)
                 .padding(.vertical, 5)
                 .background(
-                    Capsule()
+                    Rectangle()
                         .fill(Color.black.opacity(0.7))
                 )
                 .overlay(
-                    Capsule().stroke(Color.white.opacity(0.2), lineWidth: 0.5)
+                    Rectangle().stroke(Color.white.opacity(0.2), lineWidth: 0.5)
                 )
                 .transition(.opacity.combined(with: .scale))
             }
@@ -384,6 +410,42 @@ struct RouteNavigationView: View {
         }
     }
 
+    private var checkInBanner: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "timer")
+                .font(.system(size: 16, weight: .semibold))
+            Text("CHECK IN · OVERDUE")
+                .font(.system(size: 14, weight: .semibold))
+                .tracking(1)
+            Spacer()
+            Button {
+                safetyService.checkIn()
+            } label: {
+                Text("I'M OK")
+                    .font(.system(size: 11, weight: .bold))
+                    .tracking(1)
+                    .padding(.horizontal, 10)
+                    .frame(height: 26)
+                    .background(Color.white.opacity(0.18), in: Rectangle())
+            }
+            if let smsURL = safetyService.emergencySMSURL {
+                Link(destination: smsURL) {
+                    Text("SOS")
+                        .font(.system(size: 11, weight: .bold))
+                        .tracking(1)
+                        .padding(.horizontal, 10)
+                        .frame(height: 26)
+                        .background(BCColors.navAlertRed, in: Rectangle())
+                }
+            }
+        }
+        .foregroundStyle(.white)
+        .padding(.horizontal, 16)
+        .frame(maxWidth: .infinity)
+        .frame(height: 40)
+        .background(BCColors.navAlertAmber.opacity(0.9))
+    }
+
     private var formattedOffRouteDistance: String {
         let meters = session.distanceFromRouteMeters
         if meters >= 1000 {
@@ -398,8 +460,8 @@ struct RouteNavigationView: View {
         OfflineCapableMapView(
             region: $mapRegion,
             isFollowingUser: $isFollowingUser,
-            routePolyline: route.clTrackpoints,
-            breadcrumb: breadcrumbs,
+            routePolyline: ridePreferences.enabledOverlays.contains(.routeLine) ? route.clTrackpoints : [],
+            breadcrumb: ridePreferences.enabledOverlays.contains(.breadcrumbs) ? breadcrumbs : [],
             routeColor: UIColor(BCColors.brandBlue),
             tilePack: tilePackInfo
         )
@@ -413,7 +475,7 @@ struct RouteNavigationView: View {
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(width: 44, height: 44)
-                        .background(.ultraThinMaterial, in: Circle())
+                        .background(.ultraThinMaterial, in: Rectangle())
                 }
                 .padding(16)
                 .transition(.scale.combined(with: .opacity))
@@ -427,13 +489,23 @@ struct RouteNavigationView: View {
     private var bottomControlBar: some View {
         HStack(spacing: 12) {
             Button {
+                showEnduranceLock = true
+            } label: {
+                Image(systemName: "battery.100")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 44, height: 44)
+                    .background(Color.white.opacity(0.08), in: Rectangle())
+            }
+
+            Button {
                 audioService.isEnabled.toggle()
             } label: {
                 Image(systemName: audioService.isEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill")
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(audioService.isEnabled ? .white : .orange)
                     .frame(width: 44, height: 44)
-                    .background(Color.white.opacity(0.08), in: Circle())
+                    .background(Color.white.opacity(0.08), in: Rectangle())
             }
 
             Spacer()
@@ -447,7 +519,7 @@ struct RouteNavigationView: View {
                     .foregroundStyle(.white)
                     .padding(.horizontal, 22)
                     .frame(height: 44)
-                    .background(Color.red.opacity(0.9), in: Capsule())
+                    .background(Color.red.opacity(0.9), in: Rectangle())
             }
         }
         .padding(.horizontal, 16)
@@ -455,6 +527,82 @@ struct RouteNavigationView: View {
         .frame(height: 56)
         .padding(.bottom, bottomSafeAreaInset)
         .background(BCColors.navPanel)
+    }
+
+    private var enduranceLockOverlay: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+
+            VStack(spacing: 24) {
+                HStack {
+                    Text("ENDURANCE")
+                        .font(.system(size: 11, weight: .semibold))
+                        .tracking(2)
+                        .foregroundStyle(.white.opacity(0.5))
+                    Spacer()
+                    Button {
+                        showEnduranceLock = false
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .frame(width: 44, height: 44)
+                            .background(Color.white.opacity(0.08), in: Rectangle())
+                    }
+                }
+
+                Spacer()
+
+                VStack(spacing: 0) {
+                    Text(formattedSpeed)
+                        .font(.system(size: 112, weight: .black, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.55)
+                    Text("mph")
+                        .font(.system(size: 16, weight: .semibold))
+                        .tracking(2)
+                        .foregroundStyle(.white.opacity(0.45))
+                }
+
+                HStack(spacing: 0) {
+                    enduranceStat(value: session.formattedDistance, label: "DIST")
+                    enduranceStat(value: session.formattedElapsedTime, label: "TIME")
+                    enduranceStat(value: String(format: "%.1f", locationService.averageSpeedMPH), label: "AVG")
+                }
+
+                Text("Lock iPhone for all-day tracking")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.5))
+
+                Text("Best battery: skip radio, downloads, and live refreshes")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.38))
+                    .multilineTextAlignment(.center)
+
+                Spacer()
+            }
+            .padding(.top, topSafeAreaInset + 12)
+            .padding(.horizontal, 20)
+            .padding(.bottom, bottomSafeAreaInset + 24)
+        }
+    }
+
+    private func enduranceStat(value: String, label: String) -> some View {
+        VStack(spacing: 6) {
+            Text(value)
+                .font(.system(size: 22, weight: .semibold, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(.white)
+                .lineLimit(1)
+                .minimumScaleFactor(0.65)
+            Text(label)
+                .font(.system(size: 10, weight: .medium))
+                .tracking(1.5)
+                .foregroundStyle(.white.opacity(0.45))
+        }
+        .frame(maxWidth: .infinity)
     }
 
     private var bottomSafeAreaInset: CGFloat {
@@ -499,6 +647,9 @@ struct RouteNavigationView: View {
 
     private func recenterOnUser() {
         guard let loc = locationService.userLocation else { return }
+        let current = CLLocation(latitude: loc.latitude, longitude: loc.longitude)
+        lastCameraLocation = current
+        lastCameraUpdateAt = Date()
         withAnimation(.easeInOut(duration: 0.4)) {
             mapRegion = MKCoordinateRegion(
                 center: loc,
@@ -523,10 +674,18 @@ struct RouteNavigationView: View {
             altimeterService.fusedAltitudeMeters
         }
         locationService.requestPermission()
-        locationService.startTracking(mode: .ride)
+        locationService.startTracking(
+            mode: .ride,
+            powerMode: powerMode,
+            wantsHeadingUpdates: powerMode.usesHeadingUpdates
+        )
         altimeterService.start()
+        audioService.configure(for: powerMode)
         audioService.reset()
         session.start()
+        if ridePreferences.enabledOverlays.contains(.safetyCheckIn) {
+            safetyService.startCheckInTimer(routeName: route.name)
+        }
 
         precomputedTurns = RouteAnalysisService.analyzeTurns(for: route)
         activityManager.startActivity(
@@ -542,6 +701,7 @@ struct RouteNavigationView: View {
     private func stopServices() {
         locationService.stopTracking()
         altimeterService.stop()
+        safetyService.stopCheckInTimer()
         session.stop()
     }
 
@@ -589,6 +749,7 @@ struct RouteNavigationView: View {
 
     private func onLocationTick() {
         guard let loc = locationService.userLocation else { return }
+        let wasPreviouslyOffRoute = wasOffRoute
 
         if let location = locationService.lastLocation {
             // Drift correction — feed tight-vertical-accuracy GPS samples into
@@ -599,24 +760,29 @@ struct RouteNavigationView: View {
                 verticalAccuracy: location.verticalAccuracy
             )
             session.updateLocation(location)
+            locationService.setRideStationary(session.state == .paused)
         } else {
             session.updateLocation(loc, speed: locationService.speedMPS)
         }
         EmergencySafetyService.shared.updateLocation(loc)
 
-        // Breadcrumb every ~10 m
+        // Breadcrumb display is sparser than the saved track in endurance mode.
         if let last = breadcrumbs.last {
             let lastCL = CLLocation(latitude: last.latitude, longitude: last.longitude)
             let currentCL = CLLocation(latitude: loc.latitude, longitude: loc.longitude)
-            if currentCL.distance(from: lastCL) > 10 {
+            if currentCL.distance(from: lastCL) > powerMode.breadcrumbDistanceMeters {
                 breadcrumbs.append(loc)
             }
         } else {
             breadcrumbs.append(loc)
         }
+        if breadcrumbs.count > RideTuning.maxInMemoryTrackpoints {
+            breadcrumbs.removeFirst(breadcrumbs.count - RideTuning.maxInMemoryTrackpoints)
+        }
 
         // Off-route audio (tiered logic lives in session)
-        if session.isOffRoute {
+        if session.isOffRoute, ridePreferences.enabledOverlays.contains(.offRouteAlerts) {
+            locationService.requestTemporaryPrecisionBoost()
             if !wasOffRoute || session.isCriticallyOffRoute {
                 audioService.announceOffRoute(distanceMeters: session.distanceFromRouteMeters)
                 wasOffRoute = true
@@ -636,7 +802,7 @@ struct RouteNavigationView: View {
         // ..., pauseTime:)` keyed off `effectiveStartedAt`, so we don't push
         // every-second updates. Throttle inside the manager. Force a push
         // whenever the off-route flag flips so the banner doesn't lag.
-        let offRouteFlipped = (session.isOffRoute != wasOffRoute)
+        let offRouteFlipped = (session.isOffRoute != wasPreviouslyOffRoute)
         if let effectiveStart = session.effectiveStartedAt {
             activityManager.updateActivity(
                 speedMPH: locationService.speedMPH,
@@ -647,39 +813,54 @@ struct RouteNavigationView: View {
                 progress: session.progressPercent,
                 isOffRoute: session.isOffRoute,
                 heading: locationService.navigationHeading,
+                powerMode: powerMode,
                 force: offRouteFlipped
             )
         }
 
-        // HealthKit GPS feed every ~5 breadcrumbs
-        if workoutService.isRecording && breadcrumbs.count % 5 == 0 {
-            let recent = Array(locationService.locationHistory.suffix(5))
-            workoutService.addRouteData(recent)
+        if workoutService.isRecording, let location = locationService.lastLocation {
+            workoutService.addRouteData([location], powerMode: powerMode)
         }
 
-        // Turn announcement (pre-computed)
-        if let nextTurn = RouteAnalysisService.nextTurn(
-            from: session.closestTrackpointIndex,
-            in: precomputedTurns
-        ) {
-            let dist = RouteAnalysisService.distanceToTurn(
+        if ridePreferences.enabledOverlays.contains(.cues) {
+            if let nextTurn = RouteAnalysisService.nextTurn(
                 from: session.closestTrackpointIndex,
-                to: nextTurn,
-                trackpoints: route.clTrackpoints
-            )
-            if dist < 200 && dist > 10 {
-                audioService.announceTurn(direction: nextTurn.direction, distanceAhead: dist)
+                in: precomputedTurns
+            ) {
+                let dist = RouteAnalysisService.distanceToTurn(
+                    from: session.closestTrackpointIndex,
+                    to: nextTurn,
+                    trackpoints: route.clTrackpoints
+                )
+                if dist < 200 && dist > 10 {
+                    locationService.requestTemporaryPrecisionBoost()
+                    audioService.announceTurn(direction: nextTurn.direction, distanceAhead: dist)
+                }
             }
         }
 
-        // Camera follow
-        if isFollowingUser {
-            withAnimation(.easeInOut(duration: 0.5)) {
-                mapRegion = MKCoordinateRegion(
-                    center: loc,
-                    span: MKCoordinateSpan(latitudeDelta: 0.015, longitudeDelta: 0.015)
-                )
-            }
+        updateCameraIfNeeded(centeredOn: loc)
+    }
+
+    private func updateCameraIfNeeded(centeredOn coordinate: CLLocationCoordinate2D) {
+        guard isFollowingUser, scenePhase == .active, !showEnduranceLock else { return }
+
+        let current = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        let distance = lastCameraLocation.map { current.distance(from: $0) } ?? .greatestFiniteMagnitude
+        let elapsed = Date().timeIntervalSince(lastCameraUpdateAt)
+
+        guard elapsed >= powerMode.mapCameraMinInterval
+                || distance >= powerMode.mapCameraMinDistanceMeters else {
+            return
+        }
+
+        lastCameraLocation = current
+        lastCameraUpdateAt = Date()
+        withAnimation(.easeInOut(duration: 0.5)) {
+            mapRegion = MKCoordinateRegion(
+                center: coordinate,
+                span: MKCoordinateSpan(latitudeDelta: 0.015, longitudeDelta: 0.015)
+            )
         }
     }
 }
@@ -752,9 +933,9 @@ struct ConditionReportSheet: View {
                             .background(selectedCondition == condition
                                         ? Color.accentColor.opacity(0.2)
                                         : Color(UIColor.tertiarySystemBackground))
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .clipShape(Rectangle())
                             .overlay(
-                                RoundedRectangle(cornerRadius: 10)
+                                Rectangle()
                                     .stroke(selectedCondition == condition ? Color.accentColor : .clear, lineWidth: 2)
                             )
                         }

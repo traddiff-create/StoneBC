@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CommunityView: View {
+    @Environment(AppState.self) private var appState
     @State private var events: [Event] = []
     @State private var programs: [Program] = []
 
@@ -44,10 +45,7 @@ struct CommunityView: View {
     // MARK: - Events
     private var eventsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("UPCOMING EVENTS")
-                .font(.system(size: 10, weight: .semibold))
-                .tracking(1)
-                .foregroundColor(.secondary)
+            BCSectionHeader("UPCOMING EVENTS", icon: "calendar")
 
             ForEach(events) { event in
                 EventCard(event: event)
@@ -58,10 +56,7 @@ struct CommunityView: View {
     // MARK: - Programs
     private var programsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("OUR PROGRAMS")
-                .font(.system(size: 10, weight: .semibold))
-                .tracking(1)
-                .foregroundColor(.secondary)
+            BCSectionHeader("OUR PROGRAMS", icon: "wrench.and.screwdriver")
 
             ForEach(programs) { program in
                 ProgramCard(program: program)
@@ -72,33 +67,30 @@ struct CommunityView: View {
     // MARK: - About
     private var aboutSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("ABOUT")
-                .font(.system(size: 10, weight: .semibold))
-                .tracking(1)
-                .foregroundColor(.secondary)
+            BCSectionHeader("ABOUT", icon: "info.circle")
 
             VStack(alignment: .leading, spacing: 8) {
-                Text("Stone Bicycle Coalition")
-                    .font(.system(size: 16, weight: .medium))
+                Text(appState.config.coalitionName)
+                    .font(.system(size: 16, weight: .semibold))
 
                 Text("Creating a replicable, open-source bicycle cooperative model that empowers communities to establish their own bike co-ops.")
                     .font(.system(size: 13, weight: .regular))
                     .lineSpacing(4)
                     .foregroundColor(.secondary)
 
-                Divider()
+                BCHairline()
 
-                HStack(spacing: 4) {
-                    Image(systemName: "mappin")
-                        .font(.system(size: 11))
-                    Text("925 9th Street #3, Rapid City, SD 57701")
-                        .font(.system(size: 11))
+                if let location = appState.config.location {
+                    HStack(spacing: 4) {
+                        Image(systemName: "mappin")
+                            .font(.system(size: 11))
+                        Text("\(location.address), \(location.city), \(location.state) \(location.zip)")
+                            .font(.system(size: 11))
+                    }
+                    .foregroundColor(.secondary)
                 }
-                .foregroundColor(.secondary)
             }
-            .padding(BCSpacing.md)
-            .background(BCColors.cardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .bcInstrumentCard()
         }
     }
 }
@@ -109,34 +101,24 @@ struct EventCard: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: event.categoryIcon)
-                .font(.system(size: 18))
-                .foregroundColor(BCColors.brandBlue)
-                .frame(width: 36, height: 36)
-                .background(BCColors.brandBlue.opacity(0.1))
-                .clipShape(Circle())
+            BCIconTile(icon: event.categoryIcon, color: BCColors.brandBlue, size: 40)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(event.title)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.system(size: 14, weight: .semibold))
 
                 Text(event.date)
                     .font(.system(size: 11, weight: .regular))
                     .foregroundColor(.secondary)
 
                 if event.isRecurring {
-                    Text("RECURRING")
-                        .font(.system(size: 8, weight: .bold))
-                        .tracking(1)
-                        .foregroundColor(BCColors.brandGreen)
+                    BCStatusPill(text: "Recurring", color: BCColors.brandGreen)
                 }
             }
 
             Spacer()
         }
-        .padding(BCSpacing.md)
-        .background(BCColors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .bcInstrumentCard()
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(event.title). \(event.date). \(event.location)")
     }
@@ -155,17 +137,12 @@ struct ProgramCard: View {
                 }
             } label: {
                 HStack(spacing: 12) {
-                    Image(systemName: program.icon)
-                        .font(.system(size: 18))
-                        .foregroundColor(BCColors.brandGreen)
-                        .frame(width: 36, height: 36)
-                        .background(BCColors.brandGreen.opacity(0.1))
-                        .clipShape(Circle())
+                    BCIconTile(icon: program.icon, color: BCColors.brandGreen, size: 40)
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(program.name)
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.primary)
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(BCColors.primaryText)
                         Text(program.description)
                             .font(.system(size: 11, weight: .regular))
                             .foregroundColor(.secondary)
@@ -210,9 +187,7 @@ struct ProgramCard: View {
                 .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
-        .padding(BCSpacing.md)
-        .background(BCColors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .bcInstrumentCard()
     }
 }
 
@@ -220,4 +195,5 @@ struct ProgramCard: View {
     NavigationStack {
         CommunityView()
     }
+    .environment(AppState())
 }

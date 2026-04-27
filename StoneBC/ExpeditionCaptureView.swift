@@ -18,10 +18,15 @@ struct ExpeditionCaptureView: View {
 
     @State private var noteText = ""
     @State private var selectedPhoto: PhotosPickerItem?
+    @State private var selectedVideo: PhotosPickerItem?
     @State private var capturedImage: UIImage?
+    @State private var selectedVideoData: Data?
+    @State private var isLoadingVideo = false
     @State private var showCamera = false
     @State private var mediaCapture = MediaCaptureService()
     @State private var recordingFilename: String?
+    @State private var selectedMoment: ExpeditionMomentKind?
+    @State private var isFeatured = false
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
@@ -40,6 +45,27 @@ struct ExpeditionCaptureView: View {
                         Text(Date(), style: .time)
                             .font(.system(size: 10))
                             .foregroundColor(.secondary)
+                    }
+                    .padding(.horizontal)
+                }
+
+                // Moment tags
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(ExpeditionMomentKind.allCases) { kind in
+                            Button {
+                                selectedMoment = selectedMoment == kind ? nil : kind
+                            } label: {
+                                Label(kind.label, systemImage: kind.systemImage)
+                                    .font(.system(size: 11, weight: .medium))
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 7)
+                                    .background(selectedMoment == kind ? BCColors.brandBlue : BCColors.cardBackground)
+                                    .foregroundColor(selectedMoment == kind ? .white : .primary)
+                                    .clipShape(Capsule())
+                            }
+                            .buttonStyle(.plain)
+                        }
                     }
                     .padding(.horizontal)
                 }
@@ -71,6 +97,30 @@ struct ExpeditionCaptureView: View {
                         .padding(.horizontal)
                 }
 
+                // Video selected indicator
+                if selectedVideoData != nil || isLoadingVideo {
+                    HStack(spacing: 8) {
+                        Image(systemName: "play.rectangle.fill")
+                            .font(.system(size: 14))
+                            .foregroundColor(.purple)
+                        Text(isLoadingVideo ? "Loading video..." : "Video clip attached")
+                            .font(.system(size: 12, weight: .medium))
+                        Spacer()
+                        if selectedVideoData != nil {
+                            Button("Remove") {
+                                selectedVideo = nil
+                                selectedVideoData = nil
+                            }
+                            .font(.system(size: 11, weight: .medium))
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
+                    .background(Color.purple.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .padding(.horizontal)
+                }
+
                 // Voice memo indicator
                 if mediaCapture.isRecordingAudio {
                     HStack(spacing: 10) {
@@ -96,7 +146,10 @@ struct ExpeditionCaptureView: View {
                 Spacer()
 
                 // Action buttons
-                HStack(spacing: 20) {
+                LazyVGrid(
+                    columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 4),
+                    spacing: 10
+                ) {
                     // Camera
                     Button {
                         showCamera = true
@@ -120,6 +173,21 @@ struct ExpeditionCaptureView: View {
                             Image(systemName: "photo.on.rectangle")
                                 .font(.system(size: 22))
                             Text("Library")
+                                .font(.system(size: 9, weight: .medium))
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(BCColors.cardBackground)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                    .buttonStyle(.plain)
+
+                    // Video Library
+                    PhotosPicker(selection: $selectedVideo, matching: .videos) {
+                        VStack(spacing: 4) {
+                            Image(systemName: "video.fill")
+                                .font(.system(size: 22))
+                            Text("Video")
                                 .font(.system(size: 9, weight: .medium))
                         }
                         .frame(maxWidth: .infinity)
@@ -154,6 +222,13 @@ struct ExpeditionCaptureView: View {
                     }
                     .buttonStyle(.plain)
                 }
+                .padding(.horizontal)
+
+                Toggle(isOn: $isFeatured) {
+                    Label("Feature in expedition log", systemImage: "star")
+                        .font(.system(size: 12, weight: .medium))
+                }
+                .toggleStyle(.switch)
                 .padding(.horizontal)
 
                 // Save button
@@ -194,6 +269,9 @@ struct ExpeditionCaptureView: View {
             .onChange(of: selectedPhoto) {
                 loadPickerPhoto()
             }
+            .onChange(of: selectedVideo) {
+                loadPickerVideo()
+            }
         }
         .presentationDetents([.large])
     }
@@ -201,10 +279,15 @@ struct ExpeditionCaptureView: View {
     private var hasContent: Bool {
         !noteText.trimmingCharacters(in: .whitespaces).isEmpty ||
         capturedImage != nil ||
-        recordingFilename != nil
+        selectedVideoData != nil ||
+        recordingFilename != nil ||
+        selectedMoment != nil
     }
 
     private func saveEntry() {
+        let trimmedNote = noteText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let note = trimmedNote.isEmpty ? nil : trimmedNote
+
         // Save photo if captured
         var photoFilename: String?
         if let image = capturedImage {
@@ -215,34 +298,54 @@ struct ExpeditionCaptureView: View {
             )
         }
 
+        var videoFilename: String?
+        if let selectedVideoData {
+            videoFilename = mediaCapture.saveVideo(
+                data: selectedVideoData,
+                journalId: journalId,
+                dayNumber: dayNumber
+            )
+        }
+
         // Stop recording if active
         if mediaCapture.isRecordingAudio {
             mediaCapture.stopVoiceMemo()
         }
 
-        // Determine media type
-        let mediaType: MediaType?
-        let filename: String?
-        if let photo = photoFilename {
-            mediaType = .photo
-            filename = photo
-        } else if let audio = recordingFilename {
-            mediaType = .audio
-            filename = audio
-        } else {
-            mediaType = nil
-            filename = nil
+        var didAddMedia = false
+
+        func addEntry(filename: String?, mediaType: MediaType?, text: String?) {
+            let entry = JournalEntry(
+                text: text,
+                mediaFilename: filename,
+                mediaType: mediaType,
+                momentKind: selectedMoment,
+                source: .iphone,
+                coordinate: currentLocation,
+                isFeatured: isFeatured
+            )
+            onEntryAdded(entry)
         }
 
-        let entry = JournalEntry(
-            text: noteText.isEmpty ? nil : noteText,
-            mediaFilename: filename,
-            mediaType: mediaType,
-            source: .iphone,
-            coordinate: currentLocation
-        )
+        if let photo = photoFilename {
+            addEntry(filename: photo, mediaType: .photo, text: note)
+            didAddMedia = true
+        }
 
-        onEntryAdded(entry)
+        if let video = videoFilename {
+            addEntry(filename: video, mediaType: .video, text: didAddMedia ? nil : note)
+            didAddMedia = true
+        }
+
+        if let audio = recordingFilename {
+            addEntry(filename: audio, mediaType: .audio, text: didAddMedia ? nil : note)
+            didAddMedia = true
+        }
+
+        if !didAddMedia {
+            addEntry(filename: nil, mediaType: nil, text: note)
+        }
+
         dismiss()
     }
 
@@ -253,6 +356,16 @@ struct ExpeditionCaptureView: View {
                let image = UIImage(data: data) {
                 capturedImage = image
             }
+        }
+    }
+
+    private func loadPickerVideo() {
+        guard let item = selectedVideo else { return }
+        Task { @MainActor in
+            isLoadingVideo = true
+            selectedVideoData = nil
+            defer { isLoadingVideo = false }
+            selectedVideoData = try? await item.loadTransferable(type: Data.self)
         }
     }
 }

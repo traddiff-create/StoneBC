@@ -9,15 +9,23 @@
 import SwiftUI
 
 struct RecordTabView: View {
+    @Environment(AppState.self) private var appState
     @State private var history = RideHistoryService.shared
     @State private var isRecording = false
+    @State private var selectedMode: RouteRecordingMode = .free
+    @State private var selectedRoute: Route?
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: BCSpacing.lg) {
+                    recordingModeSection
+
+                    if selectedMode == .follow {
+                        routePickerSection
+                    }
+
                     startRecordingButton
-                        .padding(.top, BCSpacing.lg)
 
                     if let lastRide = history.rides.first {
                         lastRidePeek(lastRide)
@@ -25,6 +33,7 @@ struct RecordTabView: View {
                 }
                 .padding(.horizontal, BCSpacing.md)
             }
+            .background(BCColors.background)
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -35,7 +44,91 @@ struct RecordTabView: View {
                 }
             }
             .fullScreenCover(isPresented: $isRecording) {
-                RouteRecordingView()
+                RouteRecordingView(route: selectedMode == .follow ? selectedRoute : nil, recordingMode: selectedMode)
+            }
+        }
+    }
+
+    private var recordingModeSection: some View {
+        VStack(alignment: .leading, spacing: BCSpacing.sm) {
+            BCSectionHeader("RECORDING MODE", icon: "slider.horizontal.3")
+
+            ForEach(RouteRecordingMode.allCases) { mode in
+                Button {
+                    withAnimation(.spring(response: 0.25)) {
+                        selectedMode = mode
+                    }
+                } label: {
+                    HStack(spacing: 12) {
+                        BCIconTile(
+                            icon: mode.icon,
+                            color: BCColors.brandBlue,
+                            size: 38,
+                            filled: selectedMode == mode
+                        )
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(mode.label)
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(BCColors.primaryText)
+                            Text(mode.subtitle)
+                                .font(.system(size: 11))
+                                .foregroundStyle(BCColors.secondaryText)
+                        }
+
+                        Spacer()
+
+                        if selectedMode == mode {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundStyle(BCColors.brandGreen)
+                        }
+                    }
+                    .bcInstrumentCard()
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(selectedMode == mode ? .isSelected : [])
+            }
+        }
+        .padding(.top, BCSpacing.lg)
+    }
+
+    private var routePickerSection: some View {
+        VStack(alignment: .leading, spacing: BCSpacing.sm) {
+            BCSectionHeader("FOLLOW ROUTE", icon: "point.topleft.down.curvedto.point.bottomright.up")
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: BCSpacing.sm) {
+                    ForEach(appState.allRoutes.prefix(12)) { route in
+                        Button {
+                            selectedRoute = route
+                        } label: {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(route.name)
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundStyle(BCColors.primaryText)
+                                    .lineLimit(2)
+                                Text("\(route.formattedDistance) · \(route.difficulty)")
+                                    .font(.bcCaption)
+                                    .foregroundStyle(BCColors.secondaryText)
+                                if selectedRoute?.id == route.id {
+                                    Label("Selected", systemImage: "checkmark.circle.fill")
+                                        .font(.system(size: 9, weight: .semibold))
+                                        .foregroundStyle(BCColors.brandGreen)
+                                }
+                            }
+                            .frame(width: 150, alignment: .leading)
+                            .bcInstrumentCard()
+                            .overlay {
+                                RoundedRectangle(cornerRadius: BCRadius.card, style: .continuous)
+                                    .stroke(
+                                        selectedRoute?.id == route.id ? BCColors.brandBlue : Color.clear,
+                                        lineWidth: 1.5
+                                    )
+                            }
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
             }
         }
     }
@@ -46,71 +139,52 @@ struct RecordTabView: View {
         Button {
             isRecording = true
         } label: {
-            HStack(spacing: 14) {
-                Image(systemName: "record.circle.fill")
-                    .font(.system(size: 32, weight: .bold))
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("START RECORDING")
-                        .font(.system(size: 15, weight: .bold))
-                        .tracking(2)
-                    Text("Capture a new ride or route")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundStyle(.white.opacity(0.8))
-                }
-
-                Spacer()
-
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(.white.opacity(0.7))
-            }
-            .foregroundStyle(.white)
-            .padding(.horizontal, BCSpacing.lg)
-            .frame(maxWidth: .infinity)
-            .frame(height: 80)
-            .background(Color.red.opacity(0.9))
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            BCPrimaryAction(
+                title: "Start Recording",
+                subtitle: startSubtitle,
+                icon: "record.circle.fill",
+                color: BCColors.danger
+            )
         }
         .buttonStyle(PressableButtonStyle())
+        .disabled(selectedMode == .follow && selectedRoute == nil)
+        .opacity(selectedMode == .follow && selectedRoute == nil ? 0.55 : 1)
+    }
+
+    private var startSubtitle: String {
+        if selectedMode == .follow {
+            return selectedRoute?.name ?? "Choose a route first"
+        }
+        return selectedMode.subtitle
     }
 
     // MARK: - Last ride peek
 
     private func lastRidePeek(_ ride: CompletedRide) -> some View {
         VStack(alignment: .leading, spacing: BCSpacing.sm) {
-            Text("LAST RIDE")
-                .font(.system(size: 10, weight: .semibold))
-                .tracking(1)
-                .foregroundStyle(.secondary)
-                .padding(.leading, 4)
+            BCSectionHeader("LAST RIDE", icon: "clock.arrow.circlepath")
 
             HStack(spacing: BCSpacing.md) {
-                Image(systemName: "bicycle")
-                    .font(.system(size: 18))
-                    .foregroundStyle(BCColors.categoryColor(ride.category))
-                    .frame(width: 36, height: 36)
-                    .background(BCColors.categoryColor(ride.category).opacity(0.15), in: Circle())
+                BCIconTile(icon: "bicycle", color: BCColors.categoryColor(ride.category), size: 40)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(ride.routeName)
                         .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(BCColors.primaryText)
                         .lineLimit(1)
                     Text("\(ride.formattedDistance) · \(ride.formattedTime) · \(ride.formattedDate)")
-                        .font(.system(size: 12))
-                        .foregroundStyle(.secondary)
+                        .font(.bcCaption)
+                        .foregroundStyle(BCColors.secondaryText)
                         .lineLimit(1)
                 }
 
                 Spacer()
 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 10, weight: .medium))
+                    .font(.system(size: 10, weight: .bold))
                     .foregroundStyle(BCColors.tertiaryText)
             }
-            .padding(BCSpacing.md)
-            .background(BCColors.cardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .bcInstrumentCard()
         }
     }
 }

@@ -23,6 +23,19 @@ class UserRouteStore {
         persist()
     }
 
+    func replaceAll(_ newRoutes: [Route]) {
+        routes = newRoutes
+        persist()
+    }
+
+    func mergeMigratedRoutes(_ migrated: [Route]) {
+        let existingIds = Set(routes.map(\.id))
+        let additions = migrated.filter { !existingIds.contains($0.id) }
+        guard !additions.isEmpty else { return }
+        routes.append(contentsOf: additions)
+        persist()
+    }
+
     func delete(id: String) {
         routes.removeAll { $0.id == id }
         persist()

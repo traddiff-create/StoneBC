@@ -26,6 +26,15 @@ struct StoneBCApp: App {
     }
 
     private func handleDeepLink(_ url: URL) {
+        if let provider = routeProviderCallback(for: url),
+           let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+           let code = components.queryItems?.first(where: { $0.name == "code" })?.value {
+            Task {
+                try? await RouteProviderManager.shared.handleCallback(provider: provider, code: code)
+            }
+            return
+        }
+
         guard url.scheme == "stonebc",
               url.host == "auth",
               let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
@@ -38,6 +47,18 @@ struct StoneBCApp: App {
             if valid {
                 appState.signIn(email: email, token: token)
             }
+        }
+    }
+
+    private func routeProviderCallback(for url: URL) -> ConnectedRouteProvider? {
+        guard url.scheme == "stonebc" else { return nil }
+        switch url.host {
+        case "wahoo-callback":
+            return .wahoo
+        case "rwgps-callback":
+            return .rideWithGPS
+        default:
+            return nil
         }
     }
 }

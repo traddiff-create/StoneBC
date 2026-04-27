@@ -1,271 +1,284 @@
-# Routes & GPX System — StoneBC
+# Routes & Route Interop — StoneBC
 
-**Last Updated:** 2026-04-17
-
----
+**Last Updated:** 2026-04-27
 
 ## Overview
 
-StoneBC has a full GPX pipeline: 18 Black Hills cycling routes processed from raw GPX files, plus runtime GPX import/export, live navigation, route exploration, and social sharing.
+StoneBC routes are local-first. Bundled routes come from `StoneBC/routes.json`; user imports and exports run through `RouteInterchangeService` so riders can move files between StoneBC, Garmin, Wahoo, Ride with GPS, mapping tools, and devices even without cellular coverage.
 
-## Data Pipeline
+The route surface now supports a full plan, prep, ride, record loop: list/map browsing, route readiness, rider-customizable overlays, route-linked recording modes, and a post-ride review hub.
 
+The reliable baseline is offline file import/export. Direct provider integrations are feature-gated until credentials and provider approvals are available.
+
+## Route Data Pipeline
+
+```text
+Source GPX/FIT/TCX files
+  -> Scripts/process_routes.py
+  -> StoneBC/routes.json
+  -> Route.swift
+  -> RoutesView / RouteDetailView / RouteNavigationView / RouteRecordingView
 ```
-GPX + FIT files (40)  →  process_routes.py  →  routes.json (1.2MB)  →  Route.swift  →  MapKit
-     ↑                                                                       ↑
-  StoneBC/GPX/                                                     User imports (.gpx)
+
+Runtime imports use a separate path:
+
+```text
+Files / share sheet / open-in-place
+  -> GPXImportView
+  -> RouteInterchangeService
+  -> RouteImportCandidate
+  -> UserRouteStore or RideHistoryService
 ```
 
-### Source Files
-- **GPX directory:** `StoneBC/GPX/` — 18 .gpx + 22 .fit files (40 total)
-- **Processing script:** `Scripts/process_routes.py` — Python 3 + fitdecode, extracts trackpoints from both GPX (XML) and FIT (binary), calculates distance/elevation, simplifies to max 500 points, outputs JSON
-- **Bundled data:** `StoneBC/routes.json` — 35 routes, ~1.2MB
-- **Skipped files (5):** 2022Dakota50v2.gpx (corrupt XML), Fat_Pursuit_60k_2022_FINAL.gpx (3 waypoints only), Sturgis Med.gpx (0 trackpoints), BH Expedition .fit / Gmaps Pedometer Track_course.fit (missing altitude fields)
-- **Dependencies:** `pip3 install fitdecode` (for FIT binary parsing)
+## Supported Runtime Formats
 
-### Complete Route Inventory (35 routes)
+| Format | Import | Export | Notes |
+| --- | --- | --- | --- |
+| GPX | Yes | Yes | Tracks, routes, waypoints; broadest compatibility |
+| TCX | Yes | Yes | Courses, activities, course points |
+| TPX fields | Yes | N/A | Treated as Garmin TCX ActivityExtension data, not a standalone file type |
+| FIT | Yes | Yes | Minimal course/activity support for Garmin/Wahoo workflows |
+| KML | Yes | Yes | LineString, MultiGeometry, and `gx:Track` style coordinate data |
+| KMZ | Yes | Via ZIP bundle | Safely reads compressed KML bundles |
+| ZIP | Yes | Yes | Device bundle import/export; entry paths are validated |
 
-| Route Name | Distance | Elevation | Difficulty | Category | Region | Source |
-|------------|----------|-----------|------------|----------|--------|--------|
-| 28 Below Fat Bike | 30.0 mi | 2,842 ft | moderate | fatbike | Black Hills | GPX |
-| Badlands Prairie 35 | 35.0 mi | 1,992 ft | moderate | gravel | Badlands | GPX |
-| Badlands Prairie 68 | 67.8 mi | 3,305 ft | hard | gravel | Badlands | GPX |
-| Brewvet Rally | 44.4 mi | 4,567 ft | hard | gravel | Black Hills | FIT |
-| Custer Medium Loop | 26.7 mi | 2,846 ft | moderate | road | Custer | FIT |
-| Custer State Park Loop | 29.6 mi | 2,873 ft | moderate | road | Custer | GPX |
-| Dakota 50 (2021 Course) | 50.2 mi | 5,460 ft | hard | gravel | Black Hills | FIT |
-| Dead Swede 60 | 60.1 mi | 3,778 ft | hard | gravel | Black Hills | FIT |
-| Deadman's Gravel | 10.4 mi | 2,824 ft | moderate | gravel | Black Hills | FIT |
-| Deadwood Blue Loop | 29.3 mi | 3,099 ft | hard | gravel | Deadwood | GPX |
-| Gold Rush 110 | 110.3 mi | 7,487 ft | expert | gravel | Black Hills | GPX |
-| Gravel Pursuit 60 | 62.1 mi | 5,373 ft | hard | gravel | Black Hills | GPX |
-| Hill City Explorer | 29.7 mi | 4,077 ft | hard | road | Hill City | FIT |
-| Hill City Short Loop | 14.3 mi | 827 ft | easy | road | Hill City | FIT |
-| Hill City — Rockerville — Rapid City | 52.7 mi | 4,512 ft | hard | road | Black Hills | GPX |
-| Hilloween 50 | 47.4 mi | 0 ft | hard | gravel | Black Hills | FIT |
-| Jenny Gulch Gravel | 65.2 mi | 6,841 ft | expert | gravel | Black Hills | GPX |
-| Lead-Deadwood Ride | 28.8 mi | 3,429 ft | hard | road | Lead | FIT |
-| Merit Mine Trail | 26.9 mi | 8,596 ft | expert | trail | Black Hills | FIT |
-| Mickelson Trail | 108.8 mi | 7,944 ft | expert | trail | Black Hills | FIT |
-| Nemo Loop | 35.1 mi | 1,946 ft | moderate | gravel | Nemo | FIT |
-| Piedmont Quick Spin | 29.1 mi | 1,362 ft | easy | gravel | Piedmont | FIT |
-| Piedmont Ranch Hard | 50.6 mi | 2,791 ft | hard | gravel | Piedmont | GPX |
-| Piedmont Ranch Medium | 29.1 mi | 1,364 ft | moderate | gravel | Piedmont | GPX |
-| Rapid City Bikepacking | 59.1 mi | 5,333 ft | hard | gravel | Rapid City | FIT |
-| Rochford Loop | 33.0 mi | 3,402 ft | hard | gravel | Rochford | FIT |
-| Rushmore to Rapid City | 42.9 mi | 3,855 ft | hard | road | Black Hills | FIT |
-| Rushmore — Hill City — Home | 42.9 mi | 3,848 ft | hard | road | Black Hills | GPX |
-| Spearfish Canyon Epic | 276.8 mi | 27,410 ft | expert | road | Spearfish | GPX |
-| Spearfish Canyon Ride | 27.5 mi | 1,798 ft | moderate | road | Spearfish | FIT |
-| Spearfish Short Loop | 27.4 mi | 2,299 ft | moderate | road | Spearfish | FIT |
-| Sturgis Quick Loop | 28.7 mi | 2,230 ft | moderate | road | Sturgis | FIT |
-| Sturgis to Rapid City | 50.0 mi | 2,011 ft | hard | road | Sturgis | GPX |
-| Two-Day Century | 106.8 mi | 13,724 ft | expert | road | Black Hills | GPX |
-| Woodle Gulch to Rapid City | 48.6 mi | 3,632 ft | hard | gravel | Black Hills | FIT |
+`RouteInterchangeService.detectFormat(data:filename:)` sniffs content before trusting file extensions. This matters because local route libraries often contain misnamed TCX files, extensionless files, and provider exports with generic MIME types.
 
-### Route Model (`Route.swift`)
+## Canonical Import Models
+
+Core models live in `RouteInterchangeService.swift`:
+
+| Model | Purpose |
+| --- | --- |
+| `RouteFileFormat` | Detected input format: GPX, TCX, FIT, KML, KMZ, ZIP |
+| `RouteAssetKind` | Planned route vs completed ride |
+| `RouteTrackPoint` | Lat/lon/elevation/time/distance/sensor fields |
+| `RouteCoursePoint` | Cue, POI, hazard, start, finish, generated course point |
+| `RouteImportCandidate` | Preview-ready imported route or completed ride |
+| `RouteImportFailure` | Per-file import error for batch UI |
+| `RouteExportFormat` | Device bundle or single-format export target |
+
+Planned routes become `Route` values and are saved through `AppState.addImportedRoute(_:)`. Completed activities become `CompletedRide` values and are saved through `RideHistoryService.importRide(_:)`; the import UI also offers "Save as Route" for activities riders want to navigate later.
+
+## Storage
+
+Bundled routes remain in `StoneBC/routes.json`.
+
+User-imported routes are stored by `UserRouteStore` in the app Documents directory:
+
+```text
+Documents/
+  Routes/
+    userRoutes.json
+```
+
+`AppState.loadImportedRoutes()` migrates the legacy `UserDefaults` key `importedRoutes` into `UserRouteStore` on launch and then removes the old key. New imports are no longer persisted in `UserDefaults`.
+
+Completed imported rides remain in `RideHistoryService` storage alongside locally recorded rides. Ride trackpoints use the existing `CompletedRide.gpxTrackpoints` field.
+
+## Route Model and Customization
+
+`Route.swift` is intentionally backwards-compatible with older route JSON. New route-level planning fields are optional.
 
 ```swift
 struct Route: Identifiable, Codable {
     let id: String
     let name: String
-    let difficulty: String          // easy, moderate, hard, expert
-    let category: String            // road, gravel, fatbike, trail
+    let difficulty: String
+    let category: String
     let distanceMiles: Double
     let elevationGainFeet: Int
     let region: String
     let description: String
     let startCoordinate: Coordinate
-    let trackpoints: [[Double]]     // [[lat, lon, ele], ...]
-    var isImported: Bool = false     // true for user-imported routes
+    let trackpoints: [[Double]]
+    let cuePoints: [CuePoint]
+    let gpxURL: String?
+    let rideDefaults: RouteRideDefaults?
+    var isImported: Bool
 }
 ```
 
-**Computed properties:** `clTrackpoints`, `clStartCoordinate`, `elevations`, `formattedDistance`, `formattedElevation`, `elevationRange`, `minElevation`, `maxElevation`
+`RouteRideDefaults` lets route authors configure optional defaults in bundled route data:
 
-**Factory method:** `Route.fromGPX(_:difficulty:category:region:)` — creates Route from parsed GPX data with Haversine distance and elevation gain calculation.
+- `enabledOverlays`
+- `recommendedRecordingMode`
+- `offlinePriority`
+- `cueVisibility`
+- `safetyCheckInEnabled`
+- `prepNotes`
 
----
+`RouteRidePreferences` stores rider-local customization in `UserDefaults`, keyed by route ID. It covers enabled overlays, preferred recording mode, prep state, and post-ride save defaults. The free-recording key is `routeRidePreferences.free`.
 
-## Feature Set
+Overlay cases are functional ride layers only: route line, breadcrumbs, cues, off-route alerts, offline status, weather, cell coverage, nearby stops, and safety check-in.
 
-### 1. Route List (`RoutesView.swift`)
-- Difficulty filter chips (easy/moderate/hard/expert)
-- Category filter chips (road/gravel/fatbike/trail)
-- "MY ROUTES" section for imported routes with swipe-to-delete
-- "BLACK HILLS ROUTES" section for bundled routes
-- Toolbar: map icon → Route Explorer, plus icon → GPX Import
+## Planning and Riding Surfaces
 
-### 2. Route Detail (`RouteDetailView.swift`)
-- Stats grid: distance, elevation gain, elevation range, trackpoint count
-- Elevation profile chart (Charts framework, area + line marks)
-- Map preview with start/end pins
-- Full-screen map via RouteMapView
-- **Toolbar actions:**
-  - Share menu: Export GPX File / Share as Image
-  - Navigate button → RouteNavigationView
+### Route Browser
 
-### 3. Route Map (`RouteMapView.swift`)
-- All routes as MapPolyline, color-coded by difficulty
-- Start pin annotations with bicycle icon
-- Filter panel (category + difficulty)
-- Selected route card with drill-down to detail
-- Uses `appState.allRoutes` (bundled + imported)
+`RoutesView` has a `List / Map` toggle. Both modes use the same filter, sort, selected-route, imported-route, and empty-state behavior.
 
-### 4. GPX Export (`GPXService.swift`)
-- `GPXService.exportGPX(_ route:)` → valid GPX 1.1 XML string
-- Includes `<metadata>`, `<trk>`, `<trkseg>`, `<trkpt>` with elevation
-- `GPXService.writeToTempFile(_:name:)` → temp URL for ShareLink
-- XML escaping for special characters
-- Shared via native iOS share sheet (AirDrop, Files, Messages, etc.)
+- List mode keeps fast scanning with imported route and bundled route sections.
+- Map mode renders filtered route polylines and a selected-route bottom card.
+- Route cards remain the primary drill-down surface in both modes.
 
-### 5. GPX Import (`GPXImportView.swift`, `GPXService.swift`)
-- `GPXService.parseGPX(data:)` → XMLParser-based, handles `<trk>/<trkseg>` and `<rte>/<rtept>` formats
-- Returns `GPXResult` with name, description, trackpoints
-- File picker via `.fileImporter` (UTType: xml, gpx)
-- Preview card with map, stats, difficulty/category selector
-- Persisted to UserDefaults via `AppState.importedRoutes`
-- Security-scoped resource access for Files app integration
+### Route Detail
 
-### 6. Live Navigation (`RouteNavigationView.swift`, `LocationService.swift`)
-- `LocationService` — @Observable CLLocationManager wrapper
-  - 5m distance filter, bestForNavigation accuracy
-  - Heading updates for camera orientation
-  - Permission handling (WhenInUse)
-- Navigation view features:
-  - Route polyline + start/end pins
-  - User location annotation (blue dot with pulse)
-  - Progress bar (percentage along route)
-  - Distance remaining display
-  - Off-route detection (>50m from nearest trackpoint → warning banner)
-  - Camera follows user with 45° pitch, heading-aligned
-  - "END" button to stop tracking
-- **Info.plist:** `NSLocationWhenInUseUsageDescription` added
+`RouteDetailView` is organized into four modes:
 
-### 7. Route Explorer (`RouteExplorerView.swift`)
-- All routes overlaid on a single map for finding connections
-- Each route gets a distinct color from 18-color palette
-- Green dots = start points, red dots = end points
-- **Connection detection:** white dashed lines between any endpoints <2 miles apart
-- Route name labels at midpoints
-- Map style toggle: Hybrid / Satellite / Standard (all with realistic elevation)
-- Toggle connections on/off
-- Toggle labels on/off
-- Reset view button
-- Selected route card shows link count to nearby routes
-- Legend bar at bottom
-- Access: Routes tab → map icon in toolbar
+- `Overview`: stats, elevation, native map preview, description, and GPX reference link.
+- `Prep`: readiness checklist, weather, cell coverage, offline tools, and author prep notes.
+- `Ride`: start navigation, start route-linked recording, choose recording mode, and toggle ride overlays.
+- `History`: completed rides for the route plus share/export/time-trial actions.
 
-### 8. Share Card (`RouteShareCardView.swift`)
-- Social media card: map thumbnail, route name, badges, stats grid, SBC branding
-- `ImageRenderer` (iOS 16+) at 3x scale → UIImage
-- Shared via ShareLink as Image with preview
-- Sheet presentation from RouteDetailView
+Readiness composes existing local services and route data:
 
----
+- Route geometry and navigability
+- Offline route data
+- Offline tile status
+- Weather cache
+- Cue availability
+- Cell coverage
+- Warning/safety state
 
-## Files
+### Ride Overlays
 
-| File | Lines | Purpose |
-|------|-------|---------|
-| `Route.swift` | ~165 | Model + computed props + GPX factory + Haversine math |
-| `GPXService.swift` | ~170 | GPX 1.1 export (XML gen) + import (XMLParser) |
-| `GPXImportView.swift` | ~200 | File picker, preview, save flow |
-| `LocationService.swift` | ~60 | CLLocationManager @Observable wrapper |
-| `RouteNavigationView.swift` | ~190 | Live navigation map + HUD |
-| `RouteExplorerView.swift` | ~280 | Topo overlay, connection finder |
-| `RouteShareCardView.swift` | ~100 | Social media share card |
-| `RouteDetailView.swift` | ~330 | Detail view + share menu + navigate |
-| `RoutesView.swift` | ~275 | Route list + filters + import |
-| `RouteMapView.swift` | ~265 | Interactive map with polylines |
-| `AppState.swift` | ~150 | Data loading + imported route persistence |
+Navigation and route-linked recording honor `RouteRidePreferences.enabledOverlays`.
 
----
+- Route line and breadcrumbs control map geometry.
+- Cues control turn prompt/audio behavior.
+- Off-route alerts control warning banners and spoken alerts.
+- Offline status controls map offline state indicators.
+- Safety check-in controls reminder timers.
 
-## AppState Integration
+### Recording Modes
 
-```swift
-// Bundled routes (from routes.json)
-var routes: [Route]
+`RouteRecordingMode` is shared by `RecordTabView`, `RouteRecordingView`, and route-linked starts.
 
-// User-imported routes (persisted to UserDefaults)
-var importedRoutes: [Route]
+| Mode | Purpose |
+| --- | --- |
+| `Free Ride` | Record a ride without a source route |
+| `Follow Route` | Record while riding an existing route |
+| `Scout Route` | Capture a new route for cleanup and submission |
 
-// Combined — used by all views
-var allRoutes: [Route] { routes + importedRoutes }
+Scout mode biases the review flow toward saving as a route and submitting to the co-op review path. Follow mode links the recording to the selected route.
 
-// CRUD for imports
-func addImportedRoute(_ route: Route)
-func removeImportedRoute(id: String)
+### Post-Ride Review Hub
+
+The recording save sheet is now a review hub:
+
+- Stats summary
+- Map preview of the recorded track
+- Name/category/difficulty/region fields
+- Save to ride history
+- Save as local route
+- Submit to co-op through the existing review path
+- Export GPX/share text
+- Start journal prompt
+
+## Import UI
+
+`GPXImportView.swift` is still the file name for project stability, but the UI is now "Import Route or Ride".
+
+Flow:
+
+1. User taps the plus button in Routes.
+2. File picker accepts multiple route/ride files.
+3. The importer opens security-scoped resources.
+4. `RouteInterchangeService.importFiles(_:)` returns candidates and failures.
+5. Preview shows detected format, source filename, route vs activity, distance, elevation, point count, cue count, map preview, and errors.
+6. Planned routes can be added to My Routes.
+7. Completed rides can be saved to ride history or converted into a route.
+
+`StoneBC/Info.plist` registers document types for GPX, TCX, FIT, KML, KMZ, and ZIP and enables open-in-place behavior.
+
+## Export Behavior
+
+Default route export is a device bundle ZIP:
+
+```text
+<route>_device_bundle.zip
+  README.txt
+  <route>.gpx
+  <route>.tcx
+  <route>.fit
+  <route>.kml
 ```
 
----
+Single-format exports are also available from route detail:
 
-## Difficulty Classification
+- GPX Track
+- TCX Course
+- FIT Course
+- KML
 
-| Level | Distance | Elevation Gain |
-|-------|----------|---------------|
-| Easy | < 20 mi | < 1,500 ft |
-| Moderate | < 40 mi | < 3,000 ft |
-| Hard | < 80 mi | < 6,000 ft |
-| Expert | >= 80 mi | >= 6,000 ft |
+Ride detail exports completed rides as:
 
-Auto-classified by `process_routes.py`, user-selectable on import.
+- Device bundle ZIP
+- GPX Activity Track
+- TCX History
+- FIT Activity
+- KML
 
----
+Course points and POIs are preserved when present. If a route has no cues, `RouteInterchangeService.generatedCoursePoints(points:)` creates basic start, finish, and coarse turn cues and marks them as generated.
 
-## Design System Usage
+## Provider Integrations
 
-- **Colors:** `BCColors.difficultyColor()`, `BCColors.categoryColor()`, `BCColors.brandBlue/Green/Amber`
-- **Components:** `FilterChip`, `DifficultyBadge`, `CategoryBadge`, `StatCard`, `PressableButtonStyle`
-- **Typography:** `.bcSectionTitle`, `.bcCaption`, `.bcPrimaryText`, `.bcSecondaryText`, `.bcMicro`
-- **Spacing:** `BCSpacing.xs/sm/md/lg/xl/xxl`
-- **Cards:** `BCSpacing.md` padding, `cardBackground`, 12pt corner radius
+Connected app support lives in `RouteProviderService.swift` and is surfaced in `More -> Connected Apps` plus route detail send actions.
 
----
+| Provider | Current Behavior |
+| --- | --- |
+| Garmin | Feature-gated until StoneBC has approved Courses API access |
+| Wahoo | OAuth/PKCE scaffold and FIT course upload path through Wahoo Routes API when credentials and tokens exist |
+| Ride with GPS | OAuth entry scaffold; route-write behavior gated until approved API access/proxy exists |
 
-## Testing
+All provider tokens are stored in Keychain through `RouteProviderKeychain`. `config.json` may carry public client IDs only; do not commit client secrets, access tokens, refresh tokens, API keys, or private endpoints.
 
-- `/test-stonebc` — Full automated QA (build + 25 Blitz tests)
-- GPX export: verify output opens in Garmin Connect / Ride with GPS
-- GPX import: test with various sources (Strava, plotaroute, Garmin)
-- Navigation: real-device GPS testing required
-- Explorer: verify connection lines match visual proximity
+Provider upload requires network. File import/export remains fully offline.
 
----
+## Navigation Runtime
 
-## Future Enhancements
+Navigation still consumes `Route.trackpoints`:
 
-- CloudKit sync for imported routes
-- Strava API integration for direct import
-- Turn-by-turn directions (beyond follow-the-line)
-- Route recording (track your own ride → save as GPX)
-- Multi-route planner (chain connected routes into a single ride)
-- Offline map tiles for navigation without signal
+- MapKit renders route polylines and user location.
+- `LocationService` supplies GPS, heading, speed, and course.
+- `AltimeterService` supplies barometer-backed altitude where available.
+- `RouteAnalysisService` and route cue data support turn/cue UI.
+- Off-route warnings and progress calculations use nearest-trackpoint geometry.
+- `RouteRidePreferences` controls which ride overlays are active for a route.
 
----
+Map tiles depend on MapKit cache and any installed offline tile support, but route geometry, cue data, GPS, compass, and barometer behavior do not require network.
 
-## SD Trail Catalog (Pending Integration — 2026-04-17)
+## Security Rules
 
-A broader SD trail catalog has been built and is ready for app + website integration.
+- Validate imported filenames and ZIP entry paths.
+- Treat all imported XML/binary payloads as untrusted.
+- Use security-scoped access for Files app URLs.
+- Keep provider tokens in Keychain only.
+- Keep real provider secrets out of source, `config.json`, docs, and staged files.
+- Do not store route blobs or large import payloads in `UserDefaults`.
 
-### Files
-| File | Location | Description |
-|------|----------|-------------|
-| `trails-catalog.json` | `StoneBC/trails-catalog.json` | 68 trails total: 56 have GPX, 12 need GPX |
-| `trails-review.html` | `StoneBC/trails-review.html` | Standalone review UI (restyled to match site) |
+## QA Checklist
 
-Both files are indexed in Alexandria under subjects **"Bike Routes, South Dakota Trails, StoneBC"**.
+- Verify Route Browser List and Map modes share filters, sort order, selected route state, imported routes, and empty states.
+- Verify Route Detail `Overview`, `Prep`, `Ride`, and `History` sections render for bundled and imported routes.
+- Verify readiness state before and after saving offline route data/tiles/weather.
+- Verify overlay toggles persist per route and affect both guided navigation and route-linked recording.
+- Verify `Free Ride`, `Follow Route`, and `Scout Route` start, pause/resume, stop, and save correctly.
+- Verify post-ride review can save history only, save as route, submit to co-op, export/share GPX content, and open journal prompt.
+- Import valid GPX 1.0/1.1, GPX route-only, and GPX with waypoints.
+- Import TCX Course and TCX Activity with TPX extension fields.
+- Import FIT Course and FIT Activity.
+- Import KML, KMZ, and ZIP bundle.
+- Verify corrupt XML and oversized/unsupported files show per-file errors.
+- Verify path-traversal ZIP entries are rejected.
+- Export route device bundle and import into Garmin Connect, Wahoo app/API sandbox, and Ride with GPS where available.
+- Export completed ride bundle and verify GPX/TCX/FIT/KML files are created.
+- Run the simulator build:
 
-### Catalog Stats
-- **56 routes** with GPX files ready
-- **12 routes** need GPX acquisition (6 HIGH priority: Skyline, Big Hill, HLMP, Storm Mountain, Deerfield, Centennial Trail)
-- **14 regions** across South Dakota
-- Sources: Trailforks, Wikiloc, Singletracks, USFS, Strava
-
-### Integration Checklist (TODO)
-- [ ] **App** — surface catalog in RoutesView (new "Discover SD Trails" section or expanded filter)
-- [ ] **App** — link to Trailforks/Wikiloc for trails without bundled GPX
-- [ ] **Website** — embed `trails-review.html` or port to Eleventy page on stonebikeco.com
-- [ ] **GPX acquisition** — collect 6 high-priority missing files, run process_routes.py, add to routes.json
-- [ ] **Alexandria sync** — re-index after GPX files added (`alexandria index`)
+```bash
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
+xcodebuild build \
+  -scheme StoneBC \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max'
+```

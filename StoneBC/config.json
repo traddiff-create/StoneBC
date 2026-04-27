@@ -38,6 +38,9 @@
     "trailforksAppSecret": null,
     "stravaClientId": null,
     "stravaClientSecret": null,
+    "garminClientId": null,
+    "wahooClientId": null,
+    "rideWithGPSClientId": null,
     "openWeatherApiKey": null
   }
 }

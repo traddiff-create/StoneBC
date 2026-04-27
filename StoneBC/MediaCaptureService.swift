@@ -122,6 +122,22 @@ class MediaCaptureService {
         }
     }
 
+    /// Save selected video data from PhotosPicker, returns filename
+    func saveVideo(data: Data, journalId: String, dayNumber: Int) -> String? {
+        let filename = "VID_\(Int(Date().timeIntervalSince1970)).mov"
+        let docDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let mediaDir = docDir.appendingPathComponent("Expeditions/\(journalId)/media/day\(dayNumber)", isDirectory: true)
+        try? FileManager.default.createDirectory(at: mediaDir, withIntermediateDirectories: true)
+
+        let fileURL = mediaDir.appendingPathComponent(filename)
+        do {
+            try data.write(to: fileURL)
+            return filename
+        } catch {
+            return nil
+        }
+    }
+
     // MARK: - Thumbnail Generation
 
     /// Generate a thumbnail for a photo

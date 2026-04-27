@@ -46,8 +46,8 @@ struct MoreView: View {
                     moreSection(title: "EXPEDITIONS", icon: "book") {
                         NavigationLink(destination: ExpeditionListView()) {
                             moreRow(
-                                title: "My Expeditions",
-                                subtitle: appState.activeExpedition != nil ? "Active" : "Document your rides",
+                                title: "Follow My Expedition",
+                                subtitle: appState.activeExpedition != nil ? "Active offline log" : "PDF-ready field record",
                                 icon: "book.pages"
                             )
                         }
@@ -63,6 +63,17 @@ struct MoreView: View {
                                     icon: "map"
                                 )
                             }
+                        }
+                    }
+
+                    // Route provider connections
+                    moreSection(title: "NAVIGATION", icon: "point.topleft.down.to.point.bottomright.curvepath") {
+                        NavigationLink(destination: ConnectedAppsView()) {
+                            moreRow(
+                                title: "Connected Apps",
+                                subtitle: "Garmin, Wahoo, Ride with GPS",
+                                icon: "point.topleft.down.to.point.bottomright.curvepath"
+                            )
                         }
                     }
 
@@ -200,65 +211,36 @@ struct MoreView: View {
 
     private func moreSection(title: String, icon: String, @ViewBuilder content: () -> some View) -> some View {
         VStack(alignment: .leading, spacing: BCSpacing.sm) {
-            Text(title)
-                .font(.system(size: 10, weight: .semibold))
-                .tracking(1)
-                .foregroundColor(.secondary)
+            BCSectionHeader(title, icon: icon)
 
             VStack(spacing: 1) {
                 content()
             }
-            .background(BCColors.cardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .bcPanelList()
         }
     }
 
     private func moreRow(title: String, subtitle: String, icon: String) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.system(size: 16))
-                .foregroundColor(BCColors.brandBlue)
-                .frame(width: 32, height: 32)
-                .background(BCColors.brandBlue.opacity(0.1))
-                .clipShape(Circle())
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.primary)
-                Text(subtitle)
-                    .font(.system(size: 11))
-                    .foregroundColor(.secondary)
-            }
-
-            Spacer()
-
-            Image(systemName: "chevron.right")
-                .font(.system(size: 10, weight: .medium))
-                .foregroundColor(BCColors.tertiaryText)
-        }
-        .padding(BCSpacing.md)
+        BCDisclosureRow(title: title, subtitle: subtitle, icon: icon)
     }
 
     // MARK: - About
 
     private var aboutSection: some View {
         VStack(alignment: .leading, spacing: BCSpacing.sm) {
-            Text("ABOUT")
-                .font(.system(size: 10, weight: .semibold))
-                .tracking(1)
-                .foregroundColor(.secondary)
+            BCSectionHeader("ABOUT", icon: "info.circle")
 
             VStack(alignment: .leading, spacing: 8) {
                 Text(appState.config.coalitionName)
-                    .font(.system(size: 16, weight: .medium))
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(BCColors.primaryText)
 
                 Text(appState.config.tagline)
                     .font(.system(size: 13))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(BCColors.secondaryText)
 
                 if let location = appState.config.location {
-                    Divider()
+                    BCHairline()
                     HStack(spacing: 4) {
                         Image(systemName: "mappin")
                             .font(.system(size: 11))
@@ -268,15 +250,13 @@ struct MoreView: View {
                     .foregroundColor(.secondary)
                 }
 
-                Divider()
+                BCHairline()
 
                 Text("v0.2")
-                    .font(.system(size: 10))
+                    .font(.bcMicro)
                     .foregroundColor(BCColors.tertiaryText)
             }
-            .padding(BCSpacing.md)
-            .background(BCColors.cardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .bcInstrumentCard()
         }
     }
 }

@@ -49,7 +49,7 @@ struct MemberLoginView: View {
                     }
                     .padding(BCSpacing.lg)
                     .background(BCColors.cardBackground)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .clipShape(Rectangle())
                     .padding(.horizontal, BCSpacing.md)
                 } else {
                     VStack(spacing: BCSpacing.sm) {
@@ -59,7 +59,7 @@ struct MemberLoginView: View {
                             .autocorrectionDisabled()
                             .padding(BCSpacing.md)
                             .background(BCColors.cardBackground)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .clipShape(Rectangle())
 
                         if let msg = resultMessage {
                             Text(msg)
@@ -83,7 +83,7 @@ struct MemberLoginView: View {
                             .padding(BCSpacing.md)
                             .background(isValidEmail ? BCColors.brandGreen : BCColors.brandGreen.opacity(0.4))
                             .foregroundColor(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .clipShape(Rectangle())
                         }
                         .disabled(!isValidEmail || isSending)
                     }

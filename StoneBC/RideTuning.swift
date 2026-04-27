@@ -78,4 +78,166 @@ enum RideTuning {
 
     /// Default relevance score during a normal ride.
     static let liveActivityNormalRelevance: Double = 50
+
+    /// Local-only ride safety check-in cadence. The app reminds the rider to
+    /// confirm they are OK; it never sends messages automatically.
+    static let safetyCheckInIntervalSeconds: TimeInterval = 30 * 60
+
+    static let maxInMemoryTrackpoints = 300
+    static let precisionBoostSeconds: TimeInterval = 45
+    static let precisionBoostAccuracyTriggerMeters: CLLocationAccuracy = 90
+}
+
+enum RidePowerMode: String, CaseIterable, Identifiable {
+    case highDetail
+    case balanced
+    case endurance
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .highDetail: "High Detail"
+        case .balanced: "Balanced"
+        case .endurance: "Endurance"
+        }
+    }
+
+    var foregroundAccuracy: CLLocationAccuracy {
+        switch self {
+        case .highDetail: kCLLocationAccuracyBest
+        case .balanced: kCLLocationAccuracyNearestTenMeters
+        case .endurance: kCLLocationAccuracyNearestTenMeters
+        }
+    }
+
+    var foregroundDistanceFilter: CLLocationDistance {
+        switch self {
+        case .highDetail: 8
+        case .balanced: 20
+        case .endurance: 40
+        }
+    }
+
+    var backgroundAccuracy: CLLocationAccuracy {
+        switch self {
+        case .highDetail: kCLLocationAccuracyBest
+        case .balanced, .endurance: kCLLocationAccuracyHundredMeters
+        }
+    }
+
+    var backgroundDistanceFilter: CLLocationDistance {
+        switch self {
+        case .highDetail: 15
+        case .balanced: 60
+        case .endurance: 100
+        }
+    }
+
+    var stationaryAccuracy: CLLocationAccuracy {
+        switch self {
+        case .highDetail: kCLLocationAccuracyNearestTenMeters
+        case .balanced, .endurance: kCLLocationAccuracyHundredMeters
+        }
+    }
+
+    var stationaryDistanceFilter: CLLocationDistance {
+        switch self {
+        case .highDetail: 25
+        case .balanced: 100
+        case .endurance: 150
+        }
+    }
+
+    var maximumHorizontalAccuracy: CLLocationAccuracy {
+        switch self {
+        case .highDetail: 75
+        case .balanced: 100
+        case .endurance: 150
+        }
+    }
+
+    var usesAutomaticLocationPausing: Bool {
+        switch self {
+        case .highDetail: false
+        case .balanced, .endurance: true
+        }
+    }
+
+    var usesHeadingUpdates: Bool {
+        switch self {
+        case .highDetail, .balanced: true
+        case .endurance: false
+        }
+    }
+
+    var prefersLiveLocationUpdates: Bool {
+        switch self {
+        case .highDetail, .balanced: false
+        case .endurance: true
+        }
+    }
+
+    var healthKitBatchInterval: TimeInterval {
+        switch self {
+        case .highDetail: 10
+        case .balanced: 30
+        case .endurance: 60
+        }
+    }
+
+    var healthKitBatchDistanceMeters: CLLocationDistance {
+        switch self {
+        case .highDetail: 50
+        case .balanced: 150
+        case .endurance: 250
+        }
+    }
+
+    var mapCameraMinInterval: TimeInterval {
+        switch self {
+        case .highDetail: 1.5
+        case .balanced: 3
+        case .endurance: 5
+        }
+    }
+
+    var mapCameraMinDistanceMeters: CLLocationDistance {
+        switch self {
+        case .highDetail: 8
+        case .balanced: 15
+        case .endurance: 25
+        }
+    }
+
+    var breadcrumbDistanceMeters: CLLocationDistance {
+        switch self {
+        case .highDetail: 10
+        case .balanced: 20
+        case .endurance: 50
+        }
+    }
+
+    var liveActivityUpdateInterval: TimeInterval {
+        switch self {
+        case .highDetail: RideTuning.liveActivityUpdateIntervalSeconds
+        case .balanced: 30
+        case .endurance: 120
+        }
+    }
+
+    var liveActivityUpdateDistanceMeters: CLLocationDistance {
+        switch self {
+        case .highDetail: RideTuning.liveActivityUpdateMinDistanceMeters
+        case .balanced: 100
+        case .endurance: 250
+        }
+    }
+
+    var audioMilestoneMiles: Int {
+        switch self {
+        case .highDetail, .balanced: 5
+        case .endurance: 10
+        }
+    }
 }

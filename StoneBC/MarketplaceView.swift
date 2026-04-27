@@ -63,9 +63,7 @@ struct MarketplaceView: View {
     private var emptyState: some View {
         VStack(spacing: BCSpacing.md) {
             Spacer()
-            Image(systemName: "bicycle")
-                .font(.system(size: 40))
-                .foregroundColor(.secondary)
+            BCIconTile(icon: "bicycle", color: BCColors.brandBlue, size: 52)
             Text("No bikes match your filters")
                 .font(.bcPrimaryText)
                 .foregroundColor(.secondary)
@@ -75,6 +73,7 @@ struct MarketplaceView: View {
             Spacer()
         }
         .frame(maxWidth: .infinity)
+        .padding(.horizontal, BCSpacing.md)
     }
 }
 

@@ -60,7 +60,7 @@ struct BikeFilterBar: View {
                     // Divider
                     if !activeTypes.isEmpty {
                         Rectangle()
-                            .fill(BCColors.divider)
+                            .fill(BCColors.hairline)
                             .frame(width: 1, height: 20)
                             .padding(.horizontal, 4)
                     }
@@ -83,7 +83,7 @@ struct BikeFilterBar: View {
             }
             .background(BCColors.background)
 
-            Divider()
+            BCHairline()
         }
     }
 

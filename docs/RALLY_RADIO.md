@@ -84,6 +84,6 @@ idle → connecting → connected ↔ transmitting
 
 ## Testing
 
-- UI verifiable on simulator (Radio tab renders, button responds)
+- UI verifiable on simulator (Home → Rally Radio renders, button responds)
 - Peer discovery requires 2+ physical devices on same network
 - Audio transmission requires real microphone (not available on simulator)

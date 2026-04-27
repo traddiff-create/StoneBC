@@ -13,10 +13,20 @@ struct RouteDetailView: View {
     let route: Route
     @State private var showFullMap = false
     @State private var gpxFileURL: URL?
+    @State private var routeDeviceBundleURL: URL?
+    @State private var routeTCXURL: URL?
+    @State private var routeFITURL: URL?
+    @State private var routeKMLURL: URL?
     @State private var showShareCard = false
+    @State private var showRouteRecording = false
+    @State private var providerMessage: String?
+    @State private var detailMode: RouteDetailMode = .overview
+    @State private var ridePreferences: RouteRidePreferences
+    @State private var recordingMode: RouteRecordingMode
     @State private var isPreparing = false
     @State private var isCachedOffline = false
     @State private var offlineStorageSize = ""
+    @State private var cachedRouteEntry: OfflineRouteStorage.CachedRouteEntry?
     @State private var tileSources: [OfflineTileSource] = []
     @State private var selectedTileSource: OfflineTileSource?
     @State private var tilePackInfo: OfflineTilePackInfo?
@@ -32,63 +42,18 @@ struct RouteDetailView: View {
 
     init(route: Route) {
         self.route = route
+        let preferences = RouteRidePreferences.load(route: route)
+        self._ridePreferences = State(initialValue: preferences)
+        self._recordingMode = State(initialValue: preferences.defaultRecordingMode == .free ? .follow : preferences.defaultRecordingMode)
     }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: BCSpacing.lg) {
-                // Header
                 headerSection
 
-                // Disclaimer
-                DisclaimerBannerView()
-
-                // Stats Grid
-                statsGrid
-
-                // Elevation Profile
-                elevationProfile
-
-                // Weather
-                RouteWeatherSection(route: route)
-
-                // Trail Conditions + Closures
-                trailIntelligenceSection
-
-                // Strava Segments
-                if StravaService.shared.isConfigured {
-                    stravaSection
-                }
-
-                // Map Preview
-                mapPreview
-
-                // gpx.studio interactive map
-                if let gpxURL = route.gpxURL {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("INTERACTIVE MAP")
-                            .font(.system(size: 10, weight: .semibold))
-                            .tracking(1)
-                            .foregroundColor(.secondary)
-
-                        GPXStudioMapView(
-                            gpxURL: gpxURL,
-                            centerLat: route.startCoordinate.latitude,
-                            centerLon: route.startCoordinate.longitude
-                        )
-                        .frame(height: 400)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
-
-                    gpxStudioLink
-                    forkRouteButton
-                }
-
-                // Offline & Coverage tools
-                offlineToolsSection
-
-                // Description
-                descriptionSection
+                detailModePicker
+                detailModeContent
             }
             .padding(BCSpacing.md)
         }
@@ -114,11 +79,48 @@ struct RouteDetailView: View {
                     .accessibilityLabel(isFavorite ? "Remove from favorites" : "Add to favorites")
 
                     Menu {
+                        if let routeDeviceBundleURL {
+                            ShareLink(item: routeDeviceBundleURL) {
+                                Label("Share Device Bundle", systemImage: "shippingbox")
+                            }
+                        }
                         if let gpxFileURL {
                             ShareLink(item: gpxFileURL) {
                                 Label("Export GPX File", systemImage: "doc")
                             }
                         }
+                        if let routeTCXURL {
+                            ShareLink(item: routeTCXURL) {
+                                Label("Export TCX Course", systemImage: "doc.badge.gearshape")
+                            }
+                        }
+                        if let routeFITURL {
+                            ShareLink(item: routeFITURL) {
+                                Label("Export FIT Course", systemImage: "doc.zipper")
+                            }
+                        }
+                        if let routeKMLURL {
+                            ShareLink(item: routeKMLURL) {
+                                Label("Export KML", systemImage: "map")
+                            }
+                        }
+                        Divider()
+                        Button {
+                            Task { await sendRoute(to: .garmin) }
+                        } label: {
+                            Label("Send to Garmin", systemImage: ConnectedRouteProvider.garmin.icon)
+                        }
+                        Button {
+                            Task { await sendRoute(to: .wahoo) }
+                        } label: {
+                            Label("Send to Wahoo", systemImage: ConnectedRouteProvider.wahoo.icon)
+                        }
+                        Button {
+                            Task { await sendRoute(to: .rideWithGPS) }
+                        } label: {
+                            Label("Send to Ride with GPS", systemImage: ConnectedRouteProvider.rideWithGPS.icon)
+                        }
+                        Divider()
                         Button {
                             showShareCard = true
                         } label: {
@@ -144,7 +146,7 @@ struct RouteDetailView: View {
                     }
                     .accessibilityLabel("Share route")
 
-                    NavigationLink(destination: RouteNavigationView(route: route)) {
+                    NavigationLink(destination: RouteNavigationView(route: route, ridePreferences: ridePreferences)) {
                         Image(systemName: "location.fill")
                             .font(.system(size: 14))
                     }
@@ -153,8 +155,11 @@ struct RouteDetailView: View {
             }
         }
         .task {
-            let gpx = GPXService.exportGPX(route)
-            gpxFileURL = GPXService.writeToTempFile(gpx, name: route.name)
+            routeDeviceBundleURL = RouteInterchangeService.writeRouteExport(route: route, format: .deviceBundle)
+            gpxFileURL = RouteInterchangeService.writeRouteExport(route: route, format: .gpxTrack)
+            routeTCXURL = RouteInterchangeService.writeRouteExport(route: route, format: .tcxCourse)
+            routeFITURL = RouteInterchangeService.writeRouteExport(route: route, format: .fitCourse)
+            routeKMLURL = RouteInterchangeService.writeRouteExport(route: route, format: .kml)
             await refreshOfflineState()
             isFavorite = EventNotificationService.shared.isFavorite(routeId: route.id)
             isTimeTrial = TimeTrialService.shared.isPreset(routeId: route.id)
@@ -173,6 +178,17 @@ struct RouteDetailView: View {
         .sheet(isPresented: $showShareCard) {
             ShareCardSheet(route: route)
         }
+        .alert("Route Share", isPresented: Binding(
+            get: { providerMessage != nil },
+            set: { if !$0 { providerMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(providerMessage ?? "")
+        }
+        .fullScreenCover(isPresented: $showRouteRecording) {
+            RouteRecordingView(route: route, recordingMode: recordingMode)
+        }
         .onDisappear {
             tileDownloadTask?.cancel()
         }
@@ -186,6 +202,91 @@ struct RouteDetailView: View {
                             }
                         }
                     }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var detailModeContent: some View {
+        switch detailMode {
+        case .overview:
+            overviewContent
+        case .prep:
+            prepContent
+        case .ride:
+            rideContent
+        case .history:
+            historyContent
+        }
+    }
+
+    private var detailModePicker: some View {
+        Picker("Route section", selection: $detailMode) {
+            ForEach(RouteDetailMode.allCases) { mode in
+                Text(mode.label).tag(mode)
+            }
+        }
+        .pickerStyle(.segmented)
+        .accessibilityLabel("Route section")
+    }
+
+    private var overviewContent: some View {
+        VStack(alignment: .leading, spacing: BCSpacing.lg) {
+            DisclaimerBannerView()
+            statsGrid
+            elevationProfile
+            mapPreview
+            descriptionSection
+
+            if let gpxURL = route.gpxURL {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("INTERACTIVE MAP")
+                        .font(.system(size: 10, weight: .semibold))
+                        .tracking(1)
+                        .foregroundColor(.secondary)
+
+                    GPXStudioMapView(
+                        gpxURL: gpxURL,
+                        centerLat: route.startCoordinate.latitude,
+                        centerLon: route.startCoordinate.longitude
+                    )
+                    .frame(height: 400)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
+
+                gpxStudioLink
+                forkRouteButton
+            }
+        }
+    }
+
+    private var prepContent: some View {
+        VStack(alignment: .leading, spacing: BCSpacing.lg) {
+            routeReadinessSection
+            RouteWeatherSection(route: route)
+            trailIntelligenceSection
+            offlineToolsSection
+            prepNotesSection
+        }
+    }
+
+    private var rideContent: some View {
+        VStack(alignment: .leading, spacing: BCSpacing.lg) {
+            rideActionsSection
+            rideOverlaySection
+            mapPreview
+            if StravaService.shared.isConfigured {
+                stravaSection
+            }
+        }
+    }
+
+    private var historyContent: some View {
+        VStack(alignment: .leading, spacing: BCSpacing.lg) {
+            routeHistorySection
+            routeShareSection
+            if StravaService.shared.isConfigured {
+                stravaSection
             }
         }
     }
@@ -324,6 +425,426 @@ struct RouteDetailView: View {
         .padding(BCSpacing.md)
         .background(BCColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    // MARK: - Readiness
+
+    private var routeReadinessSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("ROUTE READINESS")
+                    .font(.system(size: 10, weight: .semibold))
+                    .tracking(1)
+                    .foregroundColor(.secondary)
+                Spacer()
+                Text("\(readinessCompleteCount)/\(readinessRows.count)")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(readinessCompleteCount == readinessRows.count ? BCColors.brandGreen : BCColors.brandBlue)
+                    .monospacedDigit()
+            }
+
+            ForEach(readinessRows) { row in
+                readinessRow(row)
+            }
+        }
+        .padding(BCSpacing.md)
+        .background(BCColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    private var readinessRows: [RouteReadinessRow] {
+        [
+            RouteReadinessRow(
+                id: "route",
+                title: "Route Data",
+                subtitle: route.isNavigable ? "\(route.clTrackpoints.count) trackpoints available" : "Trackpoints missing",
+                isReady: route.isNavigable,
+                icon: "point.topleft.down.to.point.bottomright.curvepath"
+            ),
+            RouteReadinessRow(
+                id: "offline",
+                title: "Offline Route",
+                subtitle: isCachedOffline ? "Route data and preview cached" : "Save route for no-service riding",
+                isReady: isCachedOffline,
+                icon: "arrow.down.circle"
+            ),
+            RouteReadinessRow(
+                id: "tiles",
+                title: "Offline Tiles",
+                subtitle: tilePackInfo.map { "\($0.source.name) · \($0.formattedSize)" } ?? "Download a map pack for this route",
+                isReady: tilePackInfo != nil || cachedRouteEntry?.tilesAvailable == true,
+                icon: "map"
+            ),
+            RouteReadinessRow(
+                id: "weather",
+                title: "Weather Cache",
+                subtitle: cachedRouteEntry?.hasWeather == true ? "Weather saved with offline route" : "Open Prep or save offline to refresh weather",
+                isReady: cachedRouteEntry?.hasWeather == true,
+                icon: "cloud.sun"
+            ),
+            RouteReadinessRow(
+                id: "cues",
+                title: "Cue Sheet",
+                subtitle: route.cuePoints.isEmpty ? "Turn prompts will be generated from route shape" : "\(route.cuePoints.count) cue points",
+                isReady: route.isNavigable,
+                icon: "arrow.turn.up.right"
+            ),
+            RouteReadinessRow(
+                id: "cell",
+                title: "Cell Coverage",
+                subtitle: "Coverage tool available before departure",
+                isReady: true,
+                icon: "antenna.radiowaves.left.and.right"
+            )
+        ]
+    }
+
+    private var readinessCompleteCount: Int {
+        readinessRows.filter(\.isReady).count
+    }
+
+    private func readinessRow(_ row: RouteReadinessRow) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: row.isReady ? "checkmark.circle.fill" : row.icon)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(row.isReady ? BCColors.brandGreen : .orange)
+                .frame(width: 22)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(row.title)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.primary)
+                Text(row.subtitle)
+                    .font(.system(size: 10))
+                    .foregroundColor(.secondary)
+                    .lineLimit(2)
+            }
+
+            Spacer()
+        }
+        .padding(BCSpacing.sm)
+        .background(BCColors.cardBackground.opacity(0.5))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(row.title), \(row.isReady ? "ready" : "not ready"), \(row.subtitle)")
+    }
+
+    private var prepNotesSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("PREP NOTES")
+                .font(.system(size: 10, weight: .semibold))
+                .tracking(1)
+                .foregroundColor(.secondary)
+
+            let notes = route.rideDefaults?.prepNotes ?? defaultPrepNotes
+            ForEach(notes, id: \.self) { note in
+                HStack(alignment: .top, spacing: 8) {
+                    Image(systemName: "checklist")
+                        .font(.system(size: 11))
+                        .foregroundColor(BCColors.brandBlue)
+                        .padding(.top, 1)
+                    Text(note)
+                        .font(.system(size: 12))
+                        .foregroundColor(.primary)
+                        .lineSpacing(3)
+                }
+            }
+        }
+        .padding(BCSpacing.md)
+        .background(BCColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    private var defaultPrepNotes: [String] {
+        [
+            "Save this route offline before heading into low-service areas.",
+            "Check weather, trail conditions, and cell coverage before starting.",
+            "Confirm your recording mode and ride overlays before departure."
+        ]
+    }
+
+    // MARK: - Ride Setup
+
+    private var rideActionsSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("RIDE")
+                .font(.system(size: 10, weight: .semibold))
+                .tracking(1)
+                .foregroundColor(.secondary)
+
+            NavigationLink(destination: RouteNavigationView(route: route, ridePreferences: ridePreferences)) {
+                toolRow(
+                    icon: "location.fill",
+                    iconColor: BCColors.brandGreen,
+                    title: "Start Navigation",
+                    subtitle: "Follow route with selected overlays",
+                    trailing: "chevron.right"
+                )
+            }
+            .buttonStyle(.plain)
+
+            Picker("Recording mode", selection: $recordingMode) {
+                ForEach([RouteRecordingMode.follow, .scout], id: \.self) { mode in
+                    Text(mode.label).tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+            .onChange(of: recordingMode) { _, newMode in
+                ridePreferences.defaultRecordingMode = newMode
+                saveRidePreferences()
+            }
+            .accessibilityLabel("Recording mode")
+
+            Button {
+                showRouteRecording = true
+            } label: {
+                toolRow(
+                    icon: recordingMode.icon,
+                    iconColor: recordingMode == .scout ? BCColors.brandAmber : BCColors.brandBlue,
+                    title: "Record \(recordingMode.label)",
+                    subtitle: recordingMode.subtitle,
+                    trailing: "record.circle"
+                )
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(BCSpacing.md)
+        .background(BCColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    private var rideOverlaySection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("RIDE OVERLAYS")
+                    .font(.system(size: 10, weight: .semibold))
+                    .tracking(1)
+                    .foregroundColor(.secondary)
+                Spacer()
+                Button("Reset") {
+                    ridePreferences.enabledOverlays = route.defaultRideOverlays
+                    saveRidePreferences()
+                }
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundColor(BCColors.brandBlue)
+            }
+
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 96), spacing: 8)], spacing: 8) {
+                ForEach(RouteRideOverlay.allCases) { overlay in
+                    overlayToggle(overlay)
+                }
+            }
+        }
+        .padding(BCSpacing.md)
+        .background(BCColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    private func overlayToggle(_ overlay: RouteRideOverlay) -> some View {
+        let isEnabled = ridePreferences.enabledOverlays.contains(overlay)
+        return Button {
+            if isEnabled {
+                ridePreferences.enabledOverlays.remove(overlay)
+            } else {
+                ridePreferences.enabledOverlays.insert(overlay)
+            }
+            saveRidePreferences()
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: overlay.icon)
+                    .font(.system(size: 11, weight: .semibold))
+                Text(overlay.label)
+                    .font(.system(size: 11, weight: .semibold))
+                    .lineLimit(1)
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 9)
+            .frame(maxWidth: .infinity)
+            .background(isEnabled ? BCColors.brandBlue : BCColors.overlayLight)
+            .foregroundColor(isEnabled ? .white : .primary)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(overlay.label) overlay")
+        .accessibilityAddTraits(isEnabled ? .isSelected : [])
+    }
+
+    private func saveRidePreferences() {
+        ridePreferences.save(routeId: route.id)
+    }
+
+    @MainActor
+    private func sendRoute(to provider: ConnectedRouteProvider) async {
+        let result = await RouteProviderManager.shared.push(route: route, to: provider)
+        switch result {
+        case .success(let push):
+            providerMessage = push.message
+        case .failure(let error):
+            providerMessage = error.localizedDescription
+        }
+    }
+
+    // MARK: - History
+
+    private var routeHistorySection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("RIDE HISTORY")
+                .font(.system(size: 10, weight: .semibold))
+                .tracking(1)
+                .foregroundColor(.secondary)
+
+            let rides = RideHistoryService.shared.rides.filter { $0.routeId == route.id }
+            if rides.isEmpty {
+                Text("No rides recorded on this route yet.")
+                    .font(.system(size: 12))
+                    .foregroundColor(.secondary)
+                    .padding(BCSpacing.sm)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(BCColors.cardBackground.opacity(0.5))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            } else {
+                ForEach(rides.prefix(5)) { ride in
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(ride.formattedDate)
+                                .font(.system(size: 12, weight: .semibold))
+                            Text("\(ride.formattedDistance) · \(ride.formattedTime) · \(String(format: "%.1f mph", ride.avgSpeedMPH))")
+                                .font(.system(size: 10))
+                                .foregroundColor(.secondary)
+                        }
+                        Spacer()
+                        if ride.isTimeTrial {
+                            Image(systemName: "stopwatch.fill")
+                                .foregroundColor(BCColors.brandAmber)
+                        }
+                    }
+                    .padding(BCSpacing.sm)
+                    .background(BCColors.cardBackground.opacity(0.5))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+            }
+        }
+        .padding(BCSpacing.md)
+        .background(BCColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    private var routeShareSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("SHARE + PRESETS")
+                .font(.system(size: 10, weight: .semibold))
+                .tracking(1)
+                .foregroundColor(.secondary)
+
+            if let routeDeviceBundleURL {
+                ShareLink(item: routeDeviceBundleURL) {
+                    toolRow(
+                        icon: "shippingbox",
+                        iconColor: BCColors.brandGreen,
+                        title: "Share Device Bundle",
+                        subtitle: "GPX, TCX, FIT, KML, and README",
+                        trailing: "square.and.arrow.up"
+                    )
+                }
+            }
+
+            if let gpxFileURL {
+                ShareLink(item: gpxFileURL) {
+                    toolRow(
+                        icon: "doc",
+                        iconColor: BCColors.brandBlue,
+                        title: "Choose Format: GPX",
+                        subtitle: "Track file for broad app compatibility",
+                        trailing: "square.and.arrow.up"
+                    )
+                }
+            }
+
+            HStack(spacing: 8) {
+                if let routeTCXURL {
+                    ShareLink(item: routeTCXURL) {
+                        formatChip(title: "TCX", icon: "doc.badge.gearshape")
+                    }
+                }
+                if let routeFITURL {
+                    ShareLink(item: routeFITURL) {
+                        formatChip(title: "FIT", icon: "doc.zipper")
+                    }
+                }
+                if let routeKMLURL {
+                    ShareLink(item: routeKMLURL) {
+                        formatChip(title: "KML", icon: "map")
+                    }
+                }
+            }
+
+            VStack(spacing: 1) {
+                providerRow(provider: .garmin)
+                providerRow(provider: .wahoo)
+                providerRow(provider: .rideWithGPS)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+
+            Button {
+                showShareCard = true
+            } label: {
+                toolRow(
+                    icon: "photo",
+                    iconColor: BCColors.brandBlue,
+                    title: "Share as Image",
+                    subtitle: "Create a route card for this route",
+                    trailing: "square.and.arrow.up"
+                )
+            }
+            .buttonStyle(.plain)
+
+            Button {
+                if isTimeTrial {
+                    TimeTrialService.shared.removePreset(routeId: route.id)
+                } else {
+                    TimeTrialService.shared.addPreset(routeId: route.id, routeName: route.name)
+                }
+                isTimeTrial.toggle()
+            } label: {
+                toolRow(
+                    icon: isTimeTrial ? "stopwatch.fill" : "stopwatch",
+                    iconColor: BCColors.brandAmber,
+                    title: isTimeTrial ? "Remove Time Trial" : "Set as Time Trial",
+                    subtitle: "Compare future attempts against your best time",
+                    trailing: nil
+                )
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(BCSpacing.md)
+        .background(BCColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    private func formatChip(title: String, icon: String) -> some View {
+        Label(title, systemImage: icon)
+            .font(.system(size: 11, weight: .semibold))
+            .foregroundColor(BCColors.brandBlue)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 8)
+            .background(BCColors.brandBlue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    private func providerRow(provider: ConnectedRouteProvider) -> some View {
+        Button {
+            Task { await sendRoute(to: provider) }
+        } label: {
+            toolRow(
+                icon: provider.icon,
+                iconColor: BCColors.brandAmber,
+                title: "Send to \(provider.displayName)",
+                subtitle: "Uses provider API when connected; export bundle stays available offline",
+                trailing: "arrow.up.right"
+            )
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Offline & Coverage Tools
@@ -562,7 +1083,9 @@ struct RouteDetailView: View {
 
     @MainActor
     private func refreshOfflineState() async {
-        isCachedOffline = await OfflineRouteStorage.shared.isCached(routeId: route.id)
+        let offlineIndex = await OfflineRouteStorage.shared.loadIndex()
+        cachedRouteEntry = offlineIndex.first { $0.routeId == route.id }
+        isCachedOffline = cachedRouteEntry != nil
         offlineStorageSize = await OfflineRouteStorage.shared.formattedCacheSize()
         tileSources = await OfflineTilePackManager.shared.approvedSources()
         tilePackInfo = await OfflineTilePackManager.shared.installedPack(forRouteId: route.id)
@@ -818,6 +1341,32 @@ struct RouteDetailView: View {
         .background(BCColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
+}
+
+private enum RouteDetailMode: String, CaseIterable, Identifiable {
+    case overview
+    case prep
+    case ride
+    case history
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .overview: "Overview"
+        case .prep: "Prep"
+        case .ride: "Ride"
+        case .history: "History"
+        }
+    }
+}
+
+private struct RouteReadinessRow: Identifiable {
+    let id: String
+    let title: String
+    let subtitle: String
+    let isReady: Bool
+    let icon: String
 }
 
 // MARK: - Stat Card

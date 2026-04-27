@@ -16,17 +16,20 @@ struct PTTButton: View {
 
     var body: some View {
         VStack(spacing: BCSpacing.sm) {
-            Circle()
-                .fill(isTransmitting ? Color.red : BCColors.brandBlue)
+            Rectangle()
+                .fill(isTransmitting ? BCColors.danger : BCColors.brandBlue)
                 .frame(width: RadioConfig.pttButtonSize, height: RadioConfig.pttButtonSize)
                 .overlay {
                     Image(systemName: "mic.fill")
                         .font(.system(size: 28, weight: .medium))
                         .foregroundColor(.white)
                 }
-                .shadow(color: isTransmitting ? .red.opacity(0.4) : .clear, radius: isTransmitting ? 12 : 0)
-                .scaleEffect(isPressed ? 1.1 : 1.0)
-                .animation(.spring(response: 0.2), value: isPressed)
+                .overlay {
+                    Rectangle()
+                        .stroke(Color.white.opacity(0.22), lineWidth: 1)
+                }
+                .opacity(isPressed ? 0.86 : 1.0)
+                .animation(.linear(duration: 0.08), value: isPressed)
                 .gesture(
                     DragGesture(minimumDistance: 0)
                         .onChanged { _ in
@@ -45,9 +48,9 @@ struct PTTButton: View {
                 .accessibilityHint("Press and hold to transmit your voice")
 
             Text(isTransmitting ? "RELEASE TO STOP" : "HOLD TO TALK")
-                .font(.system(size: 10, weight: .bold))
+                .font(.ridrMicro)
                 .tracking(1.5)
-                .foregroundColor(isTransmitting ? .red : .secondary)
+                .foregroundColor(isTransmitting ? BCColors.danger : BCColors.cockpitMutedText)
         }
     }
 }

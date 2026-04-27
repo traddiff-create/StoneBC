@@ -10,19 +10,22 @@ struct ContentView: View {
     @AppStorage("onboardingComplete") private var onboardingComplete = false
 
     var body: some View {
-        if onboardingComplete {
-            TabContainerView()
-                .environment(appState)
-                .task {
-                    await appState.syncFromWordPress()
-                }
-        } else {
-            OnboardingView {
-                withAnimation(.easeInOut(duration: 0.5)) {
-                    onboardingComplete = true
+        Group {
+            if onboardingComplete {
+                TabContainerView()
+                    .environment(appState)
+                    .task {
+                        await appState.syncFromWordPress()
+                    }
+            } else {
+                OnboardingView {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        onboardingComplete = true
+                    }
                 }
             }
         }
+        .preferredColorScheme(.dark)
     }
 }
 

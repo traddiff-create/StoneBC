@@ -6,36 +6,69 @@
 //
 
 import CoreLocation
+import UIKit
 
 @Observable
 class LocationService: NSObject, CLLocationManagerDelegate {
     enum TrackingMode {
         case foreground
         case ride
+        case expeditionHighDetail
+        case expeditionBalanced
+        case expeditionBatterySaver
+        case expeditionCheckIn
 
         var desiredAccuracy: CLLocationAccuracy {
             switch self {
-            case .foreground: kCLLocationAccuracyBest
-            case .ride: kCLLocationAccuracyBestForNavigation
+            case .foreground, .ride, .expeditionHighDetail:
+                kCLLocationAccuracyBest
+            case .expeditionBalanced:
+                kCLLocationAccuracyNearestTenMeters
+            case .expeditionBatterySaver:
+                kCLLocationAccuracyHundredMeters
+            case .expeditionCheckIn:
+                kCLLocationAccuracyKilometer
             }
         }
 
         var distanceFilter: CLLocationDistance {
             switch self {
             case .foreground: 10
-            case .ride: 3
+            case .ride: 8
+            case .expeditionHighDetail: 10
+            case .expeditionBalanced: 25
+            case .expeditionBatterySaver: 100
+            case .expeditionCheckIn: 500
             }
         }
 
         var maximumHorizontalAccuracy: CLLocationAccuracy {
             switch self {
             case .foreground: 150
-            case .ride: 75
+            case .ride: 100
+            case .expeditionHighDetail: 100
+            case .expeditionBalanced: 150
+            case .expeditionBatterySaver: 300
+            case .expeditionCheckIn: 1000
             }
         }
 
         var allowsBackgroundUpdates: Bool {
-            self == .ride
+            switch self {
+            case .ride, .expeditionHighDetail, .expeditionBalanced, .expeditionBatterySaver:
+                true
+            case .foreground, .expeditionCheckIn:
+                false
+            }
+        }
+
+        var usesAutomaticLocationPausing: Bool {
+            switch self {
+            case .ride, .expeditionBalanced, .expeditionBatterySaver:
+                true
+            case .foreground, .expeditionHighDetail, .expeditionCheckIn:
+                false
+            }
         }
     }
 
@@ -47,9 +80,12 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     var isTracking = false
     var authorizationStatus: CLAuthorizationStatus = .notDetermined
     var trackingMode: TrackingMode = .foreground
+    var requestedPowerMode: RidePowerMode = .endurance
+    var effectivePowerMode: RidePowerMode = .endurance
     var horizontalAccuracyMeters: Double = -1
     var verticalAccuracyMeters: Double = -1
     var lastLocationTimestamp: Date?
+    var isReducedAccuracy = false
 
     // Speed & course from GPS
     var speedMPS: Double = 0          // meters per second (raw)
@@ -62,6 +98,8 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     var averageSpeedMPH: Double = 0
     private var speedSamples: [Double] = []
     private var movingSpeedSamples: [Double] = [] // only samples > 1 mph (filtering stops)
+    private var movingSpeedSum: Double = 0
+    private var movingSpeedCount: Int = 0
 
     // Full CLLocation stream for workout route recording
     var locationHistory: [CLLocation] = []
@@ -70,6 +108,14 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     var onFirstAltitude: ((Double) -> Void)?
     private var hasCalibrated = false
     private var pendingStartMode: TrackingMode?
+    private var isInterfaceActive = true
+    private var isRideStationary = false
+    private var wantsHeadingUpdates = false
+    private var precisionBoostUntil: Date?
+    private var precisionBoostResetTask: Task<Void, Never>?
+    private var backgroundActivitySession: CLBackgroundActivitySession?
+    private var liveLocationTask: Task<Void, Never>?
+    private var isUsingLiveLocationUpdates = false
 
     private let manager = CLLocationManager()
 
@@ -79,6 +125,13 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         manager.activityType = .fitness
         configureManager(for: .foreground)
         authorizationStatus = manager.authorizationStatus
+        isReducedAccuracy = manager.accuracyAuthorization == .reducedAccuracy
+        installLifecycleObservers()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+        precisionBoostResetTask?.cancel()
     }
 
     func requestPermission() {
@@ -86,13 +139,25 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         manager.requestWhenInUseAuthorization()
     }
 
-    func startTracking(mode: TrackingMode = .foreground) {
+    func startTracking(mode: TrackingMode = .foreground,
+                       powerMode: RidePowerMode = .endurance,
+                       wantsHeadingUpdates: Bool? = nil) {
         guard CLLocationManager.locationServicesEnabled() else { return }
         trackingMode = mode
+        requestedPowerMode = powerMode
+        effectivePowerMode = effectiveMode(for: powerMode)
+        self.wantsHeadingUpdates = wantsHeadingUpdates ?? powerMode.usesHeadingUpdates
         pendingStartMode = mode
+        isRideStationary = false
+        liveLocationTask?.cancel()
+        liveLocationTask = nil
+        isUsingLiveLocationUpdates = false
+        precisionBoostUntil = mode == .ride ? Date().addingTimeInterval(RideTuning.precisionBoostSeconds) : nil
         configureManager(for: mode)
         speedSamples = []
         movingSpeedSamples = []
+        movingSpeedSum = 0
+        movingSpeedCount = 0
         maxSpeedMPH = 0
         averageSpeedMPH = 0
         locationHistory = []
@@ -112,6 +177,13 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     func stopTracking() {
         isTracking = false
         pendingStartMode = nil
+        precisionBoostResetTask?.cancel()
+        liveLocationTask?.cancel()
+        liveLocationTask = nil
+        isUsingLiveLocationUpdates = false
+        precisionBoostUntil = nil
+        backgroundActivitySession?.invalidate()
+        backgroundActivitySession = nil
         manager.stopUpdatingLocation()
         manager.stopUpdatingHeading()
         manager.allowsBackgroundLocationUpdates = false
@@ -121,6 +193,8 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     func resetSessionStats() {
         speedSamples = []
         movingSpeedSamples = []
+        movingSpeedSum = 0
+        movingSpeedCount = 0
         maxSpeedMPH = 0
         averageSpeedMPH = 0
         locationHistory = []
@@ -128,6 +202,33 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         lastLocation = nil
         lastLocationTimestamp = nil
         hasCalibrated = false
+    }
+
+    func setInterfaceActive(_ isActive: Bool) {
+        guard isInterfaceActive != isActive else { return }
+        isInterfaceActive = isActive
+        configureManager(for: trackingMode)
+    }
+
+    func setRideStationary(_ isStationary: Bool) {
+        guard isRideStationary != isStationary else { return }
+        isRideStationary = isStationary
+        configureManager(for: trackingMode)
+    }
+
+    func requestTemporaryPrecisionBoost(duration: TimeInterval = RideTuning.precisionBoostSeconds) {
+        guard trackingMode == .ride else { return }
+        precisionBoostUntil = Date().addingTimeInterval(duration)
+        configureManager(for: trackingMode)
+
+        precisionBoostResetTask?.cancel()
+        precisionBoostResetTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: UInt64(duration * 1_000_000_000))
+            guard let service = self else { return }
+            await MainActor.run {
+                service.expirePrecisionBoostIfNeeded()
+            }
+        }
     }
 
     // MARK: - CLLocationManagerDelegate
@@ -147,6 +248,7 @@ class LocationService: NSObject, CLLocationManagerDelegate {
 
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         authorizationStatus = manager.authorizationStatus
+        isReducedAccuracy = manager.accuracyAuthorization == .reducedAccuracy
 
         if isAuthorized, let mode = pendingStartMode {
             configureManager(for: mode)
@@ -163,26 +265,42 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     }
 
     private func configureManager(for mode: TrackingMode) {
-        manager.desiredAccuracy = mode.desiredAccuracy
-        manager.distanceFilter = mode.distanceFilter
+        effectivePowerMode = effectiveMode(for: requestedPowerMode)
+
+        if mode == .ride {
+            let profile = rideLocationProfile(for: effectivePowerMode)
+            manager.desiredAccuracy = profile.accuracy
+            manager.distanceFilter = profile.distanceFilter
+            manager.pausesLocationUpdatesAutomatically = effectivePowerMode.usesAutomaticLocationPausing
+        } else {
+            manager.desiredAccuracy = mode.desiredAccuracy
+            manager.distanceFilter = mode.distanceFilter
+            manager.pausesLocationUpdatesAutomatically = mode.usesAutomaticLocationPausing
+        }
+
         manager.activityType = .fitness
-        manager.pausesLocationUpdatesAutomatically = false
         manager.allowsBackgroundLocationUpdates = mode.allowsBackgroundUpdates
         manager.showsBackgroundLocationIndicator = mode.allowsBackgroundUpdates
+        updateHeadingUpdates()
+
     }
 
     private func beginUpdates() {
         guard CLLocationManager.locationServicesEnabled() else { return }
         isTracking = true
-        manager.startUpdatingLocation()
-        if CLLocationManager.headingAvailable() {
-            manager.startUpdatingHeading()
+        startBackgroundActivitySessionIfNeeded()
+        if startLiveLocationUpdatesIfAvailable() {
+            updateHeadingUpdates()
+            return
         }
+        manager.startUpdatingLocation()
+        updateHeadingUpdates()
     }
 
     private func isUsable(_ location: CLLocation) -> Bool {
+        let maxAccuracy = maximumHorizontalAccuracy
         guard location.horizontalAccuracy >= 0,
-              location.horizontalAccuracy <= trackingMode.maximumHorizontalAccuracy else {
+              location.horizontalAccuracy <= maxAccuracy else {
             return false
         }
 
@@ -194,6 +312,11 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     }
 
     private func process(_ location: CLLocation) {
+        if ProcessInfo.processInfo.isLowPowerModeEnabled, effectivePowerMode != .endurance {
+            effectivePowerMode = .endurance
+            configureManager(for: trackingMode)
+        }
+
         userLocation = location.coordinate
         lastLocation = location
         locationUpdateCount += 1
@@ -213,16 +336,19 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         speedMPH = measuredSpeedMPS * 2.23694
 
         speedSamples.append(speedMPH)
+        trimLongRunningSamples()
         if speedMPH > 1.0 {
             movingSpeedSamples.append(speedMPH)
+            movingSpeedSum += speedMPH
+            movingSpeedCount += 1
         }
 
         if speedMPH > maxSpeedMPH {
             maxSpeedMPH = speedMPH
         }
 
-        if !movingSpeedSamples.isEmpty {
-            averageSpeedMPH = movingSpeedSamples.reduce(0, +) / Double(movingSpeedSamples.count)
+        if movingSpeedCount > 0 {
+            averageSpeedMPH = movingSpeedSum / Double(movingSpeedCount)
         }
 
         // Course (direction of travel)
@@ -234,6 +360,166 @@ class LocationService: NSObject, CLLocationManagerDelegate {
 
         // Store for workout route recording
         locationHistory.append(location)
+        if locationHistory.count > RideTuning.maxInMemoryTrackpoints {
+            locationHistory.removeFirst(locationHistory.count - RideTuning.maxInMemoryTrackpoints)
+        }
+
+        if trackingMode == .ride,
+           location.horizontalAccuracy > RideTuning.precisionBoostAccuracyTriggerMeters {
+            requestTemporaryPrecisionBoost()
+        }
+    }
+
+    private func installLifecycleObservers() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleDidBecomeActive),
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleWillResignActive),
+            name: UIApplication.willResignActiveNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleDidEnterBackground),
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handlePowerStateChanged),
+            name: Notification.Name.NSProcessInfoPowerStateDidChange,
+            object: nil
+        )
+    }
+
+    @objc private func handleDidBecomeActive() {
+        setInterfaceActive(true)
+    }
+
+    @objc private func handleWillResignActive() {
+        setInterfaceActive(false)
+    }
+
+    @objc private func handleDidEnterBackground() {
+        setInterfaceActive(false)
+    }
+
+    @objc private func handlePowerStateChanged() {
+        configureManager(for: trackingMode)
+    }
+
+    private func effectiveMode(for requested: RidePowerMode) -> RidePowerMode {
+        ProcessInfo.processInfo.isLowPowerModeEnabled ? .endurance : requested
+    }
+
+    private func rideLocationProfile(for mode: RidePowerMode) -> (accuracy: CLLocationAccuracy, distanceFilter: CLLocationDistance) {
+        if hasActivePrecisionBoost {
+            return (kCLLocationAccuracyBest, 8)
+        }
+        if isRideStationary {
+            return (mode.stationaryAccuracy, mode.stationaryDistanceFilter)
+        }
+        if !isInterfaceActive {
+            return (mode.backgroundAccuracy, mode.backgroundDistanceFilter)
+        }
+        return (mode.foregroundAccuracy, mode.foregroundDistanceFilter)
+    }
+
+    private var hasActivePrecisionBoost: Bool {
+        guard let precisionBoostUntil else { return false }
+        return precisionBoostUntil > Date()
+    }
+
+    private var maximumHorizontalAccuracy: CLLocationAccuracy {
+        if isReducedAccuracy {
+            return max(trackingMode.maximumHorizontalAccuracy, 1000)
+        }
+        if trackingMode == .ride {
+            return hasActivePrecisionBoost ? 100 : effectivePowerMode.maximumHorizontalAccuracy
+        }
+        return trackingMode.maximumHorizontalAccuracy
+    }
+
+    private func updateHeadingUpdates() {
+        let shouldRunHeading = isTracking
+            && isInterfaceActive
+            && wantsHeadingUpdates
+            && CLLocationManager.headingAvailable()
+
+        if shouldRunHeading {
+            manager.startUpdatingHeading()
+        } else {
+            manager.stopUpdatingHeading()
+        }
+    }
+
+    private func startBackgroundActivitySessionIfNeeded() {
+        guard trackingMode == .ride,
+              backgroundActivitySession == nil else {
+            return
+        }
+        backgroundActivitySession = CLBackgroundActivitySession()
+    }
+
+    private func startLiveLocationUpdatesIfAvailable() -> Bool {
+        guard trackingMode == .ride,
+              effectivePowerMode.prefersLiveLocationUpdates,
+              liveLocationTask == nil else {
+            return false
+        }
+
+        if #available(iOS 17.0, *) {
+            isUsingLiveLocationUpdates = true
+            manager.stopUpdatingLocation()
+            liveLocationTask = Task { [weak self] in
+                do {
+                    for try await update in CLLocationUpdate.liveUpdates(.fitness) {
+                        guard !Task.isCancelled, let location = update.location else { continue }
+                        await MainActor.run { [weak self] in
+                            self?.process(location)
+                        }
+                    }
+                } catch {
+                    guard !Task.isCancelled else { return }
+                    await MainActor.run { [weak self] in
+                        self?.fallBackToStandardLocationUpdates()
+                    }
+                }
+            }
+            return true
+        }
+
+        return false
+    }
+
+    private func fallBackToStandardLocationUpdates() {
+        liveLocationTask?.cancel()
+        liveLocationTask = nil
+        isUsingLiveLocationUpdates = false
+        guard isTracking else { return }
+        manager.startUpdatingLocation()
+        updateHeadingUpdates()
+    }
+
+    private func expirePrecisionBoostIfNeeded() {
+        guard !hasActivePrecisionBoost else { return }
+        precisionBoostUntil = nil
+        configureManager(for: trackingMode)
+    }
+
+    private func trimLongRunningSamples() {
+        let maxSamples = RideTuning.maxInMemoryTrackpoints
+        if speedSamples.count > maxSamples {
+            speedSamples.removeFirst(speedSamples.count - maxSamples)
+        }
+        if movingSpeedSamples.count > maxSamples {
+            movingSpeedSamples.removeFirst(movingSpeedSamples.count - maxSamples)
+        }
     }
 
     private func measuredSpeed(for location: CLLocation) -> Double {

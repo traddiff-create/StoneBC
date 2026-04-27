@@ -86,14 +86,16 @@ struct RadioView: View {
 
     private var statusSection: some View {
         VStack(spacing: BCSpacing.sm) {
-            // Radio icon
-            Image(systemName: viewModel.state == .transmitting ? "antenna.radiowaves.left.and.right" : "antenna.radiowaves.left.and.right.slash")
-                .font(.system(size: 36, weight: .thin))
-                .foregroundColor(viewModel.state.color)
+            BCIconTile(
+                icon: viewModel.state == .transmitting ? "antenna.radiowaves.left.and.right" : "antenna.radiowaves.left.and.right.slash",
+                color: viewModel.state.color,
+                size: 56,
+                filled: viewModel.state == .transmitting
+            )
                 .symbolEffect(.pulse, isActive: viewModel.state == .transmitting)
 
             Text(viewModel.state.label)
-                .font(.system(size: 14, weight: .medium))
+                .font(.system(size: 14, weight: .bold, design: .monospaced))
                 .foregroundColor(viewModel.state.color)
                 .tracking(1)
 
@@ -104,6 +106,7 @@ struct RadioView: View {
                     .transition(.opacity)
             }
         }
+        .bcInstrumentCard()
         .animation(.easeInOut(duration: 0.3), value: viewModel.state)
     }
 
@@ -111,23 +114,24 @@ struct RadioView: View {
 
     private var peerSection: some View {
         VStack(spacing: BCSpacing.sm) {
-            Text("CONNECTED RIDERS")
-                .font(.system(size: 10, weight: .semibold))
-                .tracking(1)
-                .foregroundColor(.secondary)
+            BCSectionHeader("CONNECTED RIDERS", icon: "person.2")
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
                     ForEach(viewModel.connectedPeers) { peer in
                         VStack(spacing: 4) {
                             ZStack {
-                                Circle()
-                                    .fill(peer.isTransmitting ? Color.red.opacity(0.2) : BCColors.brandBlue.opacity(0.1))
+                                RoundedRectangle(cornerRadius: BCRadius.tile, style: .continuous)
+                                    .fill(peer.isTransmitting ? BCColors.danger.opacity(0.18) : BCColors.instrumentInset)
+                                    .overlay {
+                                        RoundedRectangle(cornerRadius: BCRadius.tile, style: .continuous)
+                                            .stroke(peer.isTransmitting ? BCColors.danger : BCColors.hairline, lineWidth: 1)
+                                    }
                                     .frame(width: RadioConfig.peerAvatarSize, height: RadioConfig.peerAvatarSize)
 
                                 Text(peer.initials)
-                                    .font(.system(size: 14, weight: .semibold))
-                                    .foregroundColor(peer.isTransmitting ? .red : BCColors.brandBlue)
+                                    .font(.system(size: 14, weight: .bold, design: .monospaced))
+                                    .foregroundColor(peer.isTransmitting ? BCColors.danger : BCColors.brandBlue)
                             }
 
                             Text(peer.displayName)
@@ -150,18 +154,18 @@ struct RadioView: View {
             if viewModel.isOpenMic {
                 // Open mic active — show live indicator instead of PTT
                 VStack(spacing: 8) {
-                    Circle()
+                    Rectangle()
                         .fill(Color.red)
                         .frame(width: RadioConfig.pttButtonSize, height: RadioConfig.pttButtonSize)
                         .overlay {
                             Text("LIVE")
-                                .font(.system(size: 16, weight: .bold))
+                                .font(.ridrDisplaySM)
                                 .foregroundColor(.white)
                                 .tracking(2)
                         }
-                        .symbolEffect(.pulse, isActive: true)
+                        .overlay { Rectangle().stroke(BCColors.caseShadow, lineWidth: 1) }
 
-                    Text("Open mic active")
+                    Text("OPEN MIC ACTIVE")
                         .font(.bcMicro)
                         .foregroundColor(.secondary)
                 }
@@ -183,7 +187,7 @@ struct RadioView: View {
         HStack {
             Image(systemName: "mic.fill")
                 .font(.system(size: 14))
-                .foregroundColor(viewModel.isOpenMic ? .red : .secondary)
+                .foregroundColor(viewModel.isOpenMic ? BCColors.danger : .secondary)
 
             Text("Open Mic")
                 .font(.system(size: 14, weight: .medium))
@@ -194,12 +198,9 @@ struct RadioView: View {
                 get: { viewModel.isOpenMic },
                 set: { _ in viewModel.toggleOpenMic() }
             ))
-            .tint(.red)
+            .tint(BCColors.danger)
         }
-        .padding(.horizontal, BCSpacing.lg)
-        .padding(.vertical, 12)
-        .background(BCColors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .bcInstrumentCard()
         .disabled(!viewModel.state.isActive)
         .opacity(viewModel.state.isActive ? 1 : 0.4)
     }
@@ -218,12 +219,16 @@ struct RadioView: View {
                 Image(systemName: viewModel.state.isActive ? "xmark.circle.fill" : "antenna.radiowaves.left.and.right")
                 Text(viewModel.state.isActive ? "Disconnect" : "Start Rally Radio")
             }
-            .font(.system(size: 15, weight: .medium))
+            .font(.system(size: 15, weight: .bold, design: .monospaced))
+            .tracking(0.6)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
-            .background(viewModel.state.isActive ? Color.red.opacity(0.15) : BCColors.brandBlue)
-            .foregroundColor(viewModel.state.isActive ? .red : .white)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .background(viewModel.state.isActive ? BCColors.danger.opacity(0.15) : BCColors.brandBlue)
+            .foregroundColor(viewModel.state.isActive ? BCColors.danger : .white)
+            .overlay {
+                Rectangle()
+                    .stroke(viewModel.state.isActive ? BCColors.danger.opacity(0.28) : Color.white.opacity(0.18), lineWidth: 1)
+            }
         }
         .buttonStyle(PressableButtonStyle())
         .padding(.horizontal, BCSpacing.lg)

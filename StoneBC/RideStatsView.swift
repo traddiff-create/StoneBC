@@ -24,30 +24,13 @@ struct RideStatsView: View {
 
     private var allTimeCard: some View {
         VStack(alignment: .leading, spacing: BCSpacing.sm) {
-            Text("ALL TIME")
-                .font(.bcSectionTitle)
-                .foregroundColor(BCColors.secondaryText)
+            BCSectionHeader("ALL TIME", icon: "gauge.with.dots.needle.bottom.50percent")
 
-            HStack(spacing: 0) {
-                statCell(
-                    value: String(format: "%.0f", history.allTimeMiles),
-                    label: "Miles"
-                )
-                Divider().frame(height: 30)
-                statCell(
-                    value: "\(history.rides.count)",
-                    label: "Rides"
-                )
-                Divider().frame(height: 30)
-                statCell(
-                    value: elevationFormatted(history.allTimeElevationFeet),
-                    label: "Elevation"
-                )
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, BCSpacing.md)
-            .background(BCColors.cardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            BCMetricStrip(metrics: [
+                BCMetric(value: String(format: "%.0f", history.allTimeMiles), label: "Miles", icon: "road.lanes"),
+                BCMetric(value: "\(history.rides.count)", label: "Rides", icon: "figure.outdoor.cycle"),
+                BCMetric(value: elevationFormatted(history.allTimeElevationFeet), label: "Elevation", icon: "arrow.up")
+            ])
         }
     }
 
@@ -56,9 +39,7 @@ struct RideStatsView: View {
     private var prGrid: some View {
         let pr = history.personalRecords
         return VStack(alignment: .leading, spacing: BCSpacing.sm) {
-            Text("PERSONAL RECORDS")
-                .font(.bcSectionTitle)
-                .foregroundColor(BCColors.secondaryText)
+            BCSectionHeader("PERSONAL RECORDS", icon: "medal")
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: BCSpacing.sm) {
                 prCard(
@@ -91,15 +72,14 @@ struct RideStatsView: View {
                 .font(.system(size: 20))
                 .foregroundColor(BCColors.brandBlue)
             Text(value)
-                .font(.system(size: 17, weight: .bold))
+                .font(.bcInstrumentValue)
             Text(label)
-                .font(.system(size: 11))
-                .foregroundColor(.secondary)
+                .font(.bcInstrumentLabel)
+                .tracking(0.6)
+                .foregroundColor(BCColors.cockpitMutedText)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, BCSpacing.md)
-        .background(BCColors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .bcInstrumentCard()
     }
 
     // MARK: - Monthly Chart
@@ -108,9 +88,7 @@ struct RideStatsView: View {
         let data = history.monthlyMiles()
         let hasData = data.contains { $0.miles > 0 }
         return VStack(alignment: .leading, spacing: BCSpacing.sm) {
-            Text("MONTHLY MILES")
-                .font(.bcSectionTitle)
-                .foregroundColor(BCColors.secondaryText)
+            BCSectionHeader("MONTHLY MILES", icon: "chart.bar")
 
             VStack {
                 if hasData {
@@ -153,9 +131,7 @@ struct RideStatsView: View {
                         .padding(.vertical, 30)
                 }
             }
-            .padding(BCSpacing.md)
-            .background(BCColors.cardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .bcInstrumentCard()
         }
     }
 
@@ -167,9 +143,7 @@ struct RideStatsView: View {
         let sorted = byCategory.sorted { $0.value > $1.value }
 
         return VStack(alignment: .leading, spacing: BCSpacing.sm) {
-            Text("BY CATEGORY")
-                .font(.bcSectionTitle)
-                .foregroundColor(BCColors.secondaryText)
+            BCSectionHeader("BY CATEGORY", icon: "square.grid.2x2")
 
             if sorted.isEmpty {
                 Text("No category data yet")
@@ -177,17 +151,14 @@ struct RideStatsView: View {
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, 20)
-                    .background(BCColors.cardBackground)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .bcInstrumentCard()
             } else {
                 VStack(spacing: BCSpacing.sm) {
                     ForEach(sorted, id: \.key) { cat, miles in
                         categoryBar(category: cat, miles: miles, total: total)
                     }
                 }
-                .padding(BCSpacing.md)
-                .background(BCColors.cardBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .bcInstrumentCard()
             }
         }
     }

@@ -20,8 +20,9 @@ class NavigationAudioService {
     private var lastTurnAlert: Date?
 
     // Cooldowns to prevent spam
-    private let offRouteCooldown: TimeInterval = 30
-    private let turnCooldown: TimeInterval = 15
+    private var offRouteCooldown: TimeInterval = 30
+    private var turnCooldown: TimeInterval = 15
+    private var milestoneStrideMiles = 5
 
     init() {
         configureAudioSession()
@@ -37,6 +38,21 @@ class NavigationAudioService {
     }
 
     // MARK: - Navigation Events
+
+    func configure(for powerMode: RidePowerMode) {
+        milestoneStrideMiles = powerMode.audioMilestoneMiles
+        switch powerMode {
+        case .highDetail:
+            offRouteCooldown = 30
+            turnCooldown = 15
+        case .balanced:
+            offRouteCooldown = 45
+            turnCooldown = 25
+        case .endurance:
+            offRouteCooldown = 90
+            turnCooldown = 45
+        }
+    }
 
     /// Called when user goes off-route
     func announceOffRoute(distanceMeters: Double) {
@@ -66,7 +82,7 @@ class NavigationAudioService {
         let remaining = totalMiles - distanceMiles
 
         // Announce every 5 miles, or at halfway, or near finish
-        if currentMile % 5 == 0 {
+        if currentMile % milestoneStrideMiles == 0 {
             speak("Mile \(currentMile). \(String(format: "%.1f", remaining)) miles remaining.")
         } else if abs(distanceMiles - totalMiles / 2) < 0.5 {
             speak("Halfway point. \(String(format: "%.1f", remaining)) miles to go.")

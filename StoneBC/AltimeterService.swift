@@ -11,8 +11,20 @@ import Foundation
 @Observable
 class AltimeterService {
     var isAvailable: Bool { CMAltimeter.isRelativeAltitudeAvailable() }
+    var isAbsoluteAltitudeAvailable: Bool {
+        if #available(iOS 15.0, *) {
+            return CMAltimeter.isAbsoluteAltitudeAvailable()
+        }
+        return false
+    }
     var relativeAltitudeMeters: Double = 0
     var relativeAltitudeFeet: Double = 0
+    var absoluteAltitudeMeters: Double?
+    var absoluteAltitudeFeet: Double? {
+        absoluteAltitudeMeters.map { $0 * 3.28084 }
+    }
+    var absoluteAltitudeAccuracyMeters: Double?
+    var absoluteAltitudePrecisionMeters: Double?
     var pressureKPa: Double = 0
     var pressureHPa: Double { pressureKPa * 10 }
     var climbRateFeetPerMin: Double = 0
@@ -68,11 +80,23 @@ class AltimeterService {
             self.relativeAltitudeFeet = altFeet
             self.pressureKPa = data.pressure.doubleValue
         }
+
+        if #available(iOS 15.0, *), CMAltimeter.isAbsoluteAltitudeAvailable() {
+            altimeter.startAbsoluteAltitudeUpdates(to: .main) { [weak self] data, error in
+                guard let self, let data, error == nil else { return }
+                self.absoluteAltitudeMeters = data.altitude
+                self.absoluteAltitudeAccuracyMeters = data.accuracy
+                self.absoluteAltitudePrecisionMeters = data.precision
+            }
+        }
     }
 
     func stop() {
         guard isRunning else { return }
         altimeter.stopRelativeAltitudeUpdates()
+        if #available(iOS 15.0, *) {
+            altimeter.stopAbsoluteAltitudeUpdates()
+        }
         isRunning = false
     }
 
@@ -115,11 +139,53 @@ class AltimeterService {
         fusedAltitudeMeters * 3.28084
     }
 
+    var bestAltitudeMeters: Double? {
+        if gpsBaseline != nil {
+            return fusedAltitudeMeters
+        }
+        if let absoluteAltitudeMeters {
+            return absoluteAltitudeMeters
+        }
+        return nil
+    }
+
+    var bestAltitudeFeet: Double? {
+        bestAltitudeMeters.map { $0 * 3.28084 }
+    }
+
+    var altitudeSourceLabel: String {
+        if gpsBaseline != nil {
+            return "GPS+BARO"
+        }
+        if absoluteAltitudeMeters != nil {
+            return "ABS"
+        }
+        return "WAITING"
+    }
+
     var formattedFusedAltitude: String {
         let ft = Int(fusedAltitudeFeet)
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         return (formatter.string(from: NSNumber(value: ft)) ?? "\(ft)") + " ft"
+    }
+
+    var formattedBestAltitude: String {
+        guard let feet = bestAltitudeFeet else { return "-- ft" }
+        let ft = Int(feet)
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return (formatter.string(from: NSNumber(value: ft)) ?? "\(ft)") + " ft"
+    }
+
+    var formattedAbsoluteAccuracy: String {
+        guard let accuracy = absoluteAltitudeAccuracyMeters else { return "--" }
+        return String(format: "%.0f m", accuracy)
+    }
+
+    var formattedAbsolutePrecision: String {
+        guard let precision = absoluteAltitudePrecisionMeters else { return "--" }
+        return String(format: "%.0f m", precision)
     }
 
     var formattedPressure: String {

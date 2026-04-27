@@ -18,8 +18,8 @@ struct CompassRingView: View {
 
     var body: some View {
         ZStack {
-            // Outer ring with cardinal marks
-            Circle()
+            // Outer frame with cardinal marks
+            Rectangle()
                 .stroke(Color.white.opacity(0.15), lineWidth: 2)
 
             // Cardinal direction ticks
@@ -291,7 +291,7 @@ struct RideDashboardView: View {
             DashStatTile(
                 label: "Elev",
                 value: altimeterService.isAvailable
-                    ? altimeterService.formattedFusedAltitude.replacingOccurrences(of: " ft", with: "")
+                    ? altimeterService.formattedBestAltitude.replacingOccurrences(of: " ft", with: "")
                     : "--",
                 unit: "ft",
                 icon: "mountain.2"
@@ -382,6 +382,37 @@ struct RideDashboardView: View {
                 )
             }
 
+            if altimeterService.isAbsoluteAltitudeAvailable {
+                HStack(spacing: 1) {
+                    DashStatTile(
+                        label: "Source",
+                        value: altimeterService.altitudeSourceLabel,
+                        unit: "",
+                        icon: "sensor"
+                    )
+                    DashStatTile(
+                        label: "Abs",
+                        value: altimeterService.absoluteAltitudeFeet.map {
+                            String(format: "%.0f", $0)
+                        } ?? "--",
+                        unit: "ft",
+                        icon: "location.north.line"
+                    )
+                    DashStatTile(
+                        label: "Accuracy",
+                        value: altimeterService.formattedAbsoluteAccuracy,
+                        unit: "",
+                        icon: "scope"
+                    )
+                    DashStatTile(
+                        label: "Precision",
+                        value: altimeterService.formattedAbsolutePrecision,
+                        unit: "",
+                        icon: "gauge.with.dots.needle.bottom.50percent"
+                    )
+                }
+            }
+
             // Emergency SOS row
             HStack(spacing: 12) {
                 if EmergencySafetyService.shared.supportsSatelliteSOS {
@@ -416,7 +447,7 @@ struct RideDashboardView: View {
                             .padding(.vertical, 4)
                             .background(Color.red.opacity(0.8))
                             .foregroundColor(.white)
-                            .clipShape(Capsule())
+                            .clipShape(Rectangle())
                     }
                 }
             }

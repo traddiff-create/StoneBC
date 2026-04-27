@@ -2,7 +2,7 @@
 
 ## Context
 
-Alexandria (personal digital library, Swift CLI) has indexed 18+ Black Hills bike routes from GPX/TCX files with full metadata: distance, elevation gain/loss, surface type, difficulty, event names, start/end coordinates, trackpoints. StoneBC (Stone Bicycle Coalition iOS app) already has a mature route system with 42 bundled routes in `routes.json`, MapKit rendering, GPX import/export, elevation charts, turn-by-turn navigation, and a route explorer with connection detection.
+Alexandria (personal digital library, Swift CLI) has indexed 18+ Black Hills bike routes from GPX/TCX files with full metadata: distance, elevation gain/loss, surface type, difficulty, event names, start/end coordinates, trackpoints. StoneBC (Stone Bicycle Coalition iOS app) already has a mature route system with bundled routes in `routes.json`, MapKit rendering, GPX/TCX/FIT/KML route interop, elevation charts, turn-by-turn navigation, and a route explorer with connection detection.
 
 **Goal:** Replace the hand-curated `routes.json` with an Alexandria-generated export. Alexandria becomes the single source of truth for route data. StoneBC consumes it at build time (bundled JSON) with optional runtime sync via Alexandria's REST API.
 
@@ -180,7 +180,7 @@ Note: StoneBC's Route.swift stores elevation in meters in trackpoints but displa
 
 ### AppState.swift — No changes for bundled routes
 
-`Route.loadFromBundle()` already reads `routes.json` from the bundle. Replacing the file contents is all that's needed. Imported routes (UserDefaults) remain untouched.
+`Route.loadFromBundle()` already reads `routes.json` from the bundle. Replacing the file contents is all that's needed. User-imported routes live in the Documents-backed `UserRouteStore` and should remain untouched.
 
 ---
 
@@ -199,7 +199,7 @@ StoneBC could add a "Sync Routes" button that:
 1. Hits `http://<mac-ip>:8642/api/routes/export/stonebc`
 2. Decodes as `[Route]`
 3. Replaces `AppState.routes`
-4. Persists to UserDefaults as backup
+4. Persists to the Documents-backed user route store only if the user explicitly saves imported routes
 
 This requires same-network access (WiFi). Not a priority — bundled JSON works fine.
 
@@ -230,7 +230,7 @@ python3 -c "import json; d=json.load(open('/Applications/Apps/StoneBC/StoneBC/ro
 5. Tap a route → verify elevation chart renders
 6. Verify connection detection still works between nearby routes
 7. Verify GPX export from a route produces valid GPX
-8. Verify imported routes (UserDefaults) are not affected
+8. Verify imported routes in `Documents/Routes/userRoutes.json` are not affected
 
 ---
 
@@ -256,7 +256,7 @@ python3 -c "import json; d=json.load(open('/Applications/Apps/StoneBC/StoneBC/ro
 
 - **Offline-first:** routes.json must be bundled, not fetched at runtime
 - **Elevation in meters:** trackpoints store meters, app converts to feet for display
-- **Existing imported routes:** must not be overwritten — they live in UserDefaults
+- **Existing imported routes:** must not be overwritten — they live in `UserRouteStore`
 - **GPX source files must be accessible:** they're in iCloud, path stored in entries.path
 - **2 routes have 0 trackpoints** (Sturgis Med, 2022Dakota50v2) — waypoint-only files. Either skip them in export or include with startCoordinate only.
 - **Route IDs must be stable** across re-exports so bookmarks/favorites don't break (use kebab-case filename as ID)

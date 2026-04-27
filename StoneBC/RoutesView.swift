@@ -2,17 +2,20 @@
 //  RoutesView.swift
 //  StoneBC
 //
-//  Route list with difficulty and category filter chips
+//  Route browser with shared list/map filters
 //
 
 import SwiftUI
+import MapKit
 
 struct RoutesView: View {
     @Environment(AppState.self) var appState
     @State private var selectedDifficulty: String?
     @State private var selectedCategory: String?
     @State private var sortOption: RouteSortOption = .distance
-    @State private var appeared = false
+    @State private var browseMode: RouteBrowseMode = .list
+    @State private var selectedMapRoute: Route?
+    @State private var routeMapPosition: MapCameraPosition = .automatic
     @State private var showImport = false
 
     enum RouteSortOption: String, CaseIterable {
@@ -20,7 +23,14 @@ struct RoutesView: View {
         case location = "Nearest"
         case elevation = "Elevation"
         case difficulty = "Difficulty"
-        case name = "A–Z"
+        case name = "A-Z"
+    }
+
+    enum RouteBrowseMode: String, CaseIterable, Identifiable {
+        case list = "List"
+        case map = "Map"
+
+        var id: String { rawValue }
     }
 
     private var routes: [Route] { appState.allRoutes }
@@ -40,7 +50,7 @@ struct RoutesView: View {
         case .distance:
             return filtered.sorted { $0.distanceMiles < $1.distanceMiles }
         case .location:
-            return filtered // already sorted by distance from RC in routes.json
+            return filtered
         case .elevation:
             return filtered.sorted { $0.elevationGainFeet > $1.elevationGainFeet }
         case .difficulty:
@@ -52,17 +62,78 @@ struct RoutesView: View {
     }
 
     private var availableDifficulties: [String] {
-        Array(Set(routes.map { $0.difficulty }))
-            .sorted { Route.allDifficulties.firstIndex(of: $0) ?? 0 < Route.allDifficulties.firstIndex(of: $1) ?? 0 }
+        Array(Set(routes.map(\.difficulty))).sorted { lhs, rhs in
+            let lhsIndex = Route.allDifficulties.firstIndex(of: lhs) ?? Int.max
+            let rhsIndex = Route.allDifficulties.firstIndex(of: rhs) ?? Int.max
+            return lhsIndex < rhsIndex
+        }
     }
 
     private var availableCategories: [String] {
-        Array(Set(routes.map { $0.category })).sorted()
+        Array(Set(routes.map(\.category))).sorted()
     }
 
     var body: some View {
         VStack(spacing: 0) {
-            // Difficulty filter
+            routeFilters
+            sortAndModeBar
+
+            if filteredRoutes.isEmpty {
+                emptyState
+            } else {
+                switch browseMode {
+                case .list:
+                    routeList
+                case .map:
+                    routeMapBrowser
+                }
+            }
+        }
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                VStack(spacing: 2) {
+                    Text("ROUTES")
+                        .font(.bcSectionTitle)
+                        .tracking(2)
+                    Text("\(filteredRoutes.count) routes")
+                        .font(.bcMicro)
+                        .foregroundColor(.secondary)
+                }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Routes. \(filteredRoutes.count) routes.")
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                HStack(spacing: 14) {
+                    NavigationLink(destination: RouteExplorerView()) {
+                        Image(systemName: "map")
+                            .font(.system(size: 14, weight: .medium))
+                    }
+                    .accessibilityLabel("Route Explorer - view all routes on topo map")
+
+                    Button {
+                        showImport = true
+                    } label: {
+                        Image(systemName: "plus")
+                            .font(.system(size: 14, weight: .medium))
+                    }
+                    .accessibilityLabel("Import route or ride files")
+                }
+            }
+        }
+        .sheet(isPresented: $showImport) {
+            GPXImportView()
+        }
+        .onChange(of: filteredRoutes.map(\.id)) { _, routeIds in
+            if let selectedMapRoute, !routeIds.contains(selectedMapRoute.id) {
+                self.selectedMapRoute = filteredRoutes.first
+            }
+        }
+    }
+
+    private var routeFilters: some View {
+        VStack(spacing: 0) {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: BCSpacing.xs) {
                     FilterChip(title: "All", count: routes.count, isSelected: selectedDifficulty == nil) {
@@ -88,26 +159,37 @@ struct RoutesView: View {
             .background(BCColors.background)
             .accessibilityIdentifier("routesDifficultyFilter")
 
-            // Category filter
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: BCSpacing.xs) {
+                    FilterChip(title: "All", isSelected: selectedCategory == nil) {
+                        withAnimation(.spring(response: 0.3)) {
+                            selectedCategory = nil
+                        }
+                    }
                     ForEach(availableCategories, id: \.self) { cat in
-                        CategoryBadge(category: cat)
-                            .opacity(selectedCategory == cat ? 1.0 : 0.5)
-                            .onTapGesture {
-                                withAnimation(.spring(response: 0.3)) {
-                                    selectedCategory = selectedCategory == cat ? nil : cat
-                                }
+                        Button {
+                            withAnimation(.spring(response: 0.3)) {
+                                selectedCategory = selectedCategory == cat ? nil : cat
                             }
+                        } label: {
+                            CategoryBadge(category: cat)
+                                .opacity(selectedCategory == cat ? 1.0 : 0.55)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Category \(cat)")
+                        .accessibilityAddTraits(selectedCategory == cat ? .isSelected : [])
                     }
                 }
                 .padding(.horizontal, BCSpacing.md)
                 .padding(.vertical, 8)
             }
-            .background(BCColors.cardBackground)
+            .background(BCColors.instrumentInset)
             .accessibilityIdentifier("routesCategoryFilter")
+        }
+    }
 
-            // Sort bar
+    private var sortAndModeBar: some View {
+        VStack(spacing: 8) {
             HStack(spacing: 6) {
                 Image(systemName: "arrow.up.arrow.down")
                     .font(.system(size: 9))
@@ -117,12 +199,15 @@ struct RoutesView: View {
                         withAnimation(.spring(response: 0.3)) { sortOption = option }
                     } label: {
                         Text(option.rawValue)
-                            .font(.system(size: 10, weight: sortOption == option ? .bold : .medium))
-                            .foregroundColor(sortOption == option ? .white : .secondary)
+                            .font(.system(size: 10, weight: sortOption == option ? .bold : .semibold, design: .monospaced))
+                            .foregroundColor(sortOption == option ? .white : BCColors.cockpitMutedText)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
-                            .background(sortOption == option ? BCColors.brandBlue : BCColors.cardBackground)
-                            .clipShape(Capsule())
+                            .background(sortOption == option ? BCColors.brandBlue : BCColors.instrumentPanel)
+                            .overlay {
+                                Rectangle()
+                                    .stroke(sortOption == option ? Color.white.opacity(0.2) : BCColors.hairline, lineWidth: 1)
+                            }
                     }
                     .buttonStyle(.plain)
                 }
@@ -131,140 +216,119 @@ struct RoutesView: View {
                     .font(.system(size: 9))
                     .foregroundColor(.secondary)
             }
+
+            Picker("Browse mode", selection: $browseMode) {
+                ForEach(RouteBrowseMode.allCases) { mode in
+                    Text(mode.rawValue).tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+            .accessibilityLabel("Route browse mode")
+        }
+        .padding(.horizontal, BCSpacing.md)
+        .padding(.vertical, 8)
+        .background(BCColors.background)
+    }
+
+    private var routeList: some View {
+        ScrollView {
+            LazyVStack(spacing: BCSpacing.sm) {
+                let imported = filteredRoutes.filter(\.isImported)
+                if !imported.isEmpty {
+                    sectionHeader("MY ROUTES")
+
+                    ForEach(imported) { route in
+                        NavigationLink(destination: RouteDetailView(route: route)) {
+                            RouteCard(route: route)
+                                .overlay(alignment: .topTrailing) {
+                                    RIDRBadge(text: "Imported", color: BCColors.brandGreen)
+                                        .padding(8)
+                                }
+                        }
+                        .buttonStyle(.plain)
+                        .swipeActions(edge: .trailing) {
+                            Button(role: .destructive) {
+                                appState.removeImportedRoute(id: route.id)
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
+                    }
+
+                    sectionHeader("BLACK HILLS ROUTES")
+                        .padding(.top, BCSpacing.sm)
+                }
+
+                let bundled = filteredRoutes.filter { !$0.isImported }
+                ForEach(Array(bundled.enumerated()), id: \.element.id) { index, route in
+                    NavigationLink(destination: RouteDetailView(route: route)) {
+                        RouteCard(route: route)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
             .padding(.horizontal, BCSpacing.md)
-            .padding(.vertical, 6)
-            .background(BCColors.background)
+            .padding(.top, BCSpacing.sm)
+            .accessibilityIdentifier("routesList")
+        }
+    }
 
-            // Route list
-            ScrollView {
-                if filteredRoutes.isEmpty {
-                    VStack(spacing: BCSpacing.md) {
-                        Spacer().frame(height: 80)
-                        Image(systemName: "bicycle")
-                            .font(.system(size: 32))
-                            .foregroundColor(.secondary)
-                        Text("No routes found")
-                            .font(.bcPrimaryText)
-                        Text("TRY A DIFFERENT FILTER")
-                            .font(.bcLabel)
-                            .tracking(2)
-                            .foregroundColor(.secondary)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .accessibilityElement(children: .combine)
-                    .accessibilityLabel("No routes found. Try a different filter.")
-                    .accessibilityIdentifier("routesEmptyState")
-                } else {
-                    LazyVStack(spacing: BCSpacing.sm) {
-                        // Imported routes section
-                        let imported = filteredRoutes.filter { $0.isImported }
-                        if !imported.isEmpty {
-                            HStack {
-                                Text("MY ROUTES")
-                                    .font(.system(size: 10, weight: .semibold))
-                                    .tracking(1)
-                                    .foregroundColor(.secondary)
-                                Spacer()
-                            }
-                            .padding(.top, BCSpacing.xs)
+    private var routeMapBrowser: some View {
+        ZStack(alignment: .bottom) {
+            Map(position: $routeMapPosition) {
+                ForEach(filteredRoutes) { route in
+                    let isSelected = selectedMapRoute?.id == route.id
+                    MapPolyline(coordinates: route.clTrackpoints)
+                        .stroke(BCColors.difficultyColor(route.difficulty), lineWidth: isSelected ? 5 : 2.5)
 
-                            ForEach(imported) { route in
-                                NavigationLink(destination: RouteDetailView(route: route)) {
-                                    RouteCard(route: route)
-                                        .overlay(alignment: .topTrailing) {
-                                            Text("IMPORTED")
-                                                .font(.system(size: 7, weight: .bold))
-                                                .tracking(0.5)
-                                                .padding(.horizontal, 6)
-                                                .padding(.vertical, 3)
-                                                .background(BCColors.brandGreen.opacity(0.2))
-                                                .foregroundColor(BCColors.brandGreen)
-                                                .clipShape(Capsule())
-                                                .padding(8)
-                                        }
-                                }
-                                .buttonStyle(.plain)
-                                .swipeActions(edge: .trailing) {
-                                    Button(role: .destructive) {
-                                        appState.removeImportedRoute(id: route.id)
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
-                                    }
+                    if let first = route.clTrackpoints.first {
+                        Annotation(route.name, coordinate: first) {
+                            RouteMapPin(route: route, isSelected: isSelected) {
+                                withAnimation(.spring(response: 0.25)) {
+                                    selectedMapRoute = selectedMapRoute?.id == route.id ? nil : route
                                 }
                             }
-
-                            HStack {
-                                Text("BLACK HILLS ROUTES")
-                                    .font(.system(size: 10, weight: .semibold))
-                                    .tracking(1)
-                                    .foregroundColor(.secondary)
-                                Spacer()
-                            }
-                            .padding(.top, BCSpacing.sm)
-                        }
-
-                        // Bundled routes
-                        let bundled = filteredRoutes.filter { !$0.isImported }
-                        ForEach(Array(bundled.enumerated()), id: \.element.id) { index, route in
-                            NavigationLink(destination: RouteDetailView(route: route)) {
-                                RouteCard(route: route)
-                            }
-                            .buttonStyle(.plain)
-                            .opacity(appeared ? 1 : 0)
-                            .offset(y: appeared ? 0 : 20)
-                            .animation(
-                                .spring(response: 0.4, dampingFraction: 0.8)
-                                .delay(Double(min(index, 15)) * 0.03),
-                                value: appeared
-                            )
                         }
                     }
-                    .padding(.horizontal, BCSpacing.md)
-                    .padding(.top, BCSpacing.sm)
-                    .accessibilityIdentifier("routesList")
                 }
             }
-        }
-        .navigationTitle("")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                VStack(spacing: 2) {
-                    Text("ROUTES")
-                        .font(.bcSectionTitle)
-                        .tracking(2)
-                    Text("\(filteredRoutes.count) routes")
-                        .font(.bcMicro)
-                        .foregroundColor(.secondary)
-                }
-                .accessibilityElement(children: .combine)
-                .accessibilityLabel("Routes. \(filteredRoutes.count) routes.")
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                HStack(spacing: 14) {
-                    NavigationLink(destination: RouteExplorerView()) {
-                        Image(systemName: "map")
-                            .font(.system(size: 14, weight: .medium))
-                    }
-                    .accessibilityLabel("Route Explorer — view all routes on topo map")
+            .mapStyle(.standard(elevation: .realistic))
+            .accessibilityIdentifier("routesMap")
 
-                    Button {
-                        showImport = true
-                    } label: {
-                        Image(systemName: "plus")
-                            .font(.system(size: 14, weight: .medium))
-                    }
-                    .accessibilityLabel("Import GPX route")
+            if let selectedMapRoute {
+                NavigationLink(destination: RouteDetailView(route: selectedMapRoute)) {
+                    RouteMapSelectionCard(route: selectedMapRoute)
                 }
+                .buttonStyle(.plain)
+                .padding(BCSpacing.md)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
-        .sheet(isPresented: $showImport) {
-            GPXImportView()
+    }
+
+    private var emptyState: some View {
+        VStack(spacing: BCSpacing.md) {
+            Spacer().frame(height: 80)
+            Image(systemName: "bicycle")
+                .font(.system(size: 32))
+                .foregroundColor(.secondary)
+            Text("No routes found")
+                .font(.bcPrimaryText)
+            Text("TRY A DIFFERENT FILTER")
+                .font(.bcLabel)
+                .tracking(2)
+                .foregroundColor(.secondary)
+            Spacer()
         }
-        .task {
-            try? await Task.sleep(for: .milliseconds(100))
-            appeared = true
-        }
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("No routes found. Try a different filter.")
+        .accessibilityIdentifier("routesEmptyState")
+    }
+
+    private func sectionHeader(_ title: String) -> some View {
+        BCSectionHeader(title, icon: title == "MY ROUTES" ? "tray.full" : "map")
+        .padding(.top, BCSpacing.xs)
     }
 }
 
@@ -274,15 +338,17 @@ struct RouteCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // Header
             HStack {
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 5) {
+                    Text(route.region.uppercased())
+                        .font(.bcInstrumentLabel)
+                        .tracking(1)
+                        .foregroundColor(BCColors.cockpitMutedText)
+
                     Text(route.name)
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.primary)
-                    Text(route.region)
-                        .font(.system(size: 11, weight: .regular))
-                        .foregroundColor(.secondary)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(BCColors.primaryText)
+                        .lineLimit(2)
                 }
 
                 Spacer()
@@ -290,31 +356,16 @@ struct RouteCard: View {
                 DifficultyBadge(difficulty: route.difficulty)
             }
 
-            // Description
             Text(route.description)
                 .font(.system(size: 12, weight: .regular))
-                .foregroundColor(.secondary)
+                .foregroundColor(BCColors.secondaryText)
                 .lineLimit(2)
 
-            // Stats + condition badge
-            HStack(spacing: 16) {
-                HStack(spacing: 4) {
-                    Image(systemName: "arrow.left.arrow.right")
-                        .font(.system(size: 10))
-                    Text(route.formattedDistance)
-                        .font(.bcCaption)
-                }
-                .foregroundColor(.secondary)
+            BCHairline()
 
-                HStack(spacing: 4) {
-                    Image(systemName: "arrow.up.right")
-                        .font(.system(size: 10))
-                    Text(route.formattedElevation)
-                        .font(.bcCaption)
-                }
-                .foregroundColor(.secondary)
-
-                // Trail condition badge (crowdsourced)
+            HStack(spacing: 12) {
+                routeStat(icon: "arrow.left.arrow.right", value: route.formattedDistance, label: "Distance")
+                routeStat(icon: "arrow.up.right", value: route.formattedElevation, label: "Gain")
                 if let condition = RouteConditionReporter.shared.latestCondition(for: route.id) {
                     TrailConditionBadge(condition: condition)
                 }
@@ -324,12 +375,57 @@ struct RouteCard: View {
                 CategoryBadge(category: route.category)
             }
         }
-        .padding(BCSpacing.md)
-        .background(BCColors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .bcInstrumentCard()
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(route.name). \(route.difficulty) \(route.category). \(route.formattedDistance), \(route.formattedElevation) gain.")
         .accessibilityHint("Double tap to view route details")
+    }
+
+    private func routeStat(icon: String, value: String, label: String) -> some View {
+        HStack(spacing: 5) {
+            Image(systemName: icon)
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundColor(BCColors.cockpitMutedText)
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text(value)
+                    .font(.bcCaption)
+                    .foregroundColor(BCColors.primaryText)
+                    .lineLimit(1)
+                Text(label.uppercased())
+                    .font(.bcInstrumentLabel)
+                    .tracking(0.6)
+                    .foregroundColor(BCColors.cockpitMutedText)
+            }
+        }
+    }
+}
+
+private struct RouteMapSelectionCard: View {
+    let route: Route
+
+    var body: some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(route.name)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(BCColors.primaryText)
+                    .lineLimit(1)
+                Text("\(route.formattedDistance) · \(route.formattedElevation) · \(route.region)")
+                    .font(.bcCaption)
+                    .foregroundColor(BCColors.secondaryText)
+                    .lineLimit(1)
+            }
+
+            Spacer()
+
+            DifficultyBadge(difficulty: route.difficulty)
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundColor(.secondary)
+        }
+        .bcInstrumentCard()
     }
 }
 

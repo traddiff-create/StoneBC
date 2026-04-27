@@ -18,11 +18,23 @@ import UIKit
 class EmergencySafetyService {
     static let shared = EmergencySafetyService()
 
+    enum CheckInState: String {
+        case inactive
+        case active
+        case overdue
+    }
+
     var emergencyContact: EmergencyContact?
     var lastKnownLocation: CLLocationCoordinate2D?
     var lastLocationTimestamp: Date?
+    var checkInState: CheckInState = .inactive
+    var checkInDeadline: Date?
+    var lastCheckInAt: Date?
+    var activeRouteName: String?
 
     private let storageKey = "emergencyContact"
+    private var checkInInterval: TimeInterval = RideTuning.safetyCheckInIntervalSeconds
+    private var checkInTimer: Timer?
 
     /// Whether device supports satellite SOS (iPhone 14+)
     var supportsSatelliteSOS: Bool {
@@ -71,6 +83,53 @@ class EmergencySafetyService {
         lastLocationTimestamp = Date()
     }
 
+    // MARK: - Local Check-In Timer
+
+    func startCheckInTimer(routeName: String?, interval: TimeInterval = RideTuning.safetyCheckInIntervalSeconds) {
+        checkInTimer?.invalidate()
+        checkInInterval = interval
+        activeRouteName = routeName
+        lastCheckInAt = Date()
+        checkInDeadline = Date().addingTimeInterval(interval)
+        checkInState = .active
+
+        checkInTimer = Timer.scheduledTimer(withTimeInterval: 15, repeats: true) { [weak self] _ in
+            self?.refreshCheckInState()
+        }
+    }
+
+    func checkIn(at date: Date = Date()) {
+        guard checkInState != .inactive else { return }
+        lastCheckInAt = date
+        checkInDeadline = date.addingTimeInterval(checkInInterval)
+        checkInState = .active
+    }
+
+    func stopCheckInTimer() {
+        checkInTimer?.invalidate()
+        checkInTimer = nil
+        checkInState = .inactive
+        checkInDeadline = nil
+        lastCheckInAt = nil
+        activeRouteName = nil
+    }
+
+    private func refreshCheckInState(at date: Date = Date()) {
+        guard let deadline = checkInDeadline else {
+            checkInState = .inactive
+            return
+        }
+        checkInState = date >= deadline ? .overdue : .active
+    }
+
+    var formattedCheckInRemaining: String {
+        guard checkInState != .inactive, let deadline = checkInDeadline else { return "" }
+        let remaining = deadline.timeIntervalSinceNow
+        guard remaining > 0 else { return "OVERDUE" }
+        let minutes = Int(ceil(remaining / 60))
+        return "\(minutes)m"
+    }
+
     /// Format last known location for emergency text
     var emergencyLocationText: String {
         guard let loc = lastKnownLocation, let time = lastLocationTimestamp else {
@@ -97,6 +156,9 @@ class EmergencySafetyService {
     /// Compose emergency SMS text (for use with MFMessageComposeViewController or SMS URL)
     var emergencySMSBody: String {
         var body = "SOS — I need help on a bike ride.\n"
+        if let activeRouteName {
+            body += "Route: \(activeRouteName)\n"
+        }
         body += emergencyLocationText
         if let url = emergencyMapURL {
             body += "\nMap: \(url.absoluteString)"

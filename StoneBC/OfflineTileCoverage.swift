@@ -8,9 +8,9 @@
 //  the covered region.
 //
 //  Coverage bbox is loaded from `Resources/tiles/tile_coverage.json` (emitted
-//  by `Scripts/build_tile_pack.py`). Falls back to a hard-coded Black Hills
-//  + foothills bbox if the JSON is missing — meaningful for early
-//  dev-builds where the tile pack hasn't been generated yet.
+//  by `Scripts/build_tile_pack.py`). If that manifest is missing, runtime
+//  coverage checks report false so the HUD never claims offline basemap
+//  coverage before real tiles ship.
 //
 
 import Foundation
@@ -27,18 +27,21 @@ enum OfflineTileCoverage {
         let attribution: String
     }
 
-    /// Coverage bbox — Black Hills + foothills, USFS topo + OSM Cycle hybrid.
-    /// Fallback used until `Resources/tiles/tile_coverage.json` ships in the
-    /// app bundle. Same shape; the script overwrites with real values.
+    /// Intended statewide coverage bbox for the SD offline map pack. Runtime
+    /// `contains` calls still require a bundled `tile_coverage.json` manifest.
     private static let fallbackBbox = Bbox(
-        minLat: 43.30,   // Wind Cave / southern Custer SP
-        maxLat: 44.85,   // Belle Fourche / Sturgis / Spearfish Canyon
-        minLon: -104.20, // Wyoming line
-        maxLon: -102.85, // Rapid City / Box Elder
+        minLat: 42.45,
+        maxLat: 45.96,
+        minLon: -104.10,
+        maxLon: -96.40,
         minZoom: 11,
         maxZoom: 14,
         attribution: "USFS Topo (public domain) · OSM Cycle Map © OpenStreetMap contributors (CC BY-SA)"
     )
+
+    static let hasBundledCoverageManifest: Bool = {
+        Bundle.main.url(forResource: "tile_coverage", withExtension: "json") != nil
+    }()
 
     static let bbox: Bbox = {
         if let url = Bundle.main.url(forResource: "tile_coverage", withExtension: "json"),
@@ -53,7 +56,8 @@ enum OfflineTileCoverage {
 
     /// Is this coordinate inside the bundled tile pack?
     static func contains(coordinate: CLLocationCoordinate2D) -> Bool {
-        coordinate.latitude >= bbox.minLat
+        guard hasBundledCoverageManifest else { return false }
+        return coordinate.latitude >= bbox.minLat
             && coordinate.latitude <= bbox.maxLat
             && coordinate.longitude >= bbox.minLon
             && coordinate.longitude <= bbox.maxLon

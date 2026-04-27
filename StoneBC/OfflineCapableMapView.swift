@@ -63,38 +63,8 @@ struct OfflineCapableMapView: UIViewRepresentable {
         context.coordinator.parent = self
         context.coordinator.syncTileOverlays(on: map)
 
-        // Refresh polylines — diff would be nicer but the polyline arrays are
-        // small enough that re-adding is fine. Strip everything that isn't a
-        // tile overlay, then re-add the route + breadcrumb.
-        let nonTileOverlays = map.overlays.filter {
-            !($0 is BundledTileOverlay) && !($0 is DownloadedRouteTileOverlay)
-        }
-        map.removeOverlays(nonTileOverlays)
-        map.removeAnnotations(map.annotations.filter { !($0 is MKUserLocation) })
-
-        if routePolyline.count >= 2 {
-            let line = MKPolyline(coordinates: routePolyline, count: routePolyline.count)
-            line.title = "route"
-            map.addOverlay(line, level: .aboveLabels)
-
-            if showsEndpointPins, let first = routePolyline.first {
-                let start = MKPointAnnotation()
-                start.title = "Start"
-                start.coordinate = first
-                map.addAnnotation(start)
-            }
-            if showsEndpointPins, let last = routePolyline.last {
-                let end = MKPointAnnotation()
-                end.title = "End"
-                end.coordinate = last
-                map.addAnnotation(end)
-            }
-        }
-        if breadcrumb.count >= 2 {
-            let crumbs = MKPolyline(coordinates: breadcrumb, count: breadcrumb.count)
-            crumbs.title = "breadcrumb"
-            map.addOverlay(crumbs, level: .aboveLabels)
-        }
+        context.coordinator.syncRouteOverlay(on: map)
+        context.coordinator.syncBreadcrumbOverlay(on: map)
 
         // Camera follow toggle — only set if it changed, to avoid fighting
         // the user when they pan.
@@ -111,6 +81,8 @@ struct OfflineCapableMapView: UIViewRepresentable {
     final class Coordinator: NSObject, MKMapViewDelegate {
         var parent: OfflineCapableMapView
         private var tileOverlayKey: String?
+        private var routeOverlayKey: String?
+        private var breadcrumbOverlayKey: String?
 
         init(_ parent: OfflineCapableMapView) {
             self.parent = parent
@@ -133,6 +105,65 @@ struct OfflineCapableMapView: UIViewRepresentable {
             }
 
             tileOverlayKey = key
+        }
+
+        func syncRouteOverlay(on map: MKMapView) {
+            let key = polylineKey(parent.routePolyline) + ":\(parent.showsEndpointPins)"
+            guard key != routeOverlayKey else { return }
+
+            let routeOverlays = map.overlays.compactMap { overlay -> MKOverlay? in
+                guard let polyline = overlay as? MKPolyline, polyline.title == "route" else { return nil }
+                return overlay
+            }
+            map.removeOverlays(routeOverlays)
+            map.removeAnnotations(map.annotations.filter { !($0 is MKUserLocation) })
+
+            if parent.routePolyline.count >= 2 {
+                let line = MKPolyline(coordinates: parent.routePolyline, count: parent.routePolyline.count)
+                line.title = "route"
+                map.addOverlay(line, level: .aboveLabels)
+
+                if parent.showsEndpointPins, let first = parent.routePolyline.first {
+                    let start = MKPointAnnotation()
+                    start.title = "Start"
+                    start.coordinate = first
+                    map.addAnnotation(start)
+                }
+                if parent.showsEndpointPins, let last = parent.routePolyline.last {
+                    let end = MKPointAnnotation()
+                    end.title = "End"
+                    end.coordinate = last
+                    map.addAnnotation(end)
+                }
+            }
+
+            routeOverlayKey = key
+        }
+
+        func syncBreadcrumbOverlay(on map: MKMapView) {
+            let key = polylineKey(parent.breadcrumb)
+            guard key != breadcrumbOverlayKey else { return }
+
+            let breadcrumbOverlays = map.overlays.compactMap { overlay -> MKOverlay? in
+                guard let polyline = overlay as? MKPolyline, polyline.title == "breadcrumb" else { return nil }
+                return overlay
+            }
+            map.removeOverlays(breadcrumbOverlays)
+
+            if parent.breadcrumb.count >= 2 {
+                let crumbs = MKPolyline(coordinates: parent.breadcrumb, count: parent.breadcrumb.count)
+                crumbs.title = "breadcrumb"
+                map.addOverlay(crumbs, level: .aboveLabels)
+            }
+
+            breadcrumbOverlayKey = key
+        }
+
+        private func polylineKey(_ coordinates: [CLLocationCoordinate2D]) -> String {
+            guard let first = coordinates.first, let last = coordinates.last else {
+                return "0"
+            }
+            return "\(coordinates.count):\(first.latitude):\(first.longitude):\(last.latitude):\(last.longitude)"
         }
 
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ContactView: View {
+    @Environment(AppState.self) private var appState
     @Environment(\.openURL) private var openURL
     @State private var showVolunteerForm = false
     @State private var showDonateForm = false
@@ -47,10 +48,7 @@ struct ContactView: View {
     // MARK: - Get Involved
     private var getInvolvedSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("HOW TO HELP")
-                .font(.system(size: 10, weight: .semibold))
-                .tracking(1)
-                .foregroundColor(.secondary)
+            BCSectionHeader("HOW TO HELP", icon: "hand.raised")
 
             // Volunteer
             Button { showVolunteerForm = true } label: {
@@ -74,7 +72,7 @@ struct ContactView: View {
 
             // Spread the Word
             Button {
-                if let url = URL(string: "https://stonebicyclecoalition.com") {
+                if let url = URL(string: appState.config.websiteURL) {
                     openURL(url)
                 }
             } label: {
@@ -90,20 +88,15 @@ struct ContactView: View {
 
     private func involveCard(title: String, description: String, icon: String) -> some View {
         HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.system(size: 16))
-                .foregroundColor(BCColors.brandBlue)
-                .frame(width: 32, height: 32)
-                .background(BCColors.brandBlue.opacity(0.1))
-                .clipShape(Circle())
+            BCIconTile(icon: icon, color: BCColors.brandBlue, size: 38)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.primary)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(BCColors.primaryText)
                 Text(description)
                     .font(.system(size: 11))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(BCColors.secondaryText)
             }
 
             Spacer()
@@ -112,51 +105,44 @@ struct ContactView: View {
                 .font(.system(size: 10))
                 .foregroundColor(BCColors.tertiaryText)
         }
-        .padding(BCSpacing.md)
-        .background(BCColors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .bcInstrumentCard()
     }
 
     // MARK: - Contact Info
     private var contactInfoSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("CONTACT")
-                .font(.system(size: 10, weight: .semibold))
-                .tracking(1)
-                .foregroundColor(.secondary)
+            BCSectionHeader("CONTACT", icon: "envelope")
 
             VStack(alignment: .leading, spacing: 12) {
                 Button {
-                    if let url = URL(string: "mailto:info@stonebicyclecoalition.com") {
+                    if let url = URL(string: "mailto:\(appState.config.email)") {
                         openURL(url)
                     }
                 } label: {
-                    contactRow(icon: "envelope", text: "info@stonebicyclecoalition.com")
+                    contactRow(icon: "envelope", text: appState.config.email)
                 }
                 .buttonStyle(.plain)
 
                 Button {
-                    if let url = URL(string: "https://stonebicyclecoalition.com") {
+                    if let url = URL(string: appState.config.websiteURL) {
                         openURL(url)
                     }
                 } label: {
-                    contactRow(icon: "globe", text: "stonebicyclecoalition.com")
+                    contactRow(
+                        icon: "globe",
+                        text: appState.config.websiteURL.replacingOccurrences(of: "https://", with: "")
+                    )
                 }
                 .buttonStyle(.plain)
             }
-            .padding(BCSpacing.md)
-            .background(BCColors.cardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .bcInstrumentCard()
         }
     }
 
     // MARK: - Links
     private var linksSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("MORE FROM TRAD DIFF")
-                .font(.system(size: 10, weight: .semibold))
-                .tracking(1)
-                .foregroundColor(.secondary)
+            BCSectionHeader("MORE FROM TRAD DIFF", icon: "link")
 
             VStack(spacing: 8) {
                 Button {
@@ -180,9 +166,7 @@ struct ContactView: View {
                 }
                 .buttonStyle(.plain)
             }
-            .padding(BCSpacing.md)
-            .background(BCColors.cardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .bcInstrumentCard()
         }
     }
 
@@ -193,8 +177,8 @@ struct ContactView: View {
                 .foregroundColor(BCColors.brandBlue)
                 .frame(width: 20)
             Text(text)
-                .font(.system(size: 12, weight: .regular))
-                .foregroundColor(.primary)
+                .font(.bcCaption)
+                .foregroundColor(BCColors.primaryText)
         }
     }
 
@@ -207,8 +191,8 @@ struct ContactView: View {
 
             VStack(alignment: .leading, spacing: 1) {
                 Text(title)
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundColor(.primary)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(BCColors.primaryText)
                 Text(subtitle.uppercased())
                     .font(.system(size: 8, weight: .medium))
                     .tracking(1)
@@ -228,4 +212,5 @@ struct ContactView: View {
     NavigationStack {
         ContactView()
     }
+    .environment(AppState())
 }

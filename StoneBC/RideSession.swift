@@ -39,6 +39,7 @@ class RideSession {
     }
 
     let mode: Mode
+    private let activeTrackStore = ActiveRideTrackStore()
 
     /// Convenience accessor — preserves the old `RideSession.route` API for
     /// view sites that haven't been migrated to mode-aware switches yet.
@@ -131,6 +132,7 @@ class RideSession {
         startedAt = now
         pausedAt = nil
         trackpoints.removeAll()
+        activeTrackStore.startSession()
         elapsedSeconds = 0
         movingSeconds = 0
         distanceMeters = 0
@@ -183,6 +185,7 @@ class RideSession {
     func stop() {
         refreshElapsed()
         state = .stopped
+        activeTrackStore.close()
     }
 
     // MARK: - Location ingest
@@ -250,7 +253,7 @@ class RideSession {
                 avgSpeedMPH = movingSpeedSum / Double(movingSpeedSamples)
             }
 
-            trackpoints.append(location)
+            appendAcceptedTrackpoint(location)
             lastLocation = location
             lastIngestTimestamp = timestamp
 
@@ -262,7 +265,7 @@ class RideSession {
             if speedMPH >= RideTuning.autoResumeSpeedMPH {
                 resume(at: timestamp)
                 onAutoResume?()
-                trackpoints.append(location)
+                appendAcceptedTrackpoint(location)
                 lastLocation = location
                 lastIngestTimestamp = timestamp
                 if let altitudeMeters = currentAltitudeMeters(for: location) {
@@ -403,6 +406,14 @@ class RideSession {
         return min(max(delta, 0), 10)
     }
 
+    private func appendAcceptedTrackpoint(_ location: CLLocation) {
+        activeTrackStore.append(location)
+        trackpoints.append(location)
+        if trackpoints.count > RideTuning.maxInMemoryTrackpoints {
+            trackpoints.removeFirst(trackpoints.count - RideTuning.maxInMemoryTrackpoints)
+        }
+    }
+
     private func refreshElapsed(at now: Date = Date()) {
         guard let startedAt else {
             elapsedSeconds = 0
@@ -466,11 +477,106 @@ class RideSession {
 
     /// `[[lat, lon, ele], ...]` shape the `Route` model expects.
     var routeTrackpointTriples: [[Double]] {
-        trackpoints.map {
-            [$0.coordinate.latitude, $0.coordinate.longitude, $0.altitude]
+        let persisted = activeTrackStore.readTrackpointTriples()
+        guard !persisted.isEmpty else {
+            return trackpoints.map {
+                [$0.coordinate.latitude, $0.coordinate.longitude, $0.altitude]
+            }
         }
+        return persisted
+    }
+
+    var exportLocations: [CLLocation] {
+        let persisted = activeTrackStore.readLocations()
+        return persisted.isEmpty ? trackpoints : persisted
     }
 
     /// Recording is "saveable as a new Route" once it has at least 2 trackpoints.
-    var isSaveable: Bool { trackpoints.count >= 2 }
+    var isSaveable: Bool { activeTrackStore.count >= 2 || trackpoints.count >= 2 }
+}
+
+final class ActiveRideTrackStore {
+    private(set) var url: URL?
+    private(set) var count = 0
+    private var handle: FileHandle?
+
+    func startSession() {
+        close()
+        count = 0
+
+        let baseURL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? FileManager.default.temporaryDirectory
+        let directory = baseURL.appendingPathComponent("ActiveRideTracks", isDirectory: true)
+        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+
+        let fileURL = directory.appendingPathComponent("\(UUID().uuidString).csv")
+        FileManager.default.createFile(atPath: fileURL.path, contents: nil)
+        handle = try? FileHandle(forWritingTo: fileURL)
+        url = fileURL
+    }
+
+    func append(_ location: CLLocation) {
+        guard let handle else { return }
+
+        let line = String(
+            format: "%.3f,%.8f,%.8f,%.2f,%.1f,%.1f,%.3f,%.1f\n",
+            locale: Locale(identifier: "en_US_POSIX"),
+            location.timestamp.timeIntervalSince1970,
+            location.coordinate.latitude,
+            location.coordinate.longitude,
+            location.altitude,
+            location.horizontalAccuracy,
+            location.verticalAccuracy,
+            location.speed,
+            location.course
+        )
+        if let data = line.data(using: .utf8) {
+            handle.write(data)
+            count += 1
+        }
+    }
+
+    func readTrackpointTriples() -> [[Double]] {
+        guard let url,
+              let contents = try? String(contentsOf: url, encoding: .utf8) else {
+            return []
+        }
+
+        return contents.split(separator: "\n").compactMap { row -> [Double]? in
+            let values = parsedValues(from: row)
+            guard values.count >= 4 else { return nil }
+            return [values[1], values[2], values[3]]
+        }
+    }
+
+    func readLocations() -> [CLLocation] {
+        guard let url,
+              let contents = try? String(contentsOf: url, encoding: .utf8) else {
+            return []
+        }
+
+        return contents.split(separator: "\n").compactMap { row -> CLLocation? in
+            let values = parsedValues(from: row)
+            guard values.count >= 8 else { return nil }
+            return CLLocation(
+                coordinate: CLLocationCoordinate2D(latitude: values[1], longitude: values[2]),
+                altitude: values[3],
+                horizontalAccuracy: values[4],
+                verticalAccuracy: values[5],
+                course: values[7],
+                speed: values[6],
+                timestamp: Date(timeIntervalSince1970: values[0])
+            )
+        }
+    }
+
+    func close() {
+        handle?.synchronizeFile()
+        try? handle?.close()
+        handle = nil
+    }
+
+    private func parsedValues(from row: Substring) -> [Double] {
+        row.split(separator: ",").compactMap { Double($0) }
+    }
 }

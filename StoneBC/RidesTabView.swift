@@ -72,27 +72,18 @@ struct RidesTabView: View {
                 .foregroundColor(.secondary)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 10)
-        .padding(.horizontal, BCSpacing.md)
-        .background(BCColors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .bcInstrumentCard()
     }
 
     // MARK: - Season Summary
 
     private var seasonSummaryStrip: some View {
         let summary = history.seasonSummary
-        return HStack(spacing: 0) {
-            summaryCell(value: summary.formattedMiles, label: "Miles")
-            Divider().frame(height: 30)
-            summaryCell(value: "\(summary.rideCount)", label: "Rides")
-            Divider().frame(height: 30)
-            summaryCell(value: summary.formattedElevation, label: "Elevation")
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, BCSpacing.md)
-        .background(BCColors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        return BCMetricStrip(metrics: [
+            BCMetric(value: summary.formattedMiles, label: "Miles", icon: "road.lanes"),
+            BCMetric(value: "\(summary.rideCount)", label: "Rides", icon: "figure.outdoor.cycle"),
+            BCMetric(value: summary.formattedElevation, label: "Elevation", icon: "arrow.up")
+        ])
     }
 
     private func summaryCell(value: String, label: String) -> some View {
@@ -227,25 +218,25 @@ struct RidesTabView: View {
                     .foregroundColor(BCColors.brandBlue.opacity(0.7))
                     .frame(width: 56, height: 56)
                     .background(BCColors.brandBlue.opacity(0.08))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .clipShape(RoundedRectangle(cornerRadius: BCRadius.tile))
             }
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(ride.routeName)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.primary)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(BCColors.primaryText)
                 Text(ride.formattedDate)
-                    .font(.system(size: 11))
-                    .foregroundColor(.secondary)
+                    .font(.bcCaption)
+                    .foregroundColor(BCColors.secondaryText)
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 2) {
                 Text(ride.formattedDistance)
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundColor(.primary)
+                    .font(.bcCaption)
+                    .foregroundColor(BCColors.primaryText)
                 Text(ride.formattedTime)
-                    .font(.system(size: 11))
-                    .foregroundColor(.secondary)
+                    .font(.bcMicro)
+                    .foregroundColor(BCColors.secondaryText)
             }
             if ride.isTimeTrial {
                 Image(systemName: "stopwatch")
@@ -256,9 +247,7 @@ struct RidesTabView: View {
                 .font(.system(size: 10, weight: .medium))
                 .foregroundColor(BCColors.tertiaryText)
         }
-        .padding(BCSpacing.md)
-        .background(BCColors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .bcInstrumentCard()
     }
 
     // MARK: - Journals
@@ -295,11 +284,11 @@ struct RidesTabView: View {
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(journal.routeName)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.primary)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(BCColors.primaryText)
                 Text(journal.date, style: .date)
-                    .font(.system(size: 11))
-                    .foregroundColor(.secondary)
+                    .font(.bcCaption)
+                    .foregroundColor(BCColors.secondaryText)
             }
             Spacer()
             if journal.isFavorite {
@@ -311,9 +300,7 @@ struct RidesTabView: View {
                 .font(.system(size: 10, weight: .medium))
                 .foregroundColor(BCColors.tertiaryText)
         }
-        .padding(BCSpacing.md)
-        .background(BCColors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .bcInstrumentCard()
     }
 
     // MARK: - Time Trials
@@ -340,19 +327,19 @@ struct RidesTabView: View {
     private func timeTrialRow(_ preset: TimeTrialPreset) -> some View {
         HStack(spacing: 12) {
             Image(systemName: "trophy")
-                .font(.system(size: 16))
+                .font(.system(size: 16, weight: .semibold))
                 .foregroundColor(BCColors.brandBlue)
-                .frame(width: 32, height: 32)
-                .background(BCColors.brandBlue.opacity(0.1))
-                .clipShape(Circle())
+                .frame(width: 36, height: 36)
+                .background(BCColors.brandBlue.opacity(0.12))
+                .clipShape(RoundedRectangle(cornerRadius: BCRadius.tile))
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(preset.routeName)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.primary)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(BCColors.primaryText)
                 Text("\(preset.attempts.count) attempts")
-                    .font(.system(size: 11))
-                    .foregroundColor(.secondary)
+                    .font(.bcCaption)
+                    .foregroundColor(BCColors.secondaryText)
             }
 
             Spacer()
@@ -360,9 +347,9 @@ struct RidesTabView: View {
             if let pb = preset.personalBestSeconds {
                 VStack(alignment: .trailing, spacing: 2) {
                     Text(formatTime(pb))
-                        .font(.system(size: 14, weight: .bold))
+                        .font(.bcCaption)
                     Text("Best")
-                        .font(.system(size: 10))
+                        .font(.bcMicro)
                         .foregroundColor(.secondary)
                 }
             }
@@ -371,9 +358,7 @@ struct RidesTabView: View {
                 .font(.system(size: 10, weight: .medium))
                 .foregroundColor(BCColors.tertiaryText)
         }
-        .padding(BCSpacing.md)
-        .background(BCColors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .bcInstrumentCard()
     }
 
     // MARK: - Empty State
@@ -382,7 +367,7 @@ struct RidesTabView: View {
         VStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.system(size: 36))
-                .foregroundColor(.secondary.opacity(0.5))
+                .foregroundColor(BCColors.cockpitMutedText.opacity(0.7))
             Text(title)
                 .font(.system(size: 15, weight: .medium))
             Text(subtitle)
@@ -392,6 +377,7 @@ struct RidesTabView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 40)
+        .bcInstrumentCard()
     }
 
     private func formatTime(_ seconds: Double) -> String {

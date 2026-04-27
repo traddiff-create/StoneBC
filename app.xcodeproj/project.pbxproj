@@ -136,6 +136,12 @@
 		P00005000000000000000005 /* RouteSubmissionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = P10005000000000000000005 /* RouteSubmissionService.swift */; };
 		P00007000000000000000007 /* MemberLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = P10007000000000000000007 /* MemberLoginView.swift */; };
 		P00006000000000000000006 /* MemberAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = P10006000000000000000006 /* MemberAuthService.swift */; };
+		AA0001000000000000000001 /* RouteInterchangeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1001000000000000000001 /* RouteInterchangeService.swift */; };
+		AA0002000000000000000002 /* RouteProviderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1002000000000000000002 /* RouteProviderService.swift */; };
+		Z10001000000000000000001 /* StardosStencil-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = Z20001000000000000000001 /* StardosStencil-Bold.ttf */; };
+		Z10002000000000000000002 /* JetBrainsMono.ttf in Resources */ = {isa = PBXBuildFile; fileRef = Z20002000000000000000002 /* JetBrainsMono.ttf */; };
+		Z10003000000000000000003 /* Archivo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = Z20003000000000000000003 /* Archivo.ttf */; };
+		Z10004000000000000000004 /* ArchivoNarrow.ttf in Resources */ = {isa = PBXBuildFile; fileRef = Z20004000000000000000004 /* ArchivoNarrow.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -272,6 +278,16 @@
 		P10005000000000000000005 /* RouteSubmissionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteSubmissionService.swift; sourceTree = "<group>"; };
 		P10007000000000000000007 /* MemberLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberLoginView.swift; sourceTree = "<group>"; };
 		P10006000000000000000006 /* MemberAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberAuthService.swift; sourceTree = "<group>"; };
+		AA1001000000000000000001 /* RouteInterchangeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteInterchangeService.swift; sourceTree = "<group>"; };
+		AA1002000000000000000002 /* RouteProviderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteProviderService.swift; sourceTree = "<group>"; };
+		Z20001000000000000000001 /* StardosStencil-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "StardosStencil-Bold.ttf"; sourceTree = "<group>"; };
+		Z20002000000000000000002 /* JetBrainsMono.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = JetBrainsMono.ttf; sourceTree = "<group>"; };
+		Z20003000000000000000003 /* Archivo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Archivo.ttf; sourceTree = "<group>"; };
+		Z20004000000000000000004 /* ArchivoNarrow.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = ArchivoNarrow.ttf; sourceTree = "<group>"; };
+		Z20005000000000000000005 /* OFL-StardosStencil.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "OFL-StardosStencil.txt"; sourceTree = "<group>"; };
+		Z20006000000000000000006 /* OFL-JetBrainsMono.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "OFL-JetBrainsMono.txt"; sourceTree = "<group>"; };
+		Z20007000000000000000007 /* OFL-Archivo.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "OFL-Archivo.txt"; sourceTree = "<group>"; };
+		Z20008000000000000000008 /* OFL-ArchivoNarrow.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "OFL-ArchivoNarrow.txt"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -311,6 +327,7 @@
 				A2000D00000000000000000D /* ToolkitArticle.swift */,
 				A2000E00000000000000000E /* BCPhoto.swift */,
 				A2000F00000000000000000F /* BCDesignSystem.swift */,
+				Z30000000000000000000001 /* Fonts */,
 				A20010000000000000000010 /* routes.json */,
 				A20011000000000000000011 /* events.json */,
 				A20012000000000000000012 /* programs.json */,
@@ -334,6 +351,8 @@
 				C2000D00000000000000000D /* MoreView.swift */,
 				C2000E00000000000000000E /* WordPressService.swift */,
 				F10001000000000000000001 /* GPXService.swift */,
+				AA1001000000000000000001 /* RouteInterchangeService.swift */,
+				AA1002000000000000000002 /* RouteProviderService.swift */,
 				F10002000000000000000002 /* GPXImportView.swift */,
 				F10003000000000000000003 /* LocationService.swift */,
 				F10004000000000000000004 /* RouteNavigationView.swift */,
@@ -447,6 +466,21 @@
 			path = Radio;
 			sourceTree = "<group>";
 		};
+		Z30000000000000000000001 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				Z20001000000000000000001 /* StardosStencil-Bold.ttf */,
+				Z20002000000000000000002 /* JetBrainsMono.ttf */,
+				Z20003000000000000000003 /* Archivo.ttf */,
+				Z20004000000000000000004 /* ArchivoNarrow.ttf */,
+				Z20005000000000000000005 /* OFL-StardosStencil.txt */,
+				Z20006000000000000000006 /* OFL-JetBrainsMono.txt */,
+				Z20007000000000000000007 /* OFL-Archivo.txt */,
+				Z20008000000000000000008 /* OFL-ArchivoNarrow.txt */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -520,6 +554,10 @@
 				G00008000000000000000008 /* cell_towers.json in Resources */,
 				K00006000000000000000006 /* guides.json in Resources */,
 				P10001000000000000000002 /* PrivacyInfo.xcprivacy in Resources */,
+				Z10001000000000000000001 /* StardosStencil-Bold.ttf in Resources */,
+				Z10002000000000000000002 /* JetBrainsMono.ttf in Resources */,
+				Z10003000000000000000003 /* Archivo.ttf in Resources */,
+				Z10004000000000000000004 /* ArchivoNarrow.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -571,6 +609,8 @@
 				D1000A00000000000000000A /* RadioOverlayView.swift in Sources */,
 				D1000B00000000000000000B /* AppState+Radio.swift in Sources */,
 				F00001000000000000000001 /* GPXService.swift in Sources */,
+				AA0001000000000000000001 /* RouteInterchangeService.swift in Sources */,
+				AA0002000000000000000002 /* RouteProviderService.swift in Sources */,
 				F00002000000000000000002 /* GPXImportView.swift in Sources */,
 				F00003000000000000000003 /* LocationService.swift in Sources */,
 				F00004000000000000000004 /* RouteNavigationView.swift in Sources */,

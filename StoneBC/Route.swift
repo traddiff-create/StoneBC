@@ -21,6 +21,7 @@ struct Route: Identifiable, Codable {
     let trackpoints: [[Double]]     // [[lat, lon, ele], ...]
     let cuePoints: [CuePoint]
     let gpxURL: String?             // Public URL for gpx.studio embed
+    let rideDefaults: RouteRideDefaults?
     var isImported: Bool
 
     struct Coordinate: Codable, Hashable {
@@ -63,13 +64,15 @@ struct Route: Identifiable, Codable {
         trackpoints = try container.decode([[Double]].self, forKey: .trackpoints)
         cuePoints = try container.decodeIfPresent([CuePoint].self, forKey: .cuePoints) ?? []
         gpxURL = try container.decodeIfPresent(String.self, forKey: .gpxURL)
+        rideDefaults = try container.decodeIfPresent(RouteRideDefaults.self, forKey: .rideDefaults)
         isImported = try container.decodeIfPresent(Bool.self, forKey: .isImported) ?? false
     }
 
     init(id: String, name: String, difficulty: String, category: String,
          distanceMiles: Double, elevationGainFeet: Int, region: String,
          description: String, startCoordinate: Coordinate, trackpoints: [[Double]],
-         cuePoints: [CuePoint] = [], gpxURL: String? = nil, isImported: Bool = false) {
+         cuePoints: [CuePoint] = [], gpxURL: String? = nil,
+         rideDefaults: RouteRideDefaults? = nil, isImported: Bool = false) {
         self.id = id
         self.name = name
         self.difficulty = difficulty
@@ -82,7 +85,139 @@ struct Route: Identifiable, Codable {
         self.trackpoints = trackpoints
         self.cuePoints = cuePoints
         self.gpxURL = gpxURL
+        self.rideDefaults = rideDefaults
         self.isImported = isImported
+    }
+}
+
+enum RouteRideOverlay: String, Codable, CaseIterable, Identifiable, Hashable {
+    case routeLine
+    case breadcrumbs
+    case cues
+    case offRouteAlerts
+    case offlineStatus
+    case weather
+    case cellCoverage
+    case nearbyStops
+    case safetyCheckIn
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .routeLine: "Route"
+        case .breadcrumbs: "Trail"
+        case .cues: "Cues"
+        case .offRouteAlerts: "Alerts"
+        case .offlineStatus: "Offline"
+        case .weather: "Weather"
+        case .cellCoverage: "Cell"
+        case .nearbyStops: "Stops"
+        case .safetyCheckIn: "Safety"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .routeLine: "point.topleft.down.to.point.bottomright.curvepath"
+        case .breadcrumbs: "scribble.variable"
+        case .cues: "arrow.turn.up.right"
+        case .offRouteAlerts: "exclamationmark.triangle"
+        case .offlineStatus: "wifi.slash"
+        case .weather: "cloud.sun"
+        case .cellCoverage: "antenna.radiowaves.left.and.right"
+        case .nearbyStops: "mappin.and.ellipse"
+        case .safetyCheckIn: "timer"
+        }
+    }
+}
+
+enum RouteRecordingMode: String, Codable, CaseIterable, Identifiable, Hashable {
+    case free
+    case follow
+    case scout
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .free: "Free Ride"
+        case .follow: "Follow Route"
+        case .scout: "Scout Route"
+        }
+    }
+
+    var subtitle: String {
+        switch self {
+        case .free: "Record a new ride from scratch"
+        case .follow: "Record while riding an existing route"
+        case .scout: "Capture a route for cleanup and submission"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .free: "record.circle"
+        case .follow: "location.fill"
+        case .scout: "map.badge.plus"
+        }
+    }
+}
+
+struct RouteRideDefaults: Codable, Hashable {
+    let enabledOverlays: [RouteRideOverlay]?
+    let recommendedRecordingMode: RouteRecordingMode?
+    let offlinePriority: Bool?
+    let cueVisibility: Bool?
+    let safetyCheckInEnabled: Bool?
+    let prepNotes: [String]?
+}
+
+struct RouteRidePreferences: Codable, Hashable {
+    var enabledOverlays: Set<RouteRideOverlay>
+    var defaultRecordingMode: RouteRecordingMode
+    var prepDismissed: Bool
+    var saveToHistory: Bool
+    var saveAsRoute: Bool
+    var submitToCoop: Bool
+
+    static func defaults(for route: Route?) -> RouteRidePreferences {
+        RouteRidePreferences(
+            enabledOverlays: route?.defaultRideOverlays ?? Self.defaultOverlays,
+            defaultRecordingMode: route?.rideDefaults?.recommendedRecordingMode ?? (route == nil ? .free : .follow),
+            prepDismissed: false,
+            saveToHistory: true,
+            saveAsRoute: route == nil,
+            submitToCoop: false
+        )
+    }
+
+    static let defaultOverlays: Set<RouteRideOverlay> = [
+        .routeLine,
+        .breadcrumbs,
+        .cues,
+        .offRouteAlerts,
+        .offlineStatus,
+        .safetyCheckIn
+    ]
+
+    static func load(route: Route?) -> RouteRidePreferences {
+        let key = storageKey(routeId: route?.id)
+        guard let data = UserDefaults.standard.data(forKey: key),
+              let preferences = try? JSONDecoder().decode(RouteRidePreferences.self, from: data) else {
+            return defaults(for: route)
+        }
+        return preferences
+    }
+
+    func save(routeId: String?) {
+        if let data = try? JSONEncoder().encode(self) {
+            UserDefaults.standard.set(data, forKey: Self.storageKey(routeId: routeId))
+        }
+    }
+
+    static func storageKey(routeId: String?) -> String {
+        "routeRidePreferences.\(routeId ?? "free")"
     }
 }
 
@@ -111,6 +246,17 @@ extension Route {
     /// Whether this route has enough data for navigation
     var isNavigable: Bool {
         clTrackpoints.count >= 2
+    }
+
+    var defaultRideOverlays: Set<RouteRideOverlay> {
+        if let enabledOverlays = rideDefaults?.enabledOverlays {
+            return Set(enabledOverlays)
+        }
+        var overlays = RouteRidePreferences.defaultOverlays
+        if !cuePoints.isEmpty {
+            overlays.insert(.cues)
+        }
+        return overlays
     }
 
     var formattedDistance: String {

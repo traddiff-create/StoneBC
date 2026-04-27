@@ -121,9 +121,9 @@ struct OnboardingView: View {
         OnboardingPage(
             icon: "book.closed.fill",
             iconColor: BCColors.brandGreen,
-            title: "Expedition Journal",
-            subtitle: "Lewis & Clark-Style Docs",
-            description: "Multi-day trip docs. Daily entries, GPS-tagged photos, audio memos, and HTML export. Ride group collaborates via an iCloud Drive shared folder.",
+            title: "Follow My Expedition",
+            subtitle: "Offline Field Log",
+            description: "Multi-day trip docs. Daily field logs, GPS-tagged photos, audio memos, video clips, and PDF expedition export. Everything records offline first.",
             showPermissionButton: false
         )
     }
@@ -201,7 +201,7 @@ struct OnboardingView: View {
             Spacer()
 
             ZStack {
-                Circle()
+                Rectangle()
                     .fill(Color.orange.opacity(0.12))
                     .frame(width: 100, height: 100)
                 Image(systemName: "exclamationmark.triangle.fill")
@@ -291,7 +291,7 @@ struct OnboardingView: View {
                     .padding(.vertical, 16)
                     .background(BCColors.brandGreen)
                     .foregroundColor(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .clipShape(Rectangle())
             }
             .padding(.horizontal, 32)
             .padding(.bottom, 20)
@@ -300,7 +300,7 @@ struct OnboardingView: View {
 
     private func featureCheck(_ label: String, granted: Bool) -> some View {
         HStack(spacing: 10) {
-            Image(systemName: granted ? "checkmark.circle.fill" : "circle")
+            Image(systemName: granted ? "checkmark.square.fill" : "square")
                 .font(.system(size: 14))
                 .foregroundColor(granted ? BCColors.brandGreen : .secondary)
             Text(label)
@@ -316,7 +316,7 @@ struct OnboardingView: View {
             // Page dots
             HStack(spacing: 6) {
                 ForEach(0..<Self.pageCount, id: \.self) { page in
-                    Circle()
+                    Rectangle()
                         .fill(page == currentPage ? BCColors.brandGreen : Color.secondary.opacity(0.3))
                         .frame(width: 7, height: 7)
                 }
@@ -371,7 +371,7 @@ struct OnboardingPage: View {
 
             // Icon
             ZStack {
-                Circle()
+                Rectangle()
                     .fill(iconColor.opacity(0.12))
                     .frame(width: 100, height: 100)
                 Image(systemName: icon)
@@ -405,7 +405,7 @@ struct OnboardingPage: View {
                 } label: {
                     HStack(spacing: 8) {
                         if permissionGranted {
-                            Image(systemName: "checkmark.circle.fill")
+                            Image(systemName: "checkmark.square.fill")
                                 .foregroundColor(.white)
                         }
                         Text(permissionLabel)
@@ -415,7 +415,7 @@ struct OnboardingPage: View {
                     .padding(.vertical, 12)
                     .background(permissionGranted ? BCColors.brandGreen : BCColors.brandBlue)
                     .foregroundColor(.white)
-                    .clipShape(Capsule())
+                    .clipShape(Rectangle())
                 }
                 .disabled(permissionGranted)
                 .padding(.top, 8)

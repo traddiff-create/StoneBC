@@ -18,7 +18,7 @@ All data is bundled as JSON in the app. WordPress sync is optional and fires on 
 | Bikes | bikes.json (bundle) | WordPress custom post type |
 | Posts | posts.json (bundle) | WordPress posts endpoint |
 | Events | events.json (bundle) | WordPress custom post type |
-| Routes | routes.json (bundle) | None (static) |
+| Routes | routes.json (bundle), Documents user route library | None (static) |
 | Config | config.json (bundle) | None (static) |
 
 ## Consequences
@@ -27,3 +27,4 @@ All data is bundled as JSON in the app. WordPress sync is optional and fires on 
 - Content updates require a new app build (unless WordPress configured)
 - No real-time data — acceptable for this use case
 - WordPress integration is additive, not required
+- Route file import/export remains local-first; provider APIs are optional enhancements

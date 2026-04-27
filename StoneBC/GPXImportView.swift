@@ -2,11 +2,9 @@
 //  GPXImportView.swift
 //  StoneBC
 //
-//  Import GPX files from Files app, preview route, and save to app
-//
 
-import SwiftUI
 import MapKit
+import SwiftUI
 import UniformTypeIdentifiers
 
 struct GPXImportView: View {
@@ -14,30 +12,36 @@ struct GPXImportView: View {
     @Environment(\.dismiss) var dismiss
 
     @State private var showFilePicker = false
-    @State private var parsedResult: GPXResult?
-    @State private var previewRoute: Route?
-    @State private var selectedDifficulty = "moderate"
-    @State private var selectedCategory = "gravel"
-    @State private var errorMessage: String?
+    @State private var candidates: [RouteImportCandidate] = []
+    @State private var failures: [RouteImportFailure] = []
+    @State private var importedIds: Set<String> = []
+    @State private var saveMessage: String?
+
+    private let allowedTypes: [UTType] = [
+        UTType(filenameExtension: "gpx") ?? .xml,
+        UTType(filenameExtension: "tcx") ?? .xml,
+        UTType(filenameExtension: "fit") ?? .data,
+        UTType(filenameExtension: "kml") ?? .xml,
+        UTType(filenameExtension: "kmz") ?? .zip,
+        .zip,
+        .xml,
+        .data
+    ]
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: BCSpacing.lg) {
-                    if let route = previewRoute {
-                        previewSection(route)
-                    } else {
+                    if candidates.isEmpty && failures.isEmpty {
                         emptyState
-                    }
-
-                    if let error = errorMessage {
-                        Text(error)
-                            .font(.bcSecondaryText)
-                            .foregroundColor(.red)
-                            .padding(BCSpacing.md)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(Color.red.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    } else {
+                        importSummary
+                        ForEach(candidates) { candidate in
+                            candidateCard(candidate)
+                        }
+                        ForEach(failures) { failure in
+                            failureCard(failure)
+                        }
                     }
                 }
                 .padding(BCSpacing.md)
@@ -47,38 +51,52 @@ struct GPXImportView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text("IMPORT ROUTE")
+                    Text("IMPORT ROUTE OR RIDE")
                         .font(.bcSectionTitle)
                         .tracking(2)
                 }
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button("Done") { dismiss() }
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        showFilePicker = true
+                    } label: {
+                        Image(systemName: "folder.badge.plus")
+                    }
+                    .accessibilityLabel("Choose route files")
                 }
             }
             .fileImporter(
                 isPresented: $showFilePicker,
-                allowedContentTypes: [UTType.xml, UTType(filenameExtension: "gpx") ?? .xml],
-                allowsMultipleSelection: false
+                allowedContentTypes: allowedTypes,
+                allowsMultipleSelection: true
             ) { result in
                 handleFileSelection(result)
             }
+            .alert("Import", isPresented: Binding(
+                get: { saveMessage != nil },
+                set: { if !$0 { saveMessage = nil } }
+            )) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(saveMessage ?? "")
+            }
         }
     }
-
-    // MARK: - Empty State
 
     private var emptyState: some View {
         VStack(spacing: BCSpacing.lg) {
             Spacer().frame(height: 60)
 
-            Image(systemName: "map")
+            Image(systemName: "point.topleft.down.to.point.bottomright.curvepath")
                 .font(.system(size: 48))
-                .foregroundColor(BCColors.brandBlue.opacity(0.5))
+                .foregroundColor(BCColors.brandBlue.opacity(0.55))
 
             VStack(spacing: BCSpacing.sm) {
-                Text("Import a GPX File")
+                Text("Import Route or Ride")
                     .font(.bcPrimaryText)
-                Text("Select a GPX file from your device to add it as a route")
+                Text("GPX, TCX, FIT, KML, KMZ, and ZIP bundles")
                     .font(.bcSecondaryText)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -87,7 +105,7 @@ struct GPXImportView: View {
             Button {
                 showFilePicker = true
             } label: {
-                Label("Select GPX File", systemImage: "folder")
+                Label("Select Files", systemImage: "folder")
                     .font(.system(size: 14, weight: .medium))
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
@@ -100,139 +118,216 @@ struct GPXImportView: View {
         .frame(maxWidth: .infinity)
     }
 
-    // MARK: - Preview Section
-
-    private func previewSection(_ route: Route) -> some View {
-        VStack(spacing: BCSpacing.md) {
-            // Map preview
-            Map {
-                MapPolyline(coordinates: route.clTrackpoints)
-                    .stroke(BCColors.brandBlue, lineWidth: 3)
-            }
-            .mapStyle(.standard(elevation: .realistic))
-            .frame(height: 200)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .allowsHitTesting(false)
-
-            // Route info
-            VStack(alignment: .leading, spacing: 12) {
-                Text(route.name)
-                    .font(.system(size: 20, weight: .semibold))
-
-                HStack(spacing: 12) {
-                    StatCard(icon: "arrow.left.arrow.right", label: "Distance", value: route.formattedDistance)
-                    StatCard(icon: "arrow.up.right", label: "Elevation", value: route.formattedElevation)
-                }
-
-                HStack(spacing: 12) {
-                    StatCard(icon: "point.topleft.down.to.point.bottomright.curvepath", label: "Trackpoints", value: "\(route.trackpoints.count)")
-                    StatCard(icon: "mountain.2", label: "Elev Range", value: route.elevationRange)
-                }
-            }
-
-            // Difficulty picker
-            VStack(alignment: .leading, spacing: BCSpacing.sm) {
-                Text("DIFFICULTY")
-                    .font(.system(size: 10, weight: .semibold))
-                    .tracking(1)
+    private var importSummary: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("\(candidates.count) ready")
+                    .font(.system(size: 16, weight: .semibold))
+                Text("\(failures.count) issue\(failures.count == 1 ? "" : "s")")
+                    .font(.system(size: 12))
                     .foregroundColor(.secondary)
-
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: BCSpacing.xs) {
-                        ForEach(Route.allDifficulties, id: \.self) { diff in
-                            FilterChip(title: diff.capitalized, isSelected: selectedDifficulty == diff) {
-                                selectedDifficulty = diff
-                            }
-                        }
-                    }
-                }
             }
-
-            // Category picker
-            VStack(alignment: .leading, spacing: BCSpacing.sm) {
-                Text("CATEGORY")
-                    .font(.system(size: 10, weight: .semibold))
-                    .tracking(1)
-                    .foregroundColor(.secondary)
-
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: BCSpacing.xs) {
-                        ForEach(Route.allCategories, id: \.self) { cat in
-                            FilterChip(title: cat.capitalized, isSelected: selectedCategory == cat) {
-                                selectedCategory = cat
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Save button
-            Button {
-                saveRoute()
-            } label: {
-                Text("Add to Routes")
-                    .font(.system(size: 14, weight: .semibold))
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(BCColors.brandGreen)
-                    .foregroundColor(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-            }
-            .buttonStyle(PressableButtonStyle())
-
-            // Pick different file
-            Button {
-                parsedResult = nil
-                previewRoute = nil
-                errorMessage = nil
+            Spacer()
+            Button("Choose More") {
                 showFilePicker = true
-            } label: {
-                Text("Choose Different File")
-                    .font(.bcSecondaryText)
-                    .foregroundColor(BCColors.brandBlue)
             }
+            .font(.system(size: 13, weight: .medium))
         }
+        .padding(BCSpacing.md)
+        .background(BCColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
-    // MARK: - Actions
+    private func candidateCard(_ candidate: RouteImportCandidate) -> some View {
+        VStack(alignment: .leading, spacing: BCSpacing.md) {
+            candidateMap(candidate)
+
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(candidate.name)
+                            .font(.system(size: 18, weight: .semibold))
+                            .lineLimit(2)
+                        Text(candidate.sourceFilename)
+                            .font(.system(size: 11))
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                    }
+                    Spacer()
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Text(candidate.assetKind.displayName.uppercased())
+                            .font(.system(size: 9, weight: .bold))
+                            .tracking(1)
+                        Text(candidate.sourceFormat.displayName)
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(BCColors.brandBlue)
+                    }
+                }
+
+                HStack(spacing: 8) {
+                    miniStat("Distance", String(format: "%.1f mi", candidate.distanceMiles))
+                    miniStat("Elev", "\(candidate.elevationGainFeet) ft")
+                    miniStat("Points", "\(candidate.trackpoints.count)")
+                    miniStat("Cues", "\(candidate.coursePoints.count)")
+                }
+            }
+
+            HStack(spacing: 10) {
+                if candidate.assetKind == .completedRide {
+                    Button {
+                        saveRide(candidate)
+                    } label: {
+                        Label(importedIds.contains("ride-\(candidate.id)") ? "Saved Ride" : "Save Ride", systemImage: "checkmark.circle")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .disabled(importedIds.contains("ride-\(candidate.id)"))
+                    .buttonStyle(ImportButtonStyle(color: BCColors.brandGreen))
+
+                    Button {
+                        saveRoute(candidate)
+                    } label: {
+                        Label(importedIds.contains("route-\(candidate.id)") ? "Saved Route" : "Save as Route", systemImage: "map")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .disabled(importedIds.contains("route-\(candidate.id)"))
+                    .buttonStyle(ImportButtonStyle(color: BCColors.brandBlue))
+                } else {
+                    Button {
+                        saveRoute(candidate)
+                    } label: {
+                        Label(importedIds.contains("route-\(candidate.id)") ? "Added" : "Add to Routes", systemImage: "plus.circle")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .disabled(importedIds.contains("route-\(candidate.id)"))
+                    .buttonStyle(ImportButtonStyle(color: BCColors.brandGreen))
+                }
+            }
+        }
+        .padding(BCSpacing.md)
+        .background(BCColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    private func failureCard(_ failure: RouteImportFailure) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Label(failure.filename, systemImage: "exclamationmark.triangle")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(BCColors.navAlertRed)
+            Text(failure.message)
+                .font(.system(size: 12))
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(BCSpacing.md)
+        .background(BCColors.navAlertRed.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    private func candidateMap(_ candidate: RouteImportCandidate) -> some View {
+        let coords = candidate.trackpoints.map(\.coordinate)
+        let region = region(for: coords)
+
+        return Map(initialPosition: .region(region)) {
+            MapPolyline(coordinates: coords)
+                .stroke(BCColors.brandBlue, lineWidth: 3)
+            if let first = coords.first {
+                Annotation("", coordinate: first) {
+                    Circle().fill(.green).frame(width: 10, height: 10)
+                }
+            }
+            if let last = coords.last {
+                Annotation("", coordinate: last) {
+                    Circle().fill(.red).frame(width: 10, height: 10)
+                }
+            }
+        }
+        .frame(height: 180)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .allowsHitTesting(false)
+    }
+
+    private func miniStat(_ label: String, _ value: String) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(label.uppercased())
+                .font(.system(size: 8, weight: .semibold))
+                .tracking(1)
+                .foregroundColor(.secondary)
+            Text(value)
+                .font(.system(size: 12, weight: .semibold))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(8)
+        .background(BCColors.background)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
 
     private func handleFileSelection(_ result: Result<[URL], Error>) {
-        errorMessage = nil
         switch result {
         case .success(let urls):
-            guard let url = urls.first else { return }
-            guard url.startAccessingSecurityScopedResource() else {
-                errorMessage = "Unable to access that file."
-                return
+            var accessibleURLs: [URL] = []
+            for url in urls {
+                if url.startAccessingSecurityScopedResource() {
+                    accessibleURLs.append(url)
+                } else {
+                    failures.append(RouteImportFailure(filename: url.lastPathComponent, message: "Unable to access that file."))
+                }
             }
-            defer { url.stopAccessingSecurityScopedResource() }
-
-            do {
-                let data = try Data(contentsOf: url)
-                let gpxResult = try GPXService.parseGPX(data: data)
-                parsedResult = gpxResult
-                previewRoute = Route.fromGPX(
-                    gpxResult,
-                    difficulty: selectedDifficulty,
-                    category: selectedCategory
-                )
-            } catch {
-                errorMessage = error.localizedDescription
+            defer {
+                accessibleURLs.forEach { $0.stopAccessingSecurityScopedResource() }
             }
+            let batch = RouteInterchangeService.importFiles(accessibleURLs)
+            candidates.append(contentsOf: batch.candidates)
+            failures.append(contentsOf: batch.failures)
         case .failure(let error):
-            errorMessage = error.localizedDescription
+            failures.append(RouteImportFailure(filename: "Files", message: error.localizedDescription))
         }
     }
 
-    private func saveRoute() {
-        guard let result = parsedResult else { return }
-        let route = Route.fromGPX(
-            result,
-            difficulty: selectedDifficulty,
-            category: selectedCategory
+    private func saveRoute(_ candidate: RouteImportCandidate) {
+        appState.addImportedRoute(candidate.route)
+        importedIds.insert("route-\(candidate.id)")
+        saveMessage = "\(candidate.name) added to Routes."
+    }
+
+    private func saveRide(_ candidate: RouteImportCandidate) {
+        RideHistoryService.shared.importRide(candidate.completedRide)
+        importedIds.insert("ride-\(candidate.id)")
+        saveMessage = "\(candidate.name) saved to ride history."
+    }
+
+    private func region(for coords: [CLLocationCoordinate2D]) -> MKCoordinateRegion {
+        guard !coords.isEmpty else {
+            return MKCoordinateRegion(
+                center: CLLocationCoordinate2D(latitude: 44.0805, longitude: -103.2310),
+                span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+            )
+        }
+        let lats = coords.map(\.latitude)
+        let lons = coords.map(\.longitude)
+        let center = CLLocationCoordinate2D(
+            latitude: ((lats.min() ?? 0) + (lats.max() ?? 0)) / 2,
+            longitude: ((lons.min() ?? 0) + (lons.max() ?? 0)) / 2
         )
-        appState.addImportedRoute(route)
-        dismiss()
+        return MKCoordinateRegion(
+            center: center,
+            span: MKCoordinateSpan(
+                latitudeDelta: max(((lats.max() ?? 0) - (lats.min() ?? 0)) * 1.4, 0.01),
+                longitudeDelta: max(((lons.max() ?? 0) - (lons.min() ?? 0)) * 1.4, 0.01)
+            )
+        )
+    }
+}
+
+private struct ImportButtonStyle: ButtonStyle {
+    let color: Color
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.system(size: 13, weight: .semibold))
+            .padding(.vertical, 12)
+            .background(color.opacity(configuration.isPressed ? 0.75 : 1))
+            .foregroundColor(.white)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }
 

@@ -9,6 +9,11 @@ struct RideDetailView: View {
     @State private var showShare = false
     @State private var showJournal = false
     @State private var showDeleteConfirm = false
+    @State private var rideDeviceBundleURL: URL?
+    @State private var rideGPXURL: URL?
+    @State private var rideTCXURL: URL?
+    @State private var rideFITURL: URL?
+    @State private var rideKMLURL: URL?
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -30,6 +35,34 @@ struct RideDetailView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Menu {
+                    if let rideDeviceBundleURL {
+                        ShareLink(item: rideDeviceBundleURL) {
+                            Label("Share Device Bundle", systemImage: "shippingbox")
+                        }
+                    }
+                    if let rideGPXURL {
+                        ShareLink(item: rideGPXURL) {
+                            Label("Export GPX Activity", systemImage: "doc")
+                        }
+                    }
+                    if let rideTCXURL {
+                        ShareLink(item: rideTCXURL) {
+                            Label("Export TCX History", systemImage: "doc.badge.gearshape")
+                        }
+                    }
+                    if let rideFITURL {
+                        ShareLink(item: rideFITURL) {
+                            Label("Export FIT Activity", systemImage: "doc.zipper")
+                        }
+                    }
+                    if let rideKMLURL {
+                        ShareLink(item: rideKMLURL) {
+                            Label("Export KML", systemImage: "map")
+                        }
+                    }
+                    if rideDeviceBundleURL != nil {
+                        Divider()
+                    }
                     Button { showShare = true } label: {
                         Label("Share Ride", systemImage: "square.and.arrow.up")
                     }
@@ -48,6 +81,9 @@ struct RideDetailView: View {
                 }
             }
         }
+        .task {
+            prepareRideExports()
+        }
         .sheet(isPresented: $showShare) {
             RideShareSheetView(ride: ride)
         }
@@ -62,6 +98,14 @@ struct RideDetailView: View {
                 dismiss()
             }
         }
+    }
+
+    private func prepareRideExports() {
+        rideDeviceBundleURL = RouteInterchangeService.writeRideExport(ride: ride, format: .deviceBundle)
+        rideGPXURL = RouteInterchangeService.writeRideExport(ride: ride, format: .gpxTrack)
+        rideTCXURL = RouteInterchangeService.writeRideExport(ride: ride, format: .tcxHistory)
+        rideFITURL = RouteInterchangeService.writeRideExport(ride: ride, format: .fitActivity)
+        rideKMLURL = RouteInterchangeService.writeRideExport(ride: ride, format: .kml)
     }
 
     private var journalForRide: RideJournal {

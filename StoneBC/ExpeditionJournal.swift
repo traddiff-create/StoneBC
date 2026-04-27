@@ -17,6 +17,7 @@ struct ExpeditionJournal: Codable, Identifiable {
     let name: String                        // "8 Over 7 — May 2026"
     let leaderName: String
     var status: JournalStatus
+    var trackingMode: ExpeditionTrackingMode? = .balanced
     let startDate: Date
     var endDate: Date?
     var days: [JournalDay]
@@ -48,6 +49,51 @@ enum JournalStatus: String, Codable {
     case published
 }
 
+enum ExpeditionTrackingMode: String, Codable, CaseIterable, Identifiable {
+    case highDetail
+    case balanced
+    case batterySaver
+    case checkInOnly
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .highDetail: "High Detail"
+        case .balanced: "Balanced"
+        case .batterySaver: "Battery Saver"
+        case .checkInOnly: "Check-In Only"
+        }
+    }
+
+    var subtitle: String {
+        switch self {
+        case .highDetail: "Best GPS detail for short trips"
+        case .balanced: "Useful tracks with moderate battery use"
+        case .batterySaver: "Sparse updates for long days"
+        case .checkInOnly: "Only logs deliberate check-ins"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .highDetail: "scope"
+        case .balanced: "location"
+        case .batterySaver: "battery.75"
+        case .checkInOnly: "mappin.and.ellipse"
+        }
+    }
+
+    var locationMode: LocationService.TrackingMode {
+        switch self {
+        case .highDetail: .expeditionHighDetail
+        case .balanced: .expeditionBalanced
+        case .batterySaver: .expeditionBatterySaver
+        case .checkInOnly: .expeditionCheckIn
+        }
+    }
+}
+
 // MARK: - Day
 
 struct JournalDay: Codable, Identifiable {
@@ -60,6 +106,10 @@ struct JournalDay: Codable, Identifiable {
     var actualMiles: Double?
     var actualElevation: Int?
     var weatherNote: String?
+    var waterNote: String?
+    var foodNote: String?
+    var shelterNote: String?
+    var sunsetNote: String?
 
     var photoCount: Int {
         entries.filter { $0.mediaType == .photo }.count
@@ -87,6 +137,7 @@ struct JournalEntry: Codable, Identifiable {
     let text: String?                       // narrative, caption, or note
     let mediaFilename: String?              // stored in media/dayN/
     let mediaType: MediaType?
+    let momentKind: ExpeditionMomentKind?
     let source: MediaSource
     var isFeatured: Bool
 
@@ -94,6 +145,7 @@ struct JournalEntry: Codable, Identifiable {
         text: String? = nil,
         mediaFilename: String? = nil,
         mediaType: MediaType? = nil,
+        momentKind: ExpeditionMomentKind? = nil,
         source: MediaSource = .iphone,
         coordinate: CLLocationCoordinate2D? = nil,
         isFeatured: Bool = false
@@ -104,6 +156,7 @@ struct JournalEntry: Codable, Identifiable {
         self.text = text
         self.mediaFilename = mediaFilename
         self.mediaType = mediaType
+        self.momentKind = momentKind
         self.source = source
         self.isFeatured = isFeatured
     }
@@ -121,6 +174,51 @@ enum MediaType: String, Codable {
     case photo
     case audio
     case video
+}
+
+enum ExpeditionMomentKind: String, Codable, CaseIterable, Identifiable {
+    case checkIn
+    case water
+    case food
+    case shelter
+    case sunset
+    case weather
+    case hazard
+    case gear
+    case wildlife
+    case reflection
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .checkIn: "Check-In"
+        case .water: "Water"
+        case .food: "Food"
+        case .shelter: "Shelter"
+        case .sunset: "Sunset"
+        case .weather: "Weather"
+        case .hazard: "Hazard"
+        case .gear: "Gear"
+        case .wildlife: "Wildlife"
+        case .reflection: "Reflection"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .checkIn: "mappin.and.ellipse"
+        case .water: "drop"
+        case .food: "fork.knife"
+        case .shelter: "tent"
+        case .sunset: "sunset"
+        case .weather: "cloud.sun"
+        case .hazard: "exclamationmark.triangle"
+        case .gear: "backpack"
+        case .wildlife: "binoculars"
+        case .reflection: "text.bubble"
+        }
+    }
 }
 
 enum MediaSource: String, Codable {
@@ -191,7 +289,11 @@ extension ExpeditionJournal {
                 summary: nil,
                 actualMiles: nil,
                 actualElevation: nil,
-                weatherNote: nil
+                weatherNote: nil,
+                waterNote: nil,
+                foodNote: nil,
+                shelterNote: nil,
+                sunsetNote: nil
             )
         }
 
