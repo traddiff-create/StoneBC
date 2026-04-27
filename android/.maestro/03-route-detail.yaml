@@ -16,7 +16,7 @@ name: Route detail — elevation profile + MapLibre map render
     element:
       text: "Start Ride on This Route"
     direction: DOWN
-- assertVisible: "Start Ride on This Route"
+- tapOn: "Start Ride on This Route"
 
-- back
-- assertVisible: "DIFFICULTY"
+- assertVisible: "Follow Route"
+- assertVisible: "8 Over 7"

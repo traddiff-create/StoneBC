@@ -8,5 +8,8 @@ name: Record tab idle state — START button + empty history
     index: 1
 - assertVisible: "START"
 - assertVisible: "RIDE"
-- assertVisible: "RECENT RIDES"
-- assertVisible: "Your first ride will appear here."
+- assertVisible: "RECORDING MODE"
+- assertVisible: "Free Ride"
+- assertVisible: "Follow Route"
+- assertVisible: "Scout Route"
+- assertVisible: "MY RIDES"
