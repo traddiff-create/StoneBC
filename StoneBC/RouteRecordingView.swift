@@ -25,25 +25,25 @@ struct RouteRecordingView: View {
     let recordingMode: RouteRecordingMode
     let ridePreferences: RouteRidePreferences
 
-    @State private var locationService = LocationService()
-    @State private var altimeterService = AltimeterService()
-    @State private var audioService = NavigationAudioService()
-    @State private var recording: RideSession
-    @State private var workoutService = WorkoutService()
-    @State private var activityManager = RideActivityManager()
-    @State private var safetyService = EmergencySafetyService.shared
+    @State private var coordinator: RideRecordingCoordinator
 
     @State private var mapRegion = Self.defaultMapRegion
     @State private var isFollowingUser = true
     @State private var showStopConfirm = false
-    @State private var showSaveSheet = false
+    @State private var saveSnapshot: RideRecordingSnapshot?
     @State private var showEnduranceLock = false
-    @State private var powerMode: RidePowerMode = .endurance
     @State private var pulsePhase = false
     @State private var lastCameraUpdateAt: Date = .distantPast
     @State private var lastCameraLocation: CLLocation?
     @Environment(\.dismiss) var dismiss
     @Environment(\.scenePhase) private var scenePhase
+
+    private var locationService: LocationService { coordinator.locationService }
+    private var altimeterService: AltimeterService { coordinator.altimeterService }
+    private var audioService: NavigationAudioService { coordinator.audioService }
+    private var recording: RideSession { coordinator.recording }
+    private var safetyService: EmergencySafetyService { coordinator.safetyService }
+    private var powerMode: RidePowerMode { coordinator.powerMode }
 
     init(
         route: Route? = nil,
@@ -58,11 +58,13 @@ struct RouteRecordingView: View {
         self.recordingMode = route == nil && recordingMode == .follow ? .free : recordingMode
         self.ridePreferences = ridePreferences ?? RouteRidePreferences.load(route: route)
 
-        if recordingMode == .follow, let route {
-            self._recording = State(initialValue: RideSession(route: route))
-        } else {
-            self._recording = State(initialValue: RideSession(mode: .freeRecording))
-        }
+        self._coordinator = State(initialValue: RideRecordingCoordinator(
+            route: route,
+            routeId: route?.id ?? routeId,
+            routeName: route?.name ?? routeName,
+            recordingMode: recordingMode,
+            ridePreferences: ridePreferences
+        ))
     }
 
     private var splitDelta: Double? {
@@ -72,24 +74,33 @@ struct RouteRecordingView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            headerStrip
-            if let delta = splitDelta {
-                splitDeltaBanner(delta)
+        ZStack {
+            if coordinator.lifecycleState == .preflighting || coordinator.lifecycleState == .ready {
+                RecordingPreflightView(coordinator: coordinator) {
+                    coordinator.discardRecording()
+                    dismiss()
+                }
+            } else {
+                VStack(spacing: 0) {
+                    headerStrip
+                    if let delta = splitDelta {
+                        splitDeltaBanner(delta)
+                    }
+                    navigationMap
+                    speedTile
+                    recordedSummaryTile
+                    sensorStrip
+                    if recording.state == .paused {
+                        pausedBanner
+                            .transition(.move(edge: .top).combined(with: .opacity))
+                    }
+                    if safetyService.checkInState == .overdue, ridePreferences.enabledOverlays.contains(.safetyCheckIn) {
+                        checkInBanner
+                            .transition(.move(edge: .top).combined(with: .opacity))
+                    }
+                    bottomControlBar
+                }
             }
-            navigationMap
-            speedTile
-            recordedSummaryTile
-            sensorStrip
-            if recording.state == .paused {
-                pausedBanner
-                    .transition(.move(edge: .top).combined(with: .opacity))
-            }
-            if safetyService.checkInState == .overdue, ridePreferences.enabledOverlays.contains(.safetyCheckIn) {
-                checkInBanner
-                    .transition(.move(edge: .top).combined(with: .opacity))
-            }
-            bottomControlBar
         }
         .background(BCColors.navPanel)
         .ignoresSafeArea(edges: .top)
@@ -122,14 +133,19 @@ struct RouteRecordingView: View {
         } message: {
             Text("\(recording.formattedDistance) in \(recording.formattedElapsed)")
         }
-        .sheet(isPresented: $showSaveSheet) {
+        .sheet(item: $saveSnapshot) { snapshot in
             RecordingSaveSheet(
-                recording: recording,
-                workoutService: workoutService,
+                snapshot: snapshot,
                 routeId: routeId,
                 initialRouteName: routeName,
                 sourceRoute: route,
-                recordingMode: recordingMode
+                recordingMode: recordingMode,
+                onDiscard: {
+                    coordinator.discardRecording()
+                },
+                onSaveWorkout: {
+                    await coordinator.finishWorkoutAfterSave()
+                }
             ) {
                 dismiss()
             }
@@ -351,10 +367,23 @@ struct RouteRecordingView: View {
 
             Spacer()
 
-            Text("RECORDED")
-                .font(.system(size: 10, weight: .medium))
-                .tracking(2)
-                .foregroundStyle(.white.opacity(0.4))
+            if recordingMode == .follow {
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(recording.formattedRemaining)
+                        .font(.system(size: 13, weight: .semibold))
+                        .monospacedDigit()
+                        .foregroundStyle(recording.isOffRoute ? BCColors.navAlertAmber : .white)
+                    Text(recording.isOffRoute ? "OFF ROUTE" : "\(Int((recording.progressPercent * 100).rounded()))%")
+                        .font(.system(size: 9, weight: .medium))
+                        .tracking(1.4)
+                        .foregroundStyle(.white.opacity(0.45))
+                }
+            } else {
+                Text("RECORDED")
+                    .font(.system(size: 10, weight: .medium))
+                    .tracking(2)
+                    .foregroundStyle(.white.opacity(0.4))
+            }
         }
         .padding(.horizontal, 16)
         .bcNavTile(height: 48)
@@ -633,86 +662,21 @@ struct RouteRecordingView: View {
     // MARK: - Lifecycle / ticks
 
     private func startRecording() {
-        locationService.onFirstAltitude = { [altimeterService] gpsAltitude in
-            altimeterService.calibrateWithGPS(altitudeMeters: gpsAltitude)
-        }
-        // Feed barometer-fused altitude into the ride engine so freerides
-        // record honest ascent, not GPS-only inflation.
-        recording.altitudeProvider = { [altimeterService] in
-            altimeterService.fusedAltitudeMeters
-        }
-        locationService.requestPermission()
-        locationService.startTracking(
-            mode: .ride,
-            powerMode: powerMode,
-            wantsHeadingUpdates: powerMode.usesHeadingUpdates
-        )
-        altimeterService.start()
-        audioService.configure(for: powerMode)
-        audioService.reset()
-
-        recording.onAutoPause = { [audioService] in
-            audioService.announcePaused()
-        }
-        recording.onAutoResume = { [audioService] in
-            audioService.announceResumed()
-        }
-        recording.start()
-        if ridePreferences.enabledOverlays.contains(.safetyCheckIn) {
-            safetyService.startCheckInTimer(routeName: routeName ?? recordingMode.label)
-        }
-        activityManager.startActivity(
-            routeName: routeName ?? recordingMode.label,
-            distanceMiles: route?.distanceMiles ?? 0,
-            category: route?.category ?? "recording"
-        )
-
-        if workoutService.isAvailable {
-            Task {
-                await workoutService.requestAuthorization()
-                await workoutService.startWorkout(routeName: routeName ?? "Ride")
-            }
-        }
+        coordinator.startPreflight()
     }
 
     private func stopServices() {
-        locationService.stopTracking()
-        altimeterService.stop()
-        safetyService.stopCheckInTimer()
-        if let effectiveStart = recording.effectiveStartedAt {
-            activityManager.endActivity(
-                finalDistance: recording.distanceMiles,
-                rideStartedAt: effectiveStart,
-                pausedAt: recording.pausedAt
-            )
-        }
-        recording.stop()
-        workoutService.cancelWorkout()
+        coordinator.handleDisappear()
     }
 
     private func togglePause() {
-        switch recording.state {
-        case .recording:
-            recording.pause()
-            locationService.setRideStationary(true)
-        case .paused:
-            recording.resume()
-            locationService.setRideStationary(false)
-        default: break
-        }
+        coordinator.togglePause()
     }
 
     private func finishRecording() {
-        recording.stop()
-        if let effectiveStart = recording.effectiveStartedAt {
-            activityManager.endActivity(
-                finalDistance: recording.distanceMiles,
-                rideStartedAt: effectiveStart,
-                pausedAt: recording.pausedAt
-            )
-        }
-        if recording.isSaveable {
-            showSaveSheet = true
+        coordinator.freezeForSave()
+        if let snapshot = coordinator.frozenSnapshot, snapshot.isSaveable {
+            saveSnapshot = snapshot
         } else {
             dismiss()
         }
@@ -732,32 +696,12 @@ struct RouteRecordingView: View {
     }
 
     private func onLocationTick() {
+        coordinator.refreshPreflightStatus()
+        guard coordinator.lifecycleState == .recording else { return }
         guard let loc = locationService.userLocation else { return }
 
-        if let cl = locationService.lastLocation {
-            altimeterService.recalibrateIfPossible(
-                gpsAltitudeMeters: cl.altitude,
-                verticalAccuracy: cl.verticalAccuracy
-            )
-            recording.ingestLocation(cl)
-            locationService.setRideStationary(recording.state == .paused)
-            workoutService.addRouteData([cl], powerMode: powerMode)
-        }
-
-        if let effectiveStart = recording.effectiveStartedAt {
-            activityManager.updateActivity(
-                speedMPH: locationService.speedMPH,
-                distanceTraveled: recording.distanceMiles,
-                distanceRemaining: 0,
-                rideStartedAt: effectiveStart,
-                pausedAt: recording.pausedAt,
-                progress: 0,
-                isOffRoute: false,
-                heading: locationService.navigationHeading,
-                powerMode: powerMode
-            )
-        }
-
+        coordinator.handleLocationTick()
+        EmergencySafetyService.shared.updateLocation(loc)
         updateCameraIfNeeded(centeredOn: loc)
     }
 
@@ -784,15 +728,165 @@ struct RouteRecordingView: View {
     }
 }
 
+// MARK: - Preflight
+
+struct RecordingPreflightView: View {
+    let coordinator: RideRecordingCoordinator
+    let onCancel: () -> Void
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Button(action: onCancel) {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: 44, height: 44)
+                        .background(Color.white.opacity(0.08), in: Rectangle())
+                }
+
+                Spacer()
+
+                Text("RIDE PREFLIGHT")
+                    .font(.system(size: 11, weight: .semibold))
+                    .tracking(2)
+                    .foregroundStyle(.white.opacity(0.55))
+
+                Spacer()
+
+                Color.clear.frame(width: 44, height: 44)
+            }
+            .padding(.top, topSafeAreaInset + 10)
+            .padding(.horizontal, 16)
+
+            Spacer(minLength: 24)
+
+            VStack(spacing: 10) {
+                Image(systemName: coordinator.canStart ? "checkmark.circle.fill" : "location.circle")
+                    .font(.system(size: 48, weight: .semibold))
+                    .foregroundStyle(coordinator.canStart ? BCColors.brandGreen : BCColors.brandBlue)
+
+                Text(coordinator.preflightMessage)
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundStyle(.white)
+                    .multilineTextAlignment(.center)
+
+                if let error = coordinator.lastPreflightError {
+                    Text(error)
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(.white.opacity(0.58))
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 24)
+                }
+            }
+
+            VStack(spacing: 1) {
+                ForEach(coordinator.preflightRows) { row in
+                    preflightRow(row)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 28)
+
+            Spacer(minLength: 24)
+
+            Button {
+                coordinator.startRecording()
+            } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: "record.circle.fill")
+                        .font(.system(size: 16, weight: .bold))
+                    Text("Start Recording")
+                        .font(.system(size: 15, weight: .bold))
+                }
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .frame(height: 54)
+                .background(coordinator.canStart ? BCColors.danger : Color.white.opacity(0.12), in: Rectangle())
+            }
+            .disabled(!coordinator.canStart)
+            .padding(.horizontal, 16)
+            .padding(.bottom, bottomSafeAreaInset + 14)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(BCColors.navPanel)
+    }
+
+    private func preflightRow(_ row: RecordingPreflightRow) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: row.icon)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(row.state.color)
+                .frame(width: 22)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(row.title)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(.white)
+                Text(row.detail)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.5))
+                    .lineLimit(2)
+            }
+
+            Spacer()
+
+            Image(systemName: row.state.symbol)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(row.state.color)
+        }
+        .padding(.horizontal, 12)
+        .frame(height: 54)
+        .background(Color.white.opacity(0.06), in: Rectangle())
+    }
+
+    private var topSafeAreaInset: CGFloat {
+        UIApplication.shared
+            .connectedScenes
+            .compactMap { ($0 as? UIWindowScene)?.keyWindow }
+            .first?.safeAreaInsets.top ?? 0
+    }
+
+    private var bottomSafeAreaInset: CGFloat {
+        UIApplication.shared
+            .connectedScenes
+            .compactMap { ($0 as? UIWindowScene)?.keyWindow }
+            .first?.safeAreaInsets.bottom ?? 0
+    }
+}
+
+private extension RecordingPreflightState {
+    var symbol: String {
+        switch self {
+        case .ready: "checkmark.circle.fill"
+        case .waiting: "clock"
+        case .warning: "exclamationmark.triangle.fill"
+        case .optional: "minus.circle"
+        case .blocked: "xmark.octagon.fill"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .ready: BCColors.brandGreen
+        case .waiting: BCColors.brandBlue
+        case .warning: BCColors.brandAmber
+        case .optional: .white.opacity(0.45)
+        case .blocked: BCColors.danger
+        }
+    }
+}
+
 // MARK: - Save sheet
 
 struct RecordingSaveSheet: View {
-    let recording: RideSession
-    let workoutService: WorkoutService
+    let snapshot: RideRecordingSnapshot
     var routeId: String? = nil
     var initialRouteName: String? = nil
     var sourceRoute: Route? = nil
     var recordingMode: RouteRecordingMode = .free
+    let onDiscard: () -> Void
+    let onSaveWorkout: () async -> Void
     let onDone: () -> Void
 
     @Environment(AppState.self) var appState
@@ -810,10 +904,18 @@ struct RecordingSaveSheet: View {
     @State private var showJournalPrompt = false
     @State private var savedRideId: String? = nil
     @State private var didApplyDefaults = false
+    @State private var exportURLs: [RouteExportFormat: URL] = [:]
     @Environment(\.dismiss) var sheetDismiss
 
     private let categories = ["road", "gravel", "fatbike", "trail"]
     private let difficulties = ["easy", "moderate", "hard", "expert"]
+    private let recordingExportFormats: [RouteExportFormat] = [
+        .deviceBundle,
+        .gpxTrack,
+        .tcxHistory,
+        .fitActivity,
+        .kml
+    ]
 
     var body: some View {
         NavigationStack {
@@ -824,15 +926,19 @@ struct RecordingSaveSheet: View {
                 }
 
                 Section("Summary") {
-                    LabeledContent("Distance", value: recording.formattedDistance)
-                    LabeledContent("Time", value: recording.formattedElapsed)
-                    LabeledContent("Climb", value: "\(Int(recording.totalAscentFeet)) ft")
-                    LabeledContent("Avg speed", value: String(format: "%.1f mph", recording.avgSpeedMPH))
+                    LabeledContent("Distance", value: snapshot.formattedDistance)
+                    LabeledContent("Time", value: snapshot.formattedElapsed)
+                    LabeledContent("Climb", value: "\(Int(snapshot.totalAscentFeet)) ft")
+                    LabeledContent("Avg speed", value: String(format: "%.1f mph", snapshot.avgSpeedMPH))
                 }
 
                 Section("Export") {
-                    ShareLink(item: exportGPXText) {
-                        Label("Export GPX", systemImage: "doc.badge.arrow.up")
+                    ForEach(recordingExportFormats, id: \.self) { format in
+                        if let url = exportURLs[format] {
+                            ShareLink(item: url) {
+                                Label(format.label, systemImage: exportIcon(for: format))
+                            }
+                        }
                     }
                 }
 
@@ -892,6 +998,7 @@ struct RecordingSaveSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .task {
                 applyInitialDefaultsIfNeeded()
+                prepareExportFiles()
                 if submitterEmail.isEmpty, let email = appState.memberEmail {
                     submitterEmail = email
                 }
@@ -899,7 +1006,7 @@ struct RecordingSaveSheet: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Discard", role: .destructive) {
-                        workoutService.cancelWorkout()
+                        onDiscard()
                         sheetDismiss()
                         onDone()
                     }
@@ -908,9 +1015,7 @@ struct RecordingSaveSheet: View {
                     Button("Save") {
                         let rideId = performSave()
                         savedRideId = rideId
-                        let endDate = recording.lastLocation?.timestamp ?? Date()
-                        let events = recording.pauseEvents.map { (date: $0.date, isPause: $0.kind == .pause) }
-                        Task { await workoutService.endWorkout(endDate: endDate, pauseEvents: events) }
+                        Task { await onSaveWorkout() }
                         if submitToCoop {
                             Task { await submitRouteToCoop() }
                         } else {
@@ -932,14 +1037,14 @@ struct RecordingSaveSheet: View {
             }
             .sheet(isPresented: $showJournalPrompt, onDismiss: onDone) {
                 if let rId = savedRideId {
-                    JournalPromptSheet(rideId: rId, routeName: routeNameForSave, distanceMiles: recording.distanceMiles, elapsedSeconds: recording.elapsedSeconds)
+                    JournalPromptSheet(rideId: rId, routeName: routeNameForSave, distanceMiles: snapshot.distanceMiles, elapsedSeconds: snapshot.elapsedSeconds)
                 }
             }
         }
     }
 
     private var recordingReviewMap: some View {
-        let coordinates = recording.trackpoints.map(\.coordinate)
+        let coordinates = snapshot.locations.map(\.coordinate)
         return Map {
             if coordinates.count >= 2 {
                 MapPolyline(coordinates: coordinates)
@@ -970,14 +1075,6 @@ struct RecordingSaveSheet: View {
         .allowsHitTesting(false)
     }
 
-    private var exportGPXText: String {
-        RideExportService.exportGPX(
-            routeName: routeNameForSave,
-            locations: recording.exportLocations,
-            startTime: recording.startedAt ?? Date()
-        )
-    }
-
     private var routeNameForSave: String {
         let trimmed = routeName.trimmingCharacters(in: .whitespaces)
         if !trimmed.isEmpty {
@@ -990,6 +1087,30 @@ struct RecordingSaveSheet: View {
         case .free: return "Recorded Ride"
         case .follow: return sourceRoute?.name ?? "Followed Route"
         case .scout: return "Scouted Route"
+        }
+    }
+
+    private func prepareExportFiles() {
+        var urls: [RouteExportFormat: URL] = [:]
+        for format in recordingExportFormats {
+            if let url = RouteInterchangeService.writeRecordedRideExport(
+                routeName: routeNameForSave,
+                points: snapshot.exportTrackpoints,
+                format: format
+            ) {
+                urls[format] = url
+            }
+        }
+        exportURLs = urls
+    }
+
+    private func exportIcon(for format: RouteExportFormat) -> String {
+        switch format {
+        case .deviceBundle: "shippingbox"
+        case .gpxTrack: "doc"
+        case .tcxHistory, .tcxCourse: "doc.badge.gearshape"
+        case .fitActivity, .fitCourse: "doc.zipper"
+        case .kml: "map"
         }
     }
 
@@ -1024,13 +1145,14 @@ struct RecordingSaveSheet: View {
                 routeId: routeId ?? UUID().uuidString,
                 routeName: name,
                 category: category,
-                distanceMiles: recording.distanceMiles,
-                elapsedSeconds: recording.elapsedSeconds,
-                movingSeconds: recording.movingSeconds,
-                elevationGainFeet: recording.totalAscentFeet,
-                avgSpeedMPH: recording.avgSpeedMPH,
-                maxSpeedMPH: recording.maxSpeedMPH,
-                gpxTrackpoints: recording.isSaveable ? recording.routeTrackpointTriples : nil
+                distanceMiles: snapshot.distanceMiles,
+                elapsedSeconds: snapshot.elapsedSeconds,
+                movingSeconds: snapshot.movingSeconds,
+                elevationGainFeet: snapshot.totalAscentFeet,
+                avgSpeedMPH: snapshot.avgSpeedMPH,
+                maxSpeedMPH: snapshot.maxSpeedMPH,
+                gpxTrackpoints: snapshot.isSaveable ? snapshot.routeTrackpointTriples : nil,
+                gpxTrackpointTimestamps: snapshot.isSaveable ? snapshot.trackpointTimestamps : nil
             )
             savedRideId = rideId
 
@@ -1038,22 +1160,22 @@ struct RecordingSaveSheet: View {
                 let isNewPB = TimeTrialService.shared.recordAttempt(
                     rideId: rideId,
                     routeId: rid,
-                    seconds: recording.elapsedSeconds,
-                    distanceMiles: recording.distanceMiles
+                    seconds: snapshot.elapsedSeconds,
+                    distanceMiles: snapshot.distanceMiles
                 )
                 _ = isNewPB
             }
         }
 
-        let routeTrackpoints = recording.routeTrackpointTriples
+        let routeTrackpoints = snapshot.routeTrackpointTriples
         if saveAsRoute, routeTrackpoints.count >= 2, let first = routeTrackpoints.first {
             let route = Route(
                 id: UUID().uuidString,
                 name: name,
                 difficulty: difficulty,
                 category: category,
-                distanceMiles: recording.distanceMiles,
-                elevationGainFeet: Int(recording.totalAscentFeet),
+                distanceMiles: snapshot.distanceMiles,
+                elevationGainFeet: Int(snapshot.totalAscentFeet),
                 region: region.isEmpty ? "Recorded" : region,
                 description: "Recorded on \(Date().formatted(date: .abbreviated, time: .omitted))",
                 startCoordinate: Route.Coordinate(
@@ -1073,10 +1195,11 @@ struct RecordingSaveSheet: View {
     private func submitRouteToCoop() async {
         isSubmitting = true
         let name = routeNameForSave
-        let gpxString = RideExportService.exportGPX(
+        let gpxString = RouteInterchangeService.exportGPX(
             routeName: name,
-            locations: recording.exportLocations,
-            startTime: recording.startedAt ?? Date()
+            description: "Recorded ride",
+            points: snapshot.exportTrackpoints,
+            coursePoints: []
         )
         let result = await RouteSubmissionService.submit(
             name: name,

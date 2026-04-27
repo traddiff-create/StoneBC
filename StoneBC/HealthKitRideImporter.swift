@@ -48,21 +48,22 @@ class HealthKitRideImporter {
         let workouts = await fetchWorkouts(predicate: predicate, sort: sort)
         let rides = RideHistoryService.shared.rides
 
-        var updates: [(CompletedRide, [[Double]])] = []
+        var updates: [(CompletedRide, [[Double]], [Date])] = []
         for workout in workouts {
             guard workout.workoutActivityType == .cycling else { continue }
             guard let match = findMatchingRide(workout: workout, in: rides) else { continue }
             guard match.gpxTrackpoints == nil else { continue }
 
-            if let trackpoints = await fetchRouteTrackpoints(for: workout) {
-                updates.append((match, trackpoints))
+            if let routeData = await fetchRouteTrackpoints(for: workout) {
+                updates.append((match, routeData.trackpoints, routeData.timestamps))
             }
         }
 
         await MainActor.run {
-            for (match, trackpoints) in updates {
+            for (match, trackpoints, timestamps) in updates {
                 var updated = match
                 updated.gpxTrackpoints = trackpoints
+                updated.gpxTrackpointTimestamps = timestamps
                 RideHistoryService.shared.update(updated)
             }
             importedCount = updates.count
@@ -96,7 +97,7 @@ class HealthKitRideImporter {
         }
     }
 
-    private func fetchRouteTrackpoints(for workout: HKWorkout) async -> [[Double]]? {
+    private func fetchRouteTrackpoints(for workout: HKWorkout) async -> (trackpoints: [[Double]], timestamps: [Date])? {
         let routeType = HKSeriesType.workoutRoute()
         let predicate = HKQuery.predicateForObjects(from: workout)
 
@@ -124,7 +125,10 @@ class HealthKitRideImporter {
         }
 
         guard locations.count >= 2 else { return nil }
-        return locations.map { [$0.coordinate.latitude, $0.coordinate.longitude, $0.altitude] }
+        return (
+            locations.map { [$0.coordinate.latitude, $0.coordinate.longitude, $0.altitude] },
+            locations.map(\.timestamp)
+        )
     }
 
     private func markComplete() {

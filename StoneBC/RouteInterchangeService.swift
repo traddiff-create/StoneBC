@@ -207,6 +207,8 @@ struct RouteImportCandidate: Identifiable {
     var completedRide: CompletedRide {
         let elapsed = elapsedSeconds
         let moving = elapsed > 0 ? elapsed : max(distanceMiles / 10 * 3600, 0)
+        let timestamps = trackpoints.map(\.timestamp)
+        let storedTimestamps = timestamps.allSatisfy { $0 != nil } ? timestamps.compactMap { $0 } : nil
         return CompletedRide(
             id: UUID().uuidString,
             routeId: UUID().uuidString,
@@ -219,7 +221,8 @@ struct RouteImportCandidate: Identifiable {
             avgSpeedMPH: moving > 0 ? distanceMiles / (moving / 3600) : 0,
             maxSpeedMPH: trackpoints.compactMap(\.speedMetersPerSecond).max().map { $0 * 2.23694 } ?? 0,
             completedAt: startedAt ?? Date(),
-            gpxTrackpoints: trackpointArrays
+            gpxTrackpoints: trackpointArrays,
+            gpxTrackpointTimestamps: storedTimestamps
         )
     }
 
@@ -383,7 +386,7 @@ enum RouteInterchangeService {
                 latitude: point[0],
                 longitude: point[1],
                 elevationMeters: point.count > 2 ? point[2] : nil,
-                timestamp: ride.completedAt.addingTimeInterval(Double(index) * max(ride.elapsedSeconds / Double(max(trackpoints.count - 1, 1)), 1))
+                timestamp: rideTimestamp(for: ride, point: point, index: index, count: trackpoints.count)
             )
         }
         let basename = sanitizedFilename(ride.routeName)
@@ -430,6 +433,49 @@ enum RouteInterchangeService {
         case .kml:
             return write(text: exportKML(routeName: ride.routeName, points: points, coursePoints: []), basename: basename, ext: "kml")
         }
+    }
+
+    static func writeRecordedRideExport(routeName: String,
+                                        points: [RouteTrackPoint],
+                                        format: RouteExportFormat) -> URL? {
+        guard !points.isEmpty else { return nil }
+        let basename = sanitizedFilename(routeName)
+        switch format {
+        case .deviceBundle:
+            let files = recordedRideDeviceBundleFiles(routeName: routeName, points: points)
+            return write(data: ZipArchive.store(entries: files), basename: "\(basename)_ride_bundle", ext: "zip")
+        case .gpxTrack:
+            return write(text: exportGPX(routeName: routeName, description: "Recorded ride", points: points, coursePoints: []), basename: basename, ext: "gpx")
+        case .tcxCourse:
+            let route = routeFromRecordedRide(routeName: routeName, points: points)
+            return write(text: exportTCXCourse(route: route), basename: basename, ext: "tcx")
+        case .tcxHistory:
+            return write(text: exportTCXHistory(routeName: routeName, points: points), basename: basename, ext: "tcx")
+        case .fitCourse:
+            let route = routeFromRecordedRide(routeName: routeName, points: points)
+            return write(data: exportFITCourseData(route: route), basename: basename, ext: "fit")
+        case .fitActivity:
+            return write(data: exportFITActivityData(routeName: routeName, points: points), basename: basename, ext: "fit")
+        case .kml:
+            return write(text: exportKML(routeName: routeName, points: points, coursePoints: []), basename: basename, ext: "kml")
+        }
+    }
+
+    private static func rideTimestamp(for ride: CompletedRide,
+                                      point: [Double],
+                                      index: Int,
+                                      count: Int) -> Date {
+        if let timestamps = ride.gpxTrackpointTimestamps,
+           timestamps.indices.contains(index) {
+            return timestamps[index]
+        }
+        if point.count > 3 {
+            return Date(timeIntervalSince1970: point[3])
+        }
+
+        let interval = count > 1 ? ride.elapsedSeconds / Double(count - 1) : 0
+        let start = ride.completedAt.addingTimeInterval(-ride.elapsedSeconds)
+        return start.addingTimeInterval(Double(index) * max(interval, 1))
     }
 
     static func exportFITCourseData(route: Route) -> Data {
@@ -666,6 +712,42 @@ enum RouteInterchangeService {
             ("\(base).fit", exportFITActivityData(routeName: ride.routeName, points: points)),
             ("\(base).kml", Data(exportKML(routeName: ride.routeName, points: points, coursePoints: []).utf8))
         ]
+    }
+
+    private static func recordedRideDeviceBundleFiles(routeName: String, points: [RouteTrackPoint]) -> [(String, Data)] {
+        let base = sanitizedFilename(routeName)
+        let readme = """
+        StoneBC ride bundle: \(routeName)
+
+        Files:
+        - \(base).gpx: GPX activity track.
+        - \(base).tcx: TCX History activity.
+        - \(base).fit: FIT Activity.
+        - \(base).kml: KML track.
+        """
+        return [
+            ("README.txt", Data(readme.utf8)),
+            ("\(base).gpx", Data(exportGPX(routeName: routeName, description: "Recorded ride", points: points, coursePoints: []).utf8)),
+            ("\(base).tcx", Data(exportTCXHistory(routeName: routeName, points: points).utf8)),
+            ("\(base).fit", exportFITActivityData(routeName: routeName, points: points)),
+            ("\(base).kml", Data(exportKML(routeName: routeName, points: points, coursePoints: []).utf8))
+        ]
+    }
+
+    private static func routeFromRecordedRide(routeName: String, points: [RouteTrackPoint]) -> Route {
+        Route(
+            id: UUID().uuidString,
+            name: routeName,
+            difficulty: "moderate",
+            category: "recording",
+            distanceMiles: Route.haversineDistance(points.map(\.routeArray)),
+            elevationGainFeet: Route.elevationGain(points.map(\.routeArray)),
+            region: "Recorded",
+            description: "Recorded ride",
+            startCoordinate: Route.Coordinate(latitude: points.first?.latitude ?? 0, longitude: points.first?.longitude ?? 0),
+            trackpoints: points.map(\.routeArray),
+            isImported: true
+        )
     }
 
     private static func points(from route: Route) -> [RouteTrackPoint] {

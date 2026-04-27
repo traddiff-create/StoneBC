@@ -67,7 +67,7 @@ class AltimeterService {
 
             // Accumulate ascent/descent
             let deltaFromLast = altFeet - self.lastAltitude
-            if abs(deltaFromLast) > 1.0 { // 1-foot deadband to filter noise
+            if abs(deltaFromLast) > RideTuning.ascentDeadbandFeet {
                 if deltaFromLast > 0 {
                     self.totalAscentFeet += deltaFromLast
                 } else {
@@ -128,19 +128,19 @@ class AltimeterService {
         gpsBaseline = baseline + delta * RideTuning.recalibrationBlendFactor
     }
 
-    /// Fused altitude: GPS baseline + barometer relative changes (meters)
-    var fusedAltitudeMeters: Double {
-        guard let baseline = gpsBaseline else { return 0 }
+    /// Fused altitude: GPS baseline + barometer relative changes (meters).
+    var fusedAltitudeMeters: Double? {
+        guard let baseline = gpsBaseline else { return nil }
         return baseline + relativeAltitudeMeters
     }
 
     /// Fused altitude in feet
-    var fusedAltitudeFeet: Double {
-        fusedAltitudeMeters * 3.28084
+    var fusedAltitudeFeet: Double? {
+        fusedAltitudeMeters.map { $0 * 3.28084 }
     }
 
     var bestAltitudeMeters: Double? {
-        if gpsBaseline != nil {
+        if let fusedAltitudeMeters {
             return fusedAltitudeMeters
         }
         if let absoluteAltitudeMeters {
@@ -151,6 +151,10 @@ class AltimeterService {
 
     var bestAltitudeFeet: Double? {
         bestAltitudeMeters.map { $0 * 3.28084 }
+    }
+
+    var bestRecordingAltitudeMeters: Double? {
+        bestAltitudeMeters
     }
 
     var altitudeSourceLabel: String {
@@ -164,6 +168,7 @@ class AltimeterService {
     }
 
     var formattedFusedAltitude: String {
+        guard let fusedAltitudeFeet else { return "-- ft" }
         let ft = Int(fusedAltitudeFeet)
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal

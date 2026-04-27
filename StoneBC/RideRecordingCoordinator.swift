@@ -5,6 +5,7 @@
 
 import CoreLocation
 import Foundation
+import UIKit
 
 @Observable
 @MainActor
@@ -38,6 +39,10 @@ final class RideRecordingCoordinator {
     var lastPreflightError: String?
     var precomputedTurns: [TurnPoint] = []
     var wasOffRoute = false
+    var frozenSnapshot: RideRecordingSnapshot?
+    var offlineRouteReady = false
+    var offlineTilesReady = false
+    var weatherCacheReady = false
 
     private var didStartPreflight = false
     private var didStartRecording = false
@@ -68,6 +73,7 @@ final class RideRecordingCoordinator {
     }
 
     var canStart: Bool {
+        guard isRecordingSupportedDevice else { return false }
         guard route?.isNavigable ?? true else { return false }
         guard locationService.authorizationStatus == .authorizedWhenInUse ||
                 locationService.authorizationStatus == .authorizedAlways else { return false }
@@ -78,6 +84,12 @@ final class RideRecordingCoordinator {
 
     var preflightRows: [RecordingPreflightRow] {
         [
+            RecordingPreflightRow(
+                title: "Device",
+                detail: deviceDetail,
+                state: isRecordingSupportedDevice ? .ready : .blocked,
+                icon: "iphone"
+            ),
             RecordingPreflightRow(
                 title: "Location",
                 detail: locationDetail,
@@ -113,6 +125,24 @@ final class RideRecordingCoordinator {
                 detail: route?.isNavigable == false ? "Route needs at least two trackpoints" : routeStatusDetail,
                 state: route?.isNavigable == false ? .blocked : .ready,
                 icon: "point.topleft.down.to.point.bottomright.curvepath"
+            ),
+            RecordingPreflightRow(
+                title: "Offline Route",
+                detail: offlineRouteDetail,
+                state: route == nil ? .optional : (offlineRouteReady ? .ready : .warning),
+                icon: "arrow.down.circle"
+            ),
+            RecordingPreflightRow(
+                title: "Offline Tiles",
+                detail: offlineTilesReady ? "Offline map tiles ready" : "Map tiles may need network or cache",
+                state: route == nil ? .optional : (offlineTilesReady ? .ready : .warning),
+                icon: "map"
+            ),
+            RecordingPreflightRow(
+                title: "Cue Readiness",
+                detail: cueReadinessDetail,
+                state: route == nil ? .optional : .ready,
+                icon: "arrow.turn.up.right"
             )
         ]
     }
@@ -128,6 +158,7 @@ final class RideRecordingCoordinator {
             wantsHeadingUpdates: false
         )
         refreshPreflightStatus()
+        refreshOfflineReadiness()
     }
 
     func refreshPreflightStatus() {
@@ -224,7 +255,25 @@ final class RideRecordingCoordinator {
     func freezeForSave() {
         guard lifecycleState == .recording else { return }
         frozenEndDate = recording.lastLocation?.timestamp ?? Date()
-        locationService.requestTemporaryPrecisionBoost(duration: 5)
+        frozenSnapshot = RideRecordingSnapshot(
+            routeId: routeId,
+            routeName: title,
+            recordingMode: recordingMode,
+            sourceRoute: route,
+            category: route?.category ?? "gravel",
+            difficulty: route?.difficulty ?? "moderate",
+            region: route?.region ?? "Recorded",
+            startedAt: recording.startedAt ?? Date(),
+            endedAt: frozenEndDate ?? Date(),
+            locations: recording.exportLocations,
+            distanceMeters: recording.distanceMeters,
+            elapsedSeconds: recording.elapsedSeconds,
+            movingSeconds: recording.movingSeconds,
+            totalAscentFeet: recording.totalAscentFeet,
+            avgSpeedMPH: recording.avgSpeedMPH,
+            maxSpeedMPH: recording.maxSpeedMPH,
+            pauseEvents: recording.pauseEvents.map { ($0.date, $0.kind == .pause) }
+        )
         recording.stop()
         stopActiveSensors()
         if let effectiveStart = recording.effectiveStartedAt {
@@ -241,6 +290,7 @@ final class RideRecordingCoordinator {
         stopActiveSensors()
         recording.stop()
         workoutService.cancelWorkout()
+        frozenSnapshot = nil
         lifecycleState = .discarded
     }
 
@@ -251,13 +301,12 @@ final class RideRecordingCoordinator {
     }
 
     func finishWorkoutAfterSave() async {
-        guard lifecycleState == .frozen else { return }
-        let endDate = frozenEndDate ?? recording.lastLocation?.timestamp ?? Date()
-        let events = recording.pauseEvents.map { (date: $0.date, isPause: $0.kind == .pause) }
+        guard lifecycleState == .frozen, let snapshot = frozenSnapshot else { return }
         await workoutService.endWorkout(
-            endDate: endDate,
-            distanceMeters: recording.distanceMeters,
-            pauseEvents: events
+            endDate: snapshot.endedAt,
+            distanceMeters: snapshot.distanceMeters,
+            ascentFeet: snapshot.totalAscentFeet,
+            pauseEvents: snapshot.pauseEvents
         )
         lifecycleState = .saved
     }
@@ -267,10 +316,22 @@ final class RideRecordingCoordinator {
         didStartWorkoutTask = true
         Task {
             await workoutService.requestAuthorization()
-            await workoutService.startWorkout(routeName: title)
+            await workoutService.startWorkout(routeName: title, startDate: recording.startedAt ?? Date())
             if let location = locationService.lastLocation {
                 workoutService.addRouteData([location], powerMode: powerMode, force: true)
             }
+        }
+    }
+
+    private func refreshOfflineReadiness() {
+        guard let route else { return }
+        Task {
+            let offlineIndex = await OfflineRouteStorage.shared.loadIndex()
+            let cached = offlineIndex.first { $0.routeId == route.id }
+            let tilePack = await OfflineTilePackManager.shared.installedPack(forRouteId: route.id)
+            offlineRouteReady = cached != nil
+            offlineTilesReady = tilePack != nil || cached?.tilesAvailable == true
+            weatherCacheReady = cached?.hasWeather == true
         }
     }
 
@@ -344,6 +405,14 @@ final class RideRecordingCoordinator {
             && abs(location.timestamp.timeIntervalSinceNow) < 60
     }
 
+    private var isRecordingSupportedDevice: Bool {
+        UIDevice.current.userInterfaceIdiom == .phone
+    }
+
+    private var deviceDetail: String {
+        isRecordingSupportedDevice ? "iPhone ride recording ready" : "Ride recording is iPhone-only for this phase"
+    }
+
     private var locationState: RecordingPreflightState {
         switch locationService.authorizationStatus {
         case .authorizedAlways, .authorizedWhenInUse:
@@ -401,7 +470,21 @@ final class RideRecordingCoordinator {
         return "Free ride or scout recording"
     }
 
+    private var offlineRouteDetail: String {
+        guard route != nil else { return "No route needed for free or scout recording" }
+        if offlineRouteReady {
+            return weatherCacheReady ? "Route and weather cached" : "Route geometry cached"
+        }
+        return "Route works from bundled data; offline cache optional"
+    }
+
+    private var cueReadinessDetail: String {
+        guard let route else { return "No route cues needed" }
+        return route.cuePoints.isEmpty ? "Generated turn cues available from route shape" : "\(route.cuePoints.count) authored cues ready"
+    }
+
     private func nextPreflightMessage() -> String {
+        if !isRecordingSupportedDevice { return "Ride recording needs iPhone" }
         if route?.isNavigable == false { return "Route is not navigable" }
         if locationState == .blocked { return "Location permission is blocked" }
         if locationService.isReducedAccuracy { return "Precise Location is required" }
@@ -410,6 +493,7 @@ final class RideRecordingCoordinator {
     }
 
     private func blockingPreflightDetail() -> String? {
+        if !isRecordingSupportedDevice { return "Use an iPhone to record active rides." }
         if route?.isNavigable == false { return "Choose a route with at least two trackpoints." }
         if locationState == .blocked { return "Open Settings and allow Location access for StoneBC." }
         if locationService.isReducedAccuracy { return "Open Settings and enable Precise Location." }
@@ -421,6 +505,7 @@ final class RideRecordingCoordinator {
 enum RecordingPreflightState {
     case ready
     case waiting
+    case warning
     case optional
     case blocked
 }
@@ -431,4 +516,70 @@ struct RecordingPreflightRow: Identifiable {
     let detail: String
     let state: RecordingPreflightState
     let icon: String
+}
+
+struct RideRecordingSnapshot: Identifiable {
+    let id = UUID()
+    let routeId: String?
+    let routeName: String
+    let recordingMode: RouteRecordingMode
+    let sourceRoute: Route?
+    let category: String
+    let difficulty: String
+    let region: String
+    let startedAt: Date
+    let endedAt: Date
+    let locations: [CLLocation]
+    let distanceMeters: Double
+    let elapsedSeconds: TimeInterval
+    let movingSeconds: TimeInterval
+    let totalAscentFeet: Double
+    let avgSpeedMPH: Double
+    let maxSpeedMPH: Double
+    let pauseEvents: [(date: Date, isPause: Bool)]
+
+    var distanceMiles: Double { distanceMeters / 1609.344 }
+    var isSaveable: Bool { locations.count >= 2 }
+
+    var formattedDistance: String {
+        String(format: "%.2f mi", distanceMiles)
+    }
+
+    var formattedElapsed: String {
+        let h = Int(elapsedSeconds) / 3600
+        let m = (Int(elapsedSeconds) % 3600) / 60
+        let s = Int(elapsedSeconds) % 60
+        return h > 0
+            ? String(format: "%d:%02d:%02d", h, m, s)
+            : String(format: "%d:%02d", m, s)
+    }
+
+    var routeTrackpointTriples: [[Double]] {
+        locations.map {
+            [$0.coordinate.latitude, $0.coordinate.longitude, $0.altitude]
+        }
+    }
+
+    var trackpointTimestamps: [Date] {
+        locations.map(\.timestamp)
+    }
+
+    var exportTrackpoints: [RouteTrackPoint] {
+        var distance: Double = 0
+        var previous: CLLocation?
+        return locations.map { location in
+            if let previous {
+                distance += location.distance(from: previous)
+            }
+            previous = location
+            return RouteTrackPoint(
+                latitude: location.coordinate.latitude,
+                longitude: location.coordinate.longitude,
+                elevationMeters: location.altitude,
+                timestamp: location.timestamp,
+                distanceMeters: distance,
+                speedMetersPerSecond: location.speed >= 0 ? location.speed : nil
+            )
+        }
+    }
 }

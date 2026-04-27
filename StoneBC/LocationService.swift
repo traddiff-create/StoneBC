@@ -80,12 +80,40 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     var isTracking = false
     var authorizationStatus: CLAuthorizationStatus = .notDetermined
     var trackingMode: TrackingMode = .foreground
-    var requestedPowerMode: RidePowerMode = .endurance
-    var effectivePowerMode: RidePowerMode = .endurance
+    var requestedPowerMode: RidePowerMode = .balanced
+    var effectivePowerMode: RidePowerMode = .balanced
     var horizontalAccuracyMeters: Double = -1
     var verticalAccuracyMeters: Double = -1
     var lastLocationTimestamp: Date?
     var isReducedAccuracy = false
+    var locationIssueDescription: String?
+    var liveUpdateDiagnostics: Set<LocationDiagnostic> = []
+
+    enum LocationDiagnostic: String, Hashable {
+        case denied
+        case deniedGlobally
+        case restricted
+        case requestInProgress
+        case reducedAccuracy
+        case serviceSessionRequired
+        case insufficientlyInUse
+        case unavailable
+        case stationary
+
+        var message: String {
+            switch self {
+            case .denied: "Location permission is denied"
+            case .deniedGlobally: "Location Services are off"
+            case .restricted: "Location is restricted on this device"
+            case .requestInProgress: "Waiting for location permission"
+            case .reducedAccuracy: "Precise Location is off"
+            case .serviceSessionRequired: "Location service session is required"
+            case .insufficientlyInUse: "Open StoneBC to continue active ride tracking"
+            case .unavailable: "Location is temporarily unavailable"
+            case .stationary: "GPS paused while stationary"
+            }
+        }
+    }
 
     // Speed & course from GPS
     var speedMPS: Double = 0          // meters per second (raw)
@@ -113,6 +141,7 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     private var wantsHeadingUpdates = false
     private var precisionBoostUntil: Date?
     private var precisionBoostResetTask: Task<Void, Never>?
+    private var serviceSession: AnyObject?
     private var backgroundActivitySession: CLBackgroundActivitySession?
     private var liveLocationTask: Task<Void, Never>?
     private var isUsingLiveLocationUpdates = false
@@ -140,8 +169,9 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     }
 
     func startTracking(mode: TrackingMode = .foreground,
-                       powerMode: RidePowerMode = .endurance,
-                       wantsHeadingUpdates: Bool? = nil) {
+                       powerMode: RidePowerMode = .balanced,
+                       wantsHeadingUpdates: Bool? = nil,
+                       resetSessionStats: Bool = true) {
         guard CLLocationManager.locationServicesEnabled() else { return }
         trackingMode = mode
         requestedPowerMode = powerMode
@@ -154,17 +184,11 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         isUsingLiveLocationUpdates = false
         precisionBoostUntil = mode == .ride ? Date().addingTimeInterval(RideTuning.precisionBoostSeconds) : nil
         configureManager(for: mode)
-        speedSamples = []
-        movingSpeedSamples = []
-        movingSpeedSum = 0
-        movingSpeedCount = 0
-        maxSpeedMPH = 0
-        averageSpeedMPH = 0
-        locationHistory = []
-        locationUpdateCount = 0
-        lastLocation = nil
-        lastLocationTimestamp = nil
-        hasCalibrated = false
+        locationIssueDescription = nil
+        liveUpdateDiagnostics = []
+        if resetSessionStats {
+            self.resetSessionStats()
+        }
 
         guard isAuthorized else {
             requestPermission()
@@ -182,6 +206,7 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         liveLocationTask = nil
         isUsingLiveLocationUpdates = false
         precisionBoostUntil = nil
+        invalidateServiceSession()
         backgroundActivitySession?.invalidate()
         backgroundActivitySession = nil
         manager.stopUpdatingLocation()
@@ -202,6 +227,8 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         lastLocation = nil
         lastLocationTimestamp = nil
         hasCalibrated = false
+        locationIssueDescription = nil
+        liveUpdateDiagnostics = []
     }
 
     func setInterfaceActive(_ isActive: Bool) {
@@ -254,6 +281,7 @@ class LocationService: NSObject, CLLocationManagerDelegate {
             configureManager(for: mode)
             beginUpdates()
         } else if !isAuthorized {
+            locationIssueDescription = "Location permission is denied"
             stopTracking()
         }
     }
@@ -288,6 +316,7 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     private func beginUpdates() {
         guard CLLocationManager.locationServicesEnabled() else { return }
         isTracking = true
+        startServiceSessionIfNeeded()
         startBackgroundActivitySessionIfNeeded()
         if startLiveLocationUpdatesIfAvailable() {
             updateHeadingUpdates()
@@ -319,6 +348,9 @@ class LocationService: NSObject, CLLocationManagerDelegate {
 
         userLocation = location.coordinate
         lastLocation = location
+        locationIssueDescription = nil
+        liveUpdateDiagnostics.remove(.unavailable)
+        liveUpdateDiagnostics.remove(.stationary)
         locationUpdateCount += 1
         horizontalAccuracyMeters = location.horizontalAccuracy
         verticalAccuracyMeters = location.verticalAccuracy
@@ -466,6 +498,20 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         backgroundActivitySession = CLBackgroundActivitySession()
     }
 
+    private func startServiceSessionIfNeeded() {
+        guard trackingMode == .ride, serviceSession == nil else { return }
+        if #available(iOS 18.0, *) {
+            serviceSession = CLServiceSession(authorization: .whenInUse) as AnyObject
+        }
+    }
+
+    private func invalidateServiceSession() {
+        if #available(iOS 18.0, *), let session = serviceSession as? CLServiceSession {
+            session.invalidate()
+        }
+        serviceSession = nil
+    }
+
     private func startLiveLocationUpdatesIfAvailable() -> Bool {
         guard trackingMode == .ride,
               effectivePowerMode.prefersLiveLocationUpdates,
@@ -479,9 +525,9 @@ class LocationService: NSObject, CLLocationManagerDelegate {
             liveLocationTask = Task { [weak self] in
                 do {
                     for try await update in CLLocationUpdate.liveUpdates(.fitness) {
-                        guard !Task.isCancelled, let location = update.location else { continue }
+                        guard !Task.isCancelled else { continue }
                         await MainActor.run { [weak self] in
-                            self?.process(location)
+                            self?.process(update)
                         }
                     }
                 } catch {
@@ -495,6 +541,29 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         }
 
         return false
+    }
+
+    @available(iOS 17.0, *)
+    private func process(_ update: CLLocationUpdate) {
+        isReducedAccuracy = manager.accuracyAuthorization == .reducedAccuracy
+        if #available(iOS 18.0, *) {
+            var diagnostics: Set<LocationDiagnostic> = []
+            if update.authorizationDenied { diagnostics.insert(.denied) }
+            if update.authorizationDeniedGlobally { diagnostics.insert(.deniedGlobally) }
+            if update.authorizationRestricted { diagnostics.insert(.restricted) }
+            if update.authorizationRequestInProgress { diagnostics.insert(.requestInProgress) }
+            if update.accuracyLimited { diagnostics.insert(.reducedAccuracy) }
+            if update.serviceSessionRequired { diagnostics.insert(.serviceSessionRequired) }
+            if update.insufficientlyInUse { diagnostics.insert(.insufficientlyInUse) }
+            if update.locationUnavailable { diagnostics.insert(.unavailable) }
+            if update.stationary { diagnostics.insert(.stationary) }
+            liveUpdateDiagnostics = diagnostics
+            locationIssueDescription = diagnostics.first?.message
+            isReducedAccuracy = isReducedAccuracy || update.accuracyLimited
+        }
+
+        guard let location = update.location, isUsable(location) else { return }
+        process(location)
     }
 
     private func fallBackToStandardLocationUpdates() {

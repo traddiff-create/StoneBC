@@ -37,6 +37,7 @@ class RideHistoryService {
         calories: Double? = nil,
         heartRateAvg: Double? = nil,
         gpxTrackpoints: [[Double]]? = nil,
+        gpxTrackpointTimestamps: [Date]? = nil,
         isTimeTrial: Bool = false
     ) -> String {
         let rideId = UUID().uuidString
@@ -53,6 +54,7 @@ class RideHistoryService {
             maxSpeedMPH: maxSpeedMPH,
             completedAt: Date(),
             gpxTrackpoints: gpxTrackpoints,
+            gpxTrackpointTimestamps: gpxTrackpointTimestamps,
             heartRateAvg: heartRateAvg,
             calories: calories,
             isTimeTrial: isTimeTrial
@@ -199,6 +201,16 @@ class RideHistoryService {
         guard let idx = rides.firstIndex(where: { $0.id == rideId }) else { return }
         var updated = rides[idx]
         updated.gpxTrackpoints = trackpoints
+        updated.gpxTrackpointTimestamps = nil
+        rides[idx] = updated
+        persistRides()
+    }
+
+    func updateGPXTrackpoints(rideId: String, trackpoints: [[Double]], timestamps: [Date]?) {
+        guard let idx = rides.firstIndex(where: { $0.id == rideId }) else { return }
+        var updated = rides[idx]
+        updated.gpxTrackpoints = trackpoints
+        updated.gpxTrackpointTimestamps = timestamps
         rides[idx] = updated
         persistRides()
     }
@@ -238,6 +250,7 @@ struct CompletedRide: Codable, Identifiable {
     // Phase 2 additions — optional for backwards compatibility
     var journalId: String?
     var gpxTrackpoints: [[Double]]?
+    var gpxTrackpointTimestamps: [Date]?
     var heartRateAvg: Double?
     var calories: Double?
     var isTimeTrial: Bool
@@ -257,6 +270,7 @@ struct CompletedRide: Codable, Identifiable {
         completedAt = try c.decode(Date.self, forKey: .completedAt)
         journalId = try c.decodeIfPresent(String.self, forKey: .journalId)
         gpxTrackpoints = try c.decodeIfPresent([[Double]].self, forKey: .gpxTrackpoints)
+        gpxTrackpointTimestamps = try c.decodeIfPresent([Date].self, forKey: .gpxTrackpointTimestamps)
         heartRateAvg = try c.decodeIfPresent(Double.self, forKey: .heartRateAvg)
         calories = try c.decodeIfPresent(Double.self, forKey: .calories)
         isTimeTrial = try c.decodeIfPresent(Bool.self, forKey: .isTimeTrial) ?? false
@@ -266,13 +280,15 @@ struct CompletedRide: Codable, Identifiable {
          distanceMiles: Double, elapsedSeconds: TimeInterval, movingSeconds: TimeInterval,
          elevationGainFeet: Double, avgSpeedMPH: Double, maxSpeedMPH: Double,
          completedAt: Date, journalId: String? = nil, gpxTrackpoints: [[Double]]? = nil,
-         heartRateAvg: Double? = nil, calories: Double? = nil, isTimeTrial: Bool = false) {
+         gpxTrackpointTimestamps: [Date]? = nil, heartRateAvg: Double? = nil,
+         calories: Double? = nil, isTimeTrial: Bool = false) {
         self.id = id; self.routeId = routeId; self.routeName = routeName
         self.category = category; self.distanceMiles = distanceMiles
         self.elapsedSeconds = elapsedSeconds; self.movingSeconds = movingSeconds
         self.elevationGainFeet = elevationGainFeet; self.avgSpeedMPH = avgSpeedMPH
         self.maxSpeedMPH = maxSpeedMPH; self.completedAt = completedAt
         self.journalId = journalId; self.gpxTrackpoints = gpxTrackpoints
+        self.gpxTrackpointTimestamps = gpxTrackpointTimestamps
         self.heartRateAvg = heartRateAvg; self.calories = calories
         self.isTimeTrial = isTimeTrial
     }

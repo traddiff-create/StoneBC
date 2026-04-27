@@ -77,7 +77,7 @@ struct JourneyConsoleView: View {
                     color: network.isOnline ? BCColors.brandGreen : BCColors.brandAmber
                 )
                 statusPill(
-                    label: permissions.locationStatus == .authorizedAlways ? "ALWAYS GPS" : "ACTIVE GPS",
+                    label: "ACTIVE GPS",
                     icon: "location.fill",
                     color: permissions.locationGranted ? BCColors.brandBlue : BCColors.danger
                 )
@@ -169,15 +169,15 @@ struct JourneyConsoleView: View {
         VStack(alignment: .leading, spacing: BCSpacing.sm) {
             BCSectionHeader("SAFETY", icon: "shield.lefthalf.filled")
 
-            if permissions.locationStatus != .authorizedAlways {
+            if !permissions.locationGranted {
                 Button {
-                    permissions.requestAlwaysLocation()
+                    permissions.requestLocation()
                 } label: {
                     toolRow(
                         icon: "location.badge.plus",
                         color: BCColors.brandAmber,
-                        title: "Enable Journey Background Tracking",
-                        subtitle: "Upgrade to Always Location for remote days",
+                        title: "Enable Active Ride Tracking",
+                        subtitle: "Allow location while using StoneBC for rides",
                         trailing: "arrow.up.forward"
                     )
                 }

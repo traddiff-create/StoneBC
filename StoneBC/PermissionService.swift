@@ -97,20 +97,8 @@ class PermissionService: NSObject, CLLocationManagerDelegate {
         locationStatus == .authorizedWhenInUse || locationStatus == .authorizedAlways
     }
 
-    var locationAlwaysGranted: Bool {
-        locationStatus == .authorizedAlways
-    }
-
     func requestLocation() {
         locationManager.requestWhenInUseAuthorization()
-    }
-
-    func requestAlwaysLocation() {
-        if locationStatus == .notDetermined {
-            locationManager.requestWhenInUseAuthorization()
-        } else if locationStatus == .authorizedWhenInUse {
-            locationManager.requestAlwaysAuthorization()
-        }
     }
 
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {

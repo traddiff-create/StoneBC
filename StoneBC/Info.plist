@@ -43,8 +43,6 @@
 	</array>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Stone Bicycle Coalition uses your cycling workout routes to display GPS maps for past rides.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>StoneBC can keep journey tracking active when the screen is locked so riders can preserve route, safety, and check-in status during remote trips.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>StardosStencil-Bold.ttf</string>

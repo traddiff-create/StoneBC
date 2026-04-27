@@ -173,8 +173,8 @@ enum RidePowerMode: String, CaseIterable, Identifiable {
 
     var prefersLiveLocationUpdates: Bool {
         switch self {
-        case .highDetail, .balanced: false
-        case .endurance: true
+        case .highDetail: false
+        case .balanced, .endurance: true
         }
     }
 

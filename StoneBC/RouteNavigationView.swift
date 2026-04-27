@@ -19,58 +19,71 @@ struct RouteNavigationView: View {
     let route: Route
     let ridePreferences: RouteRidePreferences
 
-    @State private var locationService = LocationService()
-    @State private var altimeterService = AltimeterService()
-    @State private var audioService = NavigationAudioService()
-    @State private var workoutService = WorkoutService()
-    @State private var activityManager = RideActivityManager()
-    @State private var safetyService = EmergencySafetyService.shared
-    @State private var session: RideSession
+    @State private var coordinator: RideRecordingCoordinator
     private var networkStatus = NetworkStatusService.shared
     @State private var mapRegion: MKCoordinateRegion
     @State private var tilePackInfo: OfflineTilePackInfo?
     @State private var isFollowingUser = true
     @State private var showEndConfirm = false
+    @State private var saveSnapshot: RideRecordingSnapshot?
     @State private var showConditionReport = false
+    @State private var shouldShowConditionReportAfterSave = false
     @State private var showEnduranceLock = false
-    @State private var powerMode: RidePowerMode = .endurance
-    @State private var wasOffRoute = false
+    @State private var powerMode: RidePowerMode = .balanced
     @State private var breadcrumbs: [CLLocationCoordinate2D] = []
-    @State private var precomputedTurns: [TurnPoint] = []
     @State private var pulsePhase = false
     @State private var lastCameraUpdateAt: Date = .distantPast
     @State private var lastCameraLocation: CLLocation?
     @Environment(\.dismiss) var dismiss
     @Environment(\.scenePhase) private var scenePhase
 
+    private var locationService: LocationService { coordinator.locationService }
+    private var altimeterService: AltimeterService { coordinator.altimeterService }
+    private var audioService: NavigationAudioService { coordinator.audioService }
+    private var safetyService: EmergencySafetyService { coordinator.safetyService }
+    private var session: RideSession { coordinator.recording }
+
     init(route: Route, ridePreferences: RouteRidePreferences? = nil) {
         self.route = route
         self.ridePreferences = ridePreferences ?? RouteRidePreferences.load(route: route)
-        self._session = State(initialValue: RideSession(route: route))
+        self._coordinator = State(initialValue: RideRecordingCoordinator(
+            route: route,
+            recordingMode: .follow,
+            ridePreferences: ridePreferences
+        ))
         self._mapRegion = State(initialValue: Self.initialMapRegion(for: route))
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            headerStrip       // A — slim, 16 pt + safe area
-            ZStack(alignment: .topTrailing) {
-                navigationMap     // F — hero, fills flex space
-                offlinePill       // OFFLINE indicator — top-right of map
-                    .padding(.top, 8)
-                    .padding(.trailing, 12)
+        ZStack {
+            if coordinator.lifecycleState == .preflighting || coordinator.lifecycleState == .ready {
+                RecordingPreflightView(coordinator: coordinator) {
+                    coordinator.discardRecording()
+                    dismiss()
+                }
+            } else {
+                VStack(spacing: 0) {
+                    headerStrip       // A — slim, 16 pt + safe area
+                    ZStack(alignment: .topTrailing) {
+                        navigationMap     // F — hero, fills flex space
+                        offlinePill       // OFFLINE indicator — top-right of map
+                            .padding(.top, 8)
+                            .padding(.trailing, 12)
+                    }
+                    speedTile         // B — 180 pt
+                    progressTile      // C — 48 pt
+                    sensorStrip       // D — 80 pt
+                    if session.isOffRoute, ridePreferences.enabledOverlays.contains(.offRouteAlerts) {
+                        offRouteBanner // E — 40 pt, conditional
+                            .transition(.move(edge: .top).combined(with: .opacity))
+                    }
+                    if safetyService.checkInState == .overdue, ridePreferences.enabledOverlays.contains(.safetyCheckIn) {
+                        checkInBanner
+                            .transition(.move(edge: .top).combined(with: .opacity))
+                    }
+                    bottomControlBar  // Audio + END RIDE — 56 pt, thumb-reachable
+                }
             }
-            speedTile         // B — 180 pt
-            progressTile      // C — 48 pt
-            sensorStrip       // D — 80 pt
-            if session.isOffRoute, ridePreferences.enabledOverlays.contains(.offRouteAlerts) {
-                offRouteBanner // E — 40 pt, conditional
-                    .transition(.move(edge: .top).combined(with: .opacity))
-            }
-            if safetyService.checkInState == .overdue, ridePreferences.enabledOverlays.contains(.safetyCheckIn) {
-                checkInBanner
-                    .transition(.move(edge: .top).combined(with: .opacity))
-            }
-            bottomControlBar  // Audio + END RIDE — 56 pt, thumb-reachable
         }
         .background(BCColors.navPanel)
         .ignoresSafeArea(edges: .top)
@@ -87,7 +100,6 @@ struct RouteNavigationView: View {
             }
         }
         .onAppear(perform: startRide)
-        .task { await requestWorkoutAuthorization() }
         .onDisappear(perform: stopServices)
         .onChange(of: locationService.locationUpdateCount) { _, _ in
             onLocationTick()
@@ -108,6 +120,29 @@ struct RouteNavigationView: View {
         .sheet(isPresented: $showConditionReport) {
             ConditionReportSheet(routeId: route.id, routeName: route.name) {
                 dismiss()
+            }
+        }
+        .sheet(item: $saveSnapshot) { snapshot in
+            RecordingSaveSheet(
+                snapshot: snapshot,
+                routeId: route.id,
+                initialRouteName: route.name,
+                sourceRoute: route,
+                recordingMode: .follow,
+                onDiscard: {
+                    shouldShowConditionReportAfterSave = false
+                    coordinator.discardRecording()
+                },
+                onSaveWorkout: {
+                    await coordinator.finishWorkoutAfterSave()
+                    EmergencySafetyService.shared.lastKnownLocation = nil
+                }
+            ) {
+                if shouldShowConditionReportAfterSave {
+                    showConditionReport = true
+                } else {
+                    dismiss()
+                }
             }
         }
     }
@@ -665,52 +700,15 @@ struct RouteNavigationView: View {
             dismiss()
             return
         }
-        locationService.onFirstAltitude = { [altimeterService] gpsAltitude in
-            altimeterService.calibrateWithGPS(altitudeMeters: gpsAltitude)
-        }
-        // Feed barometer-fused altitude into the ride engine so ascent math
-        // beats GPS-only inflation in canyons.
-        session.altitudeProvider = { [altimeterService] in
-            altimeterService.fusedAltitudeMeters
-        }
-        locationService.requestPermission()
-        locationService.startTracking(
-            mode: .ride,
-            powerMode: powerMode,
-            wantsHeadingUpdates: powerMode.usesHeadingUpdates
-        )
-        altimeterService.start()
-        audioService.configure(for: powerMode)
-        audioService.reset()
-        session.start()
-        if ridePreferences.enabledOverlays.contains(.safetyCheckIn) {
-            safetyService.startCheckInTimer(routeName: route.name)
-        }
-
-        precomputedTurns = RouteAnalysisService.analyzeTurns(for: route)
-        activityManager.startActivity(
-            routeName: route.name,
-            distanceMiles: route.distanceMiles,
-            category: route.category
-        )
+        coordinator.powerMode = powerMode
+        coordinator.startPreflight()
         Task {
             tilePackInfo = await OfflineTilePackManager.shared.installedPack(forRouteId: route.id)
         }
     }
 
     private func stopServices() {
-        locationService.stopTracking()
-        altimeterService.stop()
-        safetyService.stopCheckInTimer()
-        session.stop()
-    }
-
-    private func requestWorkoutAuthorization() async {
-        guard workoutService.isAvailable else { return }
-        await workoutService.requestAuthorization()
-        if workoutService.isAuthorized {
-            await workoutService.startWorkout(routeName: route.name)
-        }
+        coordinator.handleDisappear()
     }
 
     private func endRide() {
@@ -718,52 +716,21 @@ struct RouteNavigationView: View {
             distance: session.distanceTraveledMiles,
             time: session.formattedElapsedTime
         )
-        let effectiveStart = session.effectiveStartedAt ?? Date()
-        activityManager.endActivity(
-            finalDistance: session.distanceTraveledMiles,
-            rideStartedAt: effectiveStart,
-            pausedAt: session.pausedAt
-        )
-        let endDate = session.lastLocation?.timestamp ?? Date()
-        let events = session.pauseEvents.map { (date: $0.date, isPause: $0.kind == .pause) }
-        Task {
-            await workoutService.endWorkout(endDate: endDate, pauseEvents: events)
-        }
-        RideHistoryService.shared.recordRide(
-            routeId: route.id,
-            routeName: route.name,
-            category: route.category,
-            distanceMiles: session.distanceTraveledMiles,
-            elapsedSeconds: session.elapsedSeconds,
-            movingSeconds: session.movingSeconds,
-            elevationGainFeet: Double(altimeterService.totalAscentFeet),
-            avgSpeedMPH: locationService.averageSpeedMPH,
-            maxSpeedMPH: locationService.maxSpeedMPH
-        )
-        EmergencySafetyService.shared.lastKnownLocation = nil
-        stopServices()
-        showConditionReport = true
+
+        coordinator.freezeForSave()
+        guard let snapshot = coordinator.frozenSnapshot else { return }
+        shouldShowConditionReportAfterSave = true
+        saveSnapshot = snapshot
     }
 
     // MARK: - GPS tick — audio cues, breadcrumb, Live Activity update, camera follow
 
     private func onLocationTick() {
+        coordinator.refreshPreflightStatus()
+        guard coordinator.lifecycleState == .recording else { return }
         guard let loc = locationService.userLocation else { return }
-        let wasPreviouslyOffRoute = wasOffRoute
 
-        if let location = locationService.lastLocation {
-            // Drift correction — feed tight-vertical-accuracy GPS samples into
-            // the barometer baseline so fused altitude doesn't drift over a
-            // long climb.
-            altimeterService.recalibrateIfPossible(
-                gpsAltitudeMeters: location.altitude,
-                verticalAccuracy: location.verticalAccuracy
-            )
-            session.updateLocation(location)
-            locationService.setRideStationary(session.state == .paused)
-        } else {
-            session.updateLocation(loc, speed: locationService.speedMPS)
-        }
+        coordinator.handleLocationTick()
         EmergencySafetyService.shared.updateLocation(loc)
 
         // Breadcrumb display is sparser than the saved track in endurance mode.
@@ -778,65 +745,6 @@ struct RouteNavigationView: View {
         }
         if breadcrumbs.count > RideTuning.maxInMemoryTrackpoints {
             breadcrumbs.removeFirst(breadcrumbs.count - RideTuning.maxInMemoryTrackpoints)
-        }
-
-        // Off-route audio (tiered logic lives in session)
-        if session.isOffRoute, ridePreferences.enabledOverlays.contains(.offRouteAlerts) {
-            locationService.requestTemporaryPrecisionBoost()
-            if !wasOffRoute || session.isCriticallyOffRoute {
-                audioService.announceOffRoute(distanceMeters: session.distanceFromRouteMeters)
-                wasOffRoute = true
-            }
-        } else if wasOffRoute {
-            audioService.announceBackOnRoute()
-            wasOffRoute = false
-        }
-
-        // Milestone audio
-        audioService.checkMilestone(
-            distanceMiles: session.distanceTraveledMiles,
-            totalMiles: route.distanceMiles
-        )
-
-        // Live Activity — the widget renders the timer via `Text(timerInterval:
-        // ..., pauseTime:)` keyed off `effectiveStartedAt`, so we don't push
-        // every-second updates. Throttle inside the manager. Force a push
-        // whenever the off-route flag flips so the banner doesn't lag.
-        let offRouteFlipped = (session.isOffRoute != wasPreviouslyOffRoute)
-        if let effectiveStart = session.effectiveStartedAt {
-            activityManager.updateActivity(
-                speedMPH: locationService.speedMPH,
-                distanceTraveled: session.distanceTraveledMiles,
-                distanceRemaining: session.distanceRemainingMiles,
-                rideStartedAt: effectiveStart,
-                pausedAt: session.pausedAt,
-                progress: session.progressPercent,
-                isOffRoute: session.isOffRoute,
-                heading: locationService.navigationHeading,
-                powerMode: powerMode,
-                force: offRouteFlipped
-            )
-        }
-
-        if workoutService.isRecording, let location = locationService.lastLocation {
-            workoutService.addRouteData([location], powerMode: powerMode)
-        }
-
-        if ridePreferences.enabledOverlays.contains(.cues) {
-            if let nextTurn = RouteAnalysisService.nextTurn(
-                from: session.closestTrackpointIndex,
-                in: precomputedTurns
-            ) {
-                let dist = RouteAnalysisService.distanceToTurn(
-                    from: session.closestTrackpointIndex,
-                    to: nextTurn,
-                    trackpoints: route.clTrackpoints
-                )
-                if dist < 200 && dist > 10 {
-                    locationService.requestTemporaryPrecisionBoost()
-                    audioService.announceTurn(direction: nextTurn.direction, distanceAhead: dist)
-                }
-            }
         }
 
         updateCameraIfNeeded(centeredOn: loc)
