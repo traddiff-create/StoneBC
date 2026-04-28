@@ -32,6 +32,7 @@ final class RideRecordingCoordinator {
     let activityManager = RideActivityManager()
     let alertService = RideAlertService.shared
     let safetyService = EmergencySafetyService.shared
+    let pulsePublisher: RidePulsePublishing
     let recording: RideSession
 
     var lifecycleState: LifecycleState = .preflighting
@@ -49,19 +50,24 @@ final class RideRecordingCoordinator {
     private var didStartRecording = false
     private var didStartWorkoutTask = false
     private var frozenEndDate: Date?
+    private var lastPulseOffRoute = false
+    private var lastPulseCriticalOffRoute = false
+    private var lastPulseSafetyState: RidePulseSnapshot.SafetyState = .inactive
 
     init(
         route: Route? = nil,
         routeId: String? = nil,
         routeName: String? = nil,
         recordingMode: RouteRecordingMode = .free,
-        ridePreferences: RouteRidePreferences? = nil
+        ridePreferences: RouteRidePreferences? = nil,
+        pulsePublisher: RidePulsePublishing = RidePulsePublisher.shared
     ) {
         self.route = route
         self.routeId = route?.id ?? routeId
         self.routeName = route?.name ?? routeName
         self.recordingMode = route == nil && recordingMode == .follow ? .free : recordingMode
         self.ridePreferences = ridePreferences ?? RouteRidePreferences.load(route: route)
+        self.pulsePublisher = pulsePublisher
         if recordingMode == .follow, let route {
             recording = RideSession(route: route)
         } else {
@@ -180,9 +186,10 @@ final class RideRecordingCoordinator {
     }
 
     func startRecording() {
-        guard !didStartRecording, canStart else { return }
+        guard !didStartRecording, canStart || StoneBCTestMode.isUITesting else { return }
         didStartRecording = true
         lifecycleState = .recording
+        UIDevice.current.isBatteryMonitoringEnabled = true
 
         locationService.onFirstAltitude = { [altimeterService] gpsAltitude in
             altimeterService.calibrateWithGPS(altitudeMeters: gpsAltitude)
@@ -200,6 +207,7 @@ final class RideRecordingCoordinator {
         audioService.configure(for: powerMode)
         audioService.reset()
         alertService.startSession()
+        configureSafetyPulseBridge()
         recording.onAutoPause = { [audioService] in audioService.announcePaused() }
         recording.onAutoResume = { [audioService] in audioService.announceResumed() }
 
@@ -221,6 +229,7 @@ final class RideRecordingCoordinator {
             category: route?.category ?? "recording",
             rideStartedAt: recording.startedAt ?? Date()
         )
+        publishWatchPulse(force: true)
         startWorkoutIfAvailable()
     }
 
@@ -237,6 +246,7 @@ final class RideRecordingCoordinator {
         workoutService.addRouteData([location], powerMode: powerMode)
         handleRouteFollowEvents()
         updateLiveActivity()
+        publishWatchPulse()
     }
 
     func togglePause() {
@@ -245,10 +255,12 @@ final class RideRecordingCoordinator {
             recording.pause()
             locationService.setRideStationary(true)
             updateLiveActivity(force: true)
+            publishWatchPulse(force: true)
         case .paused:
             recording.resume()
             locationService.setRideStationary(false)
             updateLiveActivity(force: true)
+            publishWatchPulse(force: true)
         default:
             break
         }
@@ -286,6 +298,7 @@ final class RideRecordingCoordinator {
             )
         }
         lifecycleState = .frozen
+        publishWatchPulse(force: true, events: [.rideEnded])
     }
 
     func discardRecording() {
@@ -294,6 +307,7 @@ final class RideRecordingCoordinator {
         workoutService.cancelWorkout()
         frozenSnapshot = nil
         lifecycleState = .discarded
+        publishWatchPulse(force: true, events: [.rideEnded])
     }
 
     func handleDisappear() {
@@ -314,6 +328,7 @@ final class RideRecordingCoordinator {
     }
 
     private func startWorkoutIfAvailable() {
+        guard !StoneBCTestMode.isUITesting else { return }
         guard workoutService.isAvailable, !didStartWorkoutTask else { return }
         didStartWorkoutTask = true
         Task {
@@ -338,10 +353,86 @@ final class RideRecordingCoordinator {
     }
 
     private func stopActiveSensors() {
+        safetyService.onCheckInStateChanged = nil
         locationService.stopTracking()
         altimeterService.stop()
         alertService.endSession()
         safetyService.stopCheckInTimer()
+    }
+
+    private func configureSafetyPulseBridge() {
+        safetyService.onCheckInStateChanged = { [weak self] _ in
+            Task { @MainActor [weak self] in
+                self?.publishWatchPulse(force: true)
+            }
+        }
+    }
+
+    func publishWatchPulse(force: Bool = false, events: [RidePulseEvent] = []) {
+        let snapshot = makeRidePulseSnapshot()
+        let transitionEvents = consumePulseTransitionEvents(for: snapshot)
+        pulsePublisher.publish(
+            snapshot: snapshot,
+            force: force || !transitionEvents.isEmpty || !events.isEmpty,
+            events: events + transitionEvents
+        )
+    }
+
+    private func makeRidePulseSnapshot() -> RidePulseSnapshot {
+        let cue = nextRidePulseCue()
+        let batteryLevel = UIDevice.current.batteryLevel
+        let normalizedBattery = batteryLevel >= 0 ? Double(batteryLevel) : nil
+        let latestCoordinate = locationService.lastLocation?.coordinate ?? safetyService.lastKnownLocation
+        let pulseCoordinate = latestCoordinate.map {
+            RidePulseCoordinate(latitude: $0.latitude, longitude: $0.longitude)
+        }
+        let journalContext = RidePulseJournalContextProvider.current()
+
+        return RidePulseSnapshot(
+            routeId: routeId,
+            routeName: title,
+            rideState: ridePulseState,
+            updatedAt: Date(),
+            effectiveStartedAt: recording.effectiveStartedAt,
+            pausedAt: recording.pausedAt,
+            speedMPH: locationService.speedMPH,
+            distanceTraveledMiles: recording.distanceMiles,
+            distanceRemainingMiles: route == nil ? 0 : recording.distanceRemainingMiles,
+            progressPercent: route == nil ? 0 : recording.progressPercent,
+            nextCueText: cue.text,
+            nextCueDistanceMeters: cue.distanceMeters,
+            isOffRoute: route == nil ? false : recording.isOffRoute,
+            isCriticalOffRoute: route == nil ? false : recording.isCriticallyOffRoute,
+            safetyState: ridePulseSafetyState,
+            powerMode: ridePulsePowerMode,
+            phoneBatteryLevel: normalizedBattery,
+            phoneLowPowerModeEnabled: ProcessInfo.processInfo.isLowPowerModeEnabled,
+            lastKnownCoordinate: pulseCoordinate,
+            activeJournalId: journalContext?.id,
+            activeJournalName: journalContext?.name,
+            activeJournalDayNumber: journalContext?.dayNumber,
+            checkInDeadline: safetyService.checkInDeadline
+        )
+    }
+
+    private func consumePulseTransitionEvents(for snapshot: RidePulseSnapshot) -> [RidePulseEvent] {
+        var events: [RidePulseEvent] = []
+
+        if snapshot.isOffRoute && !lastPulseOffRoute {
+            events.append(.offRoute)
+        }
+        if snapshot.isCriticalOffRoute && !lastPulseCriticalOffRoute {
+            events.append(.criticalOffRoute)
+        }
+        if snapshot.safetyState == .overdue && lastPulseSafetyState != .overdue {
+            events.append(.safetyCheckInOverdue)
+        }
+
+        lastPulseOffRoute = snapshot.isOffRoute
+        lastPulseCriticalOffRoute = snapshot.isCriticalOffRoute
+        lastPulseSafetyState = snapshot.safetyState
+
+        return events
     }
 
     private func updateLiveActivity(force: Bool = false) {
@@ -403,6 +494,150 @@ final class RideRecordingCoordinator {
 
         if offRouteFlipped {
             updateLiveActivity(force: true)
+        }
+    }
+
+    private var ridePulseState: RidePulseSnapshot.RideState {
+        switch lifecycleState {
+        case .preflighting:
+            return .idle
+        case .ready:
+            return .ready
+        case .recording:
+            switch recording.state {
+            case .recording:
+                return .recording
+            case .paused:
+                return .paused
+            case .stopped:
+                return .stopped
+            case .idle:
+                return .ready
+            }
+        case .frozen, .saved:
+            return .ended
+        case .discarded:
+            return .discarded
+        }
+    }
+
+    private var ridePulseSafetyState: RidePulseSnapshot.SafetyState {
+        switch safetyService.checkInState {
+        case .inactive:
+            return .inactive
+        case .active:
+            return .active
+        case .overdue:
+            return .overdue
+        }
+    }
+
+    private var ridePulsePowerMode: RidePulseSnapshot.PowerMode {
+        switch powerMode {
+        case .highDetail:
+            return .highDetail
+        case .balanced:
+            return .balanced
+        case .endurance:
+            return .endurance
+        }
+    }
+
+    private func nextRidePulseCue() -> (text: String?, distanceMeters: Double?) {
+        guard let route else { return (nil, nil) }
+        if let authoredCue = nextAuthoredCue(in: route) {
+            return authoredCue
+        }
+        guard let nextTurn = RouteAnalysisService.nextTurn(
+            from: recording.closestTrackpointIndex,
+            in: precomputedTurns
+        ) else {
+            return recording.distanceRemainingMiles > 0.1 ? ("Finish", recording.distanceRemainingMiles * 1609.344) : (nil, nil)
+        }
+        let distance = RouteAnalysisService.distanceToTurn(
+            from: recording.closestTrackpointIndex,
+            to: nextTurn,
+            trackpoints: route.clTrackpoints
+        )
+        return (ridePulseCueLabel(for: nextTurn.direction), distance)
+    }
+
+    private func nextAuthoredCue(in route: Route) -> (text: String?, distanceMeters: Double?)? {
+        guard !route.cuePoints.isEmpty,
+              recording.closestTrackpointIndex < route.clTrackpoints.count else {
+            return nil
+        }
+
+        let trackpoints = route.clTrackpoints
+        let currentIndex = recording.closestTrackpointIndex
+        var bestCue: Route.CuePoint?
+        var bestIndex = Int.max
+        var bestDistance = Double.greatestFiniteMagnitude
+
+        for cue in route.cuePoints {
+            var nearestIndex = currentIndex
+            var nearestDistance = Double.greatestFiniteMagnitude
+            for index in currentIndex..<trackpoints.count {
+                let point = trackpoints[index]
+                let distance = CLLocation(
+                    latitude: point.latitude,
+                    longitude: point.longitude
+                ).distance(from: CLLocation(
+                    latitude: cue.coordinate.latitude,
+                    longitude: cue.coordinate.longitude
+                ))
+                if distance < nearestDistance {
+                    nearestDistance = distance
+                    nearestIndex = index
+                }
+            }
+            if nearestIndex >= currentIndex && nearestIndex < bestIndex {
+                bestCue = cue
+                bestIndex = nearestIndex
+                bestDistance = distanceAlongRoute(from: currentIndex, to: nearestIndex, in: trackpoints)
+            }
+        }
+
+        guard let bestCue else { return nil }
+        return (bestCue.name, bestDistance)
+    }
+
+    private func distanceAlongRoute(
+        from startIndex: Int,
+        to endIndex: Int,
+        in trackpoints: [CLLocationCoordinate2D]
+    ) -> Double {
+        guard startIndex < endIndex,
+              endIndex < trackpoints.count else {
+            return 0
+        }
+
+        var distance: Double = 0
+        for index in startIndex..<endIndex {
+            let start = trackpoints[index]
+            let end = trackpoints[index + 1]
+            distance += CLLocation(latitude: start.latitude, longitude: start.longitude)
+                .distance(from: CLLocation(latitude: end.latitude, longitude: end.longitude))
+        }
+        return distance
+    }
+
+    private func ridePulseCueLabel(for direction: TurnDirection) -> String? {
+        switch direction {
+        case .sharpLeft:
+            return "Sharp left"
+        case .left:
+            return "Turn left"
+        case .slightLeft:
+            return "Bear left"
+        case .straight:
+            return nil
+        case .slightRight:
+            return "Bear right"
+        case .right:
+            return "Turn right"
+        case .sharpRight:
+            return "Sharp right"
         }
     }
 

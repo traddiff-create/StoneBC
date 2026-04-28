@@ -11,8 +11,8 @@ struct ContentView: View {
 
     var body: some View {
         Group {
-            if onboardingComplete {
-                TabContainerView()
+            if onboardingComplete || StoneBCTestMode.skipOnboarding {
+                TabContainerView(initialSelectedTab: StoneBCTestMode.initialTab)
                     .environment(appState)
                     .task {
                         await appState.syncFromWordPress()

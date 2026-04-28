@@ -824,7 +824,9 @@ struct RouteNavigationView: View {
     // MARK: - GPS tick — audio cues, breadcrumb, Live Activity update, camera follow
 
     private func onLocationTick() {
-        coordinator.refreshPreflightStatus()
+        if coordinator.lifecycleState == .preflighting || coordinator.lifecycleState == .ready {
+            coordinator.refreshPreflightStatus()
+        }
         guard coordinator.lifecycleState == .recording else { return }
         guard let loc = locationService.userLocation else { return }
 

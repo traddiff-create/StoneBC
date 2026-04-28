@@ -11,6 +11,10 @@ struct TabContainerView: View {
     @Environment(AppState.self) var appState
     @State private var selectedTab = 0
 
+    init(initialSelectedTab: Int = 0) {
+        _selectedTab = State(initialValue: initialSelectedTab)
+    }
+
     var body: some View {
         TabView(selection: $selectedTab) {
             HomeView()
@@ -32,8 +36,10 @@ struct TabContainerView: View {
             RecordTabView()
                 .tabItem {
                     Label("Record", systemImage: "record.circle.fill")
+                        .accessibilityIdentifier("stonebc.tab.record")
                 }
                 .tag(2)
+                .accessibilityIdentifier("stonebc.record.tab.root")
 
             RidesTabView()
                 .tabItem {

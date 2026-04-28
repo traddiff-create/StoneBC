@@ -15,37 +15,23 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A60000000000000000000001"
-               BuildableName = "StoneBC.app"
-               BlueprintName = "StoneBC"
+               BlueprintIdentifier = "W60001000000000000000001"
+               BuildableName = "StoneBCWatch.app"
+               BlueprintName = "StoneBCWatch"
                ReferencedContainer = "container:app.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
             buildForTesting = "YES"
-            buildForRunning = "NO"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "NO">
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "T60000000000000000000001"
-               BuildableName = "StoneBCTests.xctest"
-               BlueprintName = "StoneBCTests"
-               ReferencedContainer = "container:app.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "NO"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "U60000000000000000000001"
-               BuildableName = "StoneBCUITests.xctest"
-               BlueprintName = "StoneBCUITests"
+               BlueprintIdentifier = "W60002000000000000000002"
+               BuildableName = "StoneBCWatchWidgets.appex"
+               BlueprintName = "StoneBCWatchWidgets"
                ReferencedContainer = "container:app.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -58,28 +44,6 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       shouldAutocreateTestPlan = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "T60000000000000000000001"
-               BuildableName = "StoneBCTests.xctest"
-               BlueprintName = "StoneBCTests"
-               ReferencedContainer = "container:app.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "U60000000000000000000001"
-               BuildableName = "StoneBCUITests.xctest"
-               BlueprintName = "StoneBCUITests"
-               ReferencedContainer = "container:app.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
@@ -96,9 +60,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A60000000000000000000001"
-            BuildableName = "StoneBC.app"
-            BlueprintName = "StoneBC"
+            BlueprintIdentifier = "W60001000000000000000001"
+            BuildableName = "StoneBCWatch.app"
+            BlueprintName = "StoneBCWatch"
             ReferencedContainer = "container:app.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -113,9 +77,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A60000000000000000000001"
-            BuildableName = "StoneBC.app"
-            BlueprintName = "StoneBC"
+            BlueprintIdentifier = "W60001000000000000000001"
+            BuildableName = "StoneBCWatch.app"
+            BlueprintName = "StoneBCWatch"
             ReferencedContainer = "container:app.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

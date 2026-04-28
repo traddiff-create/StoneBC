@@ -32,6 +32,7 @@ class EmergencySafetyService {
     var checkInDeadline: Date?
     var lastCheckInAt: Date?
     var activeRouteName: String?
+    var onCheckInStateChanged: ((CheckInState) -> Void)?
 
     private let storageKey = "emergencyContact"
     private var checkInInterval: TimeInterval = RideTuning.safetyCheckInIntervalSeconds
@@ -92,7 +93,7 @@ class EmergencySafetyService {
         activeRouteName = routeName
         lastCheckInAt = Date()
         checkInDeadline = Date().addingTimeInterval(interval)
-        checkInState = .active
+        setCheckInState(.active, notifyUnchanged: true)
 
         checkInTimer = Timer.scheduledTimer(withTimeInterval: 15, repeats: true) { [weak self] _ in
             self?.refreshCheckInState()
@@ -103,14 +104,14 @@ class EmergencySafetyService {
         guard checkInState != .inactive else { return }
         lastCheckInAt = date
         checkInDeadline = date.addingTimeInterval(checkInInterval)
-        checkInState = .active
+        setCheckInState(.active, notifyUnchanged: true)
         scheduleCheckInNotification()
     }
 
     func stopCheckInTimer() {
         checkInTimer?.invalidate()
         checkInTimer = nil
-        checkInState = .inactive
+        setCheckInState(.inactive)
         checkInDeadline = nil
         lastCheckInAt = nil
         activeRouteName = nil
@@ -118,10 +119,21 @@ class EmergencySafetyService {
 
     private func refreshCheckInState(at date: Date = Date()) {
         guard let deadline = checkInDeadline else {
-            checkInState = .inactive
+            setCheckInState(.inactive)
             return
         }
-        checkInState = date >= deadline ? .overdue : .active
+        setCheckInState(date >= deadline ? .overdue : .active)
+    }
+
+    private func setCheckInState(_ state: CheckInState, notifyUnchanged: Bool = false) {
+        guard checkInState != state else {
+            if notifyUnchanged {
+                onCheckInStateChanged?(state)
+            }
+            return
+        }
+        checkInState = state
+        onCheckInStateChanged?(state)
     }
 
     var formattedCheckInRemaining: String {

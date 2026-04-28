@@ -6,16 +6,25 @@
 //
 
 import SwiftUI
+#if canImport(UIKit)
+import UIKit
+#endif
 
 @main
 struct StoneBCApp: App {
     @State private var appState = AppState()
+
+    init() {
+        StoneBCTestMode.configureRuntimeIfNeeded()
+        StoneBCTestMode.prepareLocalSandboxIfNeeded()
+    }
 
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environment(appState)
                 .task {
+                    RidePulsePublisher.shared.start()
                     NetworkStatusService.shared.start()
                     appState.startPeriodicSync()
                 }
@@ -59,6 +68,61 @@ struct StoneBCApp: App {
             return .rideWithGPS
         default:
             return nil
+        }
+    }
+}
+
+enum StoneBCTestMode {
+    private static let arguments = ProcessInfo.processInfo.arguments
+
+    static var isUITesting: Bool {
+        arguments.contains("-stonebc-ui-testing")
+    }
+
+    static var skipOnboarding: Bool {
+        isUITesting && arguments.contains("-stonebc-ui-skip-onboarding")
+    }
+
+    static var initialTab: Int {
+        arguments.contains("-stonebc-ui-start-record") ? 2 : 0
+    }
+
+    static var autoStartRide: Bool {
+        isUITesting && arguments.contains("-stonebc-ui-auto-start-ride")
+    }
+
+    static func configureRuntimeIfNeeded() {
+        guard isUITesting else { return }
+#if canImport(UIKit)
+        UIView.setAnimationsEnabled(false)
+#endif
+    }
+
+    static func prepareLocalSandboxIfNeeded() {
+        guard isUITesting else { return }
+
+        if arguments.contains("-stonebc-ui-reset"),
+           let bundleIdentifier = Bundle.main.bundleIdentifier {
+            UserDefaults.standard.removePersistentDomain(forName: bundleIdentifier)
+            clearDocumentsDirectory()
+        }
+
+        if skipOnboarding {
+            UserDefaults.standard.set(true, forKey: "onboardingComplete")
+        }
+    }
+
+    private static func clearDocumentsDirectory() {
+        guard let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first,
+              let contents = try? FileManager.default.contentsOfDirectory(
+                at: documentsURL,
+                includingPropertiesForKeys: nil
+              ) else {
+            return
+        }
+
+        for url in contents {
+            try? FileManager.default.removeItem(at: url)
         }
     }
 }

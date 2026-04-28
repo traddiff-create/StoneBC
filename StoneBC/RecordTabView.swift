@@ -35,6 +35,7 @@ struct RecordTabView: View {
                 .padding(.horizontal, BCSpacing.md)
             }
             .background(BCColors.background)
+            .accessibilityIdentifier("stonebc.record.screen")
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -172,6 +173,7 @@ struct RecordTabView: View {
         .buttonStyle(PressableButtonStyle())
         .disabled(selectedMode == .follow && selectedRoute == nil)
         .opacity(selectedMode == .follow && selectedRoute == nil ? 0.55 : 1)
+        .accessibilityIdentifier("stonebc.record.start")
     }
 
     private var startSubtitle: String {

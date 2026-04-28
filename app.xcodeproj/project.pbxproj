@@ -140,6 +140,18 @@
 		T10001000000000000000001 /* RideSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20001000000000000000001 /* RideSessionTests.swift */; };
 		T10002000000000000000002 /* WorkoutServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20002000000000000000002 /* WorkoutServiceTests.swift */; };
 		T10003000000000000000003 /* RideHistoryExportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20003000000000000000003 /* RideHistoryExportTests.swift */; };
+		U10001000000000000000001 /* StoneBCUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = U20001000000000000000001 /* StoneBCUITests.swift */; };
+		W10001000000000000000001 /* RidePulse.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20001000000000000000001 /* RidePulse.swift */; };
+		W10002000000000000000002 /* RidePulsePublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20002000000000000000002 /* RidePulsePublisher.swift */; };
+		W10003000000000000000003 /* RidePulse.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20001000000000000000001 /* RidePulse.swift */; };
+		W10004000000000000000004 /* StoneBCWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20003000000000000000003 /* StoneBCWatchApp.swift */; };
+		W10005000000000000000005 /* WatchRidePulseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20004000000000000000004 /* WatchRidePulseModel.swift */; };
+		W10006000000000000000006 /* WatchRidePulseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20005000000000000000005 /* WatchRidePulseView.swift */; };
+		W10007000000000000000007 /* RidePulse.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20001000000000000000001 /* RidePulse.swift */; };
+		W10008000000000000000008 /* RidePulseComplicationWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20008000000000000000008 /* RidePulseComplicationWidget.swift */; };
+		W10009000000000000000009 /* RidePulseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = W2000B0000000000000000B /* RidePulseTests.swift */; };
+		W1000A0000000000000000A /* StoneBCWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = W30001000000000000000001 /* StoneBCWatch.app */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		W1000B0000000000000000B /* StoneBCWatchWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = W30002000000000000000002 /* StoneBCWatchWidgets.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		AA0001000000000000000001 /* RouteInterchangeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1001000000000000000001 /* RouteInterchangeService.swift */; };
 		AA0002000000000000000002 /* RouteProviderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1002000000000000000002 /* RouteProviderService.swift */; };
 		JY0001000000000000000001 /* Journey.swift in Sources */ = {isa = PBXBuildFile; fileRef = JY1001000000000000000001 /* Journey.swift */; };
@@ -164,7 +176,53 @@
 			remoteGlobalIDString = A60000000000000000000001;
 			remoteInfo = StoneBC;
 		};
+		W90001000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A90000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = W60001000000000000000001;
+			remoteInfo = StoneBCWatch;
+		};
+		W90002000000000000000002 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A90000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = W60002000000000000000002;
+			remoteInfo = StoneBCWatchWidgets;
+		};
+		U90001000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A90000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A60000000000000000000001;
+			remoteInfo = StoneBC;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		W70000000000000000000000 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				W1000A0000000000000000A /* StoneBCWatch.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		W70001000000000000000001 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				W1000B0000000000000000B /* StoneBCWatchWidgets.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		A20001000000000000000001 /* StoneBCApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoneBCApp.swift; sourceTree = "<group>"; };
@@ -305,6 +363,21 @@
 		T20002000000000000000002 /* WorkoutServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutServiceTests.swift; sourceTree = "<group>"; };
 		T20003000000000000000003 /* RideHistoryExportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideHistoryExportTests.swift; sourceTree = "<group>"; };
 		T30000000000000000000001 /* StoneBCTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StoneBCTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		U20001000000000000000001 /* StoneBCUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoneBCUITests.swift; sourceTree = "<group>"; };
+		U30000000000000000000001 /* StoneBCUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StoneBCUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		W20001000000000000000001 /* RidePulse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RidePulse.swift; sourceTree = "<group>"; };
+		W20002000000000000000002 /* RidePulsePublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RidePulsePublisher.swift; sourceTree = "<group>"; };
+		W20003000000000000000003 /* StoneBCWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoneBCWatchApp.swift; sourceTree = "<group>"; };
+		W20004000000000000000004 /* WatchRidePulseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchRidePulseModel.swift; sourceTree = "<group>"; };
+		W20005000000000000000005 /* WatchRidePulseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchRidePulseView.swift; sourceTree = "<group>"; };
+		W20006000000000000000006 /* StoneBCWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StoneBCWatch.entitlements; sourceTree = "<group>"; };
+		W20007000000000000000007 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		W20008000000000000000008 /* RidePulseComplicationWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RidePulseComplicationWidget.swift; sourceTree = "<group>"; };
+		W20009000000000000000009 /* StoneBCWatchWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StoneBCWatchWidgets.entitlements; sourceTree = "<group>"; };
+		W2000A0000000000000000A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		W2000B0000000000000000B /* RidePulseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RidePulseTests.swift; sourceTree = "<group>"; };
+		W30001000000000000000001 /* StoneBCWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StoneBCWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		W30002000000000000000002 /* StoneBCWatchWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = StoneBCWatchWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA1001000000000000000001 /* RouteInterchangeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteInterchangeService.swift; sourceTree = "<group>"; };
 		AA1002000000000000000002 /* RouteProviderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteProviderService.swift; sourceTree = "<group>"; };
 		JY1001000000000000000001 /* Journey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Journey.swift; sourceTree = "<group>"; };
@@ -340,6 +413,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		U40000000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		W40001000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		W40002000000000000000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -347,7 +441,10 @@
 			isa = PBXGroup;
 			children = (
 				A50002000000000000000002 /* StoneBC */,
+				W50001000000000000000001 /* StoneBCWatch */,
+				W50002000000000000000002 /* StoneBCWatchWidgets */,
 				T50000000000000000000001 /* StoneBCTests */,
+				U50000000000000000000001 /* StoneBCUITests */,
 				A50003000000000000000003 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -467,6 +564,8 @@
 				Q10001000000000000000001 /* SunsetPillView.swift */,
 				Q10002000000000000000002 /* RideAlertService.swift */,
 				Q10003000000000000000003 /* RideAlertsSettingsView.swift */,
+				W20001000000000000000001 /* RidePulse.swift */,
+				W20002000000000000000002 /* RidePulsePublisher.swift */,
 				H10003000000000000000003 /* NavigationAudioService.swift */,
 				H10004000000000000000004 /* WorkoutService.swift */,
 				H10005000000000000000005 /* RideActivityAttributes.swift */,
@@ -496,7 +595,10 @@
 			isa = PBXGroup;
 			children = (
 				A30000000000000000000001 /* StoneBC.app */,
+				W30001000000000000000001 /* StoneBCWatch.app */,
+				W30002000000000000000002 /* StoneBCWatchWidgets.appex */,
 				T30000000000000000000001 /* StoneBCTests.xctest */,
+				U30000000000000000000001 /* StoneBCUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -507,8 +609,39 @@
 				T20001000000000000000001 /* RideSessionTests.swift */,
 				T20002000000000000000002 /* WorkoutServiceTests.swift */,
 				T20003000000000000000003 /* RideHistoryExportTests.swift */,
+				W2000B0000000000000000B /* RidePulseTests.swift */,
 			);
 			path = StoneBCTests;
+			sourceTree = "<group>";
+		};
+		U50000000000000000000001 /* StoneBCUITests */ = {
+			isa = PBXGroup;
+			children = (
+				U20001000000000000000001 /* StoneBCUITests.swift */,
+			);
+			path = StoneBCUITests;
+			sourceTree = "<group>";
+		};
+		W50001000000000000000001 /* StoneBCWatch */ = {
+			isa = PBXGroup;
+			children = (
+				W20003000000000000000003 /* StoneBCWatchApp.swift */,
+				W20004000000000000000004 /* WatchRidePulseModel.swift */,
+				W20005000000000000000005 /* WatchRidePulseView.swift */,
+				W20007000000000000000007 /* Info.plist */,
+				W20006000000000000000006 /* StoneBCWatch.entitlements */,
+			);
+			path = StoneBCWatch;
+			sourceTree = "<group>";
+		};
+		W50002000000000000000002 /* StoneBCWatchWidgets */ = {
+			isa = PBXGroup;
+			children = (
+				W20008000000000000000008 /* RidePulseComplicationWidget.swift */,
+				W2000A0000000000000000A /* Info.plist */,
+				W20009000000000000000009 /* StoneBCWatchWidgets.entitlements */,
+			);
+			path = StoneBCWatchWidgets;
 			sourceTree = "<group>";
 		};
 		D30000000000000000000001 /* Radio */ = {
@@ -554,15 +687,53 @@
 				A70001000000000000000001 /* Sources */,
 				A40000000000000000000001 /* Frameworks */,
 				A70002000000000000000002 /* Resources */,
+				W70000000000000000000000 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				W90003000000000000000003 /* PBXTargetDependency */,
 			);
 			name = StoneBC;
 			productName = StoneBC;
 			productReference = A30000000000000000000001 /* StoneBC.app */;
 			productType = "com.apple.product-type.application";
+		};
+		W60001000000000000000001 /* StoneBCWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = W80001000000000000000001 /* Build configuration list for PBXNativeTarget "StoneBCWatch" */;
+			buildPhases = (
+				W70004000000000000000004 /* Sources */,
+				W40001000000000000000001 /* Frameworks */,
+				W70002000000000000000002 /* Resources */,
+				W70001000000000000000001 /* Embed App Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				W90004000000000000000004 /* PBXTargetDependency */,
+			);
+			name = StoneBCWatch;
+			productName = StoneBCWatch;
+			productReference = W30001000000000000000001 /* StoneBCWatch.app */;
+			productType = "com.apple.product-type.application";
+		};
+		W60002000000000000000002 /* StoneBCWatchWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = W80002000000000000000002 /* Build configuration list for PBXNativeTarget "StoneBCWatchWidgets" */;
+			buildPhases = (
+				W70005000000000000000005 /* Sources */,
+				W40002000000000000000002 /* Frameworks */,
+				W70003000000000000000003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = StoneBCWatchWidgets;
+			productName = StoneBCWatchWidgets;
+			productReference = W30002000000000000000002 /* StoneBCWatchWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 		T60000000000000000000001 /* StoneBCTests */ = {
 			isa = PBXNativeTarget;
@@ -581,6 +752,23 @@
 			productReference = T30000000000000000000001 /* StoneBCTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		U60000000000000000000001 /* StoneBCUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = U80000000000000000000001 /* Build configuration list for PBXNativeTarget "StoneBCUITests" */;
+			buildPhases = (
+				U70001000000000000000001 /* Sources */,
+				U40000000000000000000001 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				U90002000000000000000002 /* PBXTargetDependency */,
+			);
+			name = StoneBCUITests;
+			productName = StoneBCUITests;
+			productReference = U30000000000000000000001 /* StoneBCUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -594,8 +782,18 @@
 					A60000000000000000000001 = {
 						CreatedOnToolsVersion = 16.0;
 					};
+					W60001000000000000000001 = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					W60002000000000000000002 = {
+						CreatedOnToolsVersion = 26.2;
+					};
 					T60000000000000000000001 = {
 						CreatedOnToolsVersion = 16.0;
+						TestTargetID = A60000000000000000000001;
+					};
+					U60000000000000000000001 = {
+						CreatedOnToolsVersion = 26.2;
 						TestTargetID = A60000000000000000000001;
 					};
 				};
@@ -614,7 +812,10 @@
 			projectRoot = "";
 			targets = (
 				A60000000000000000000001 /* StoneBC */,
+				W60001000000000000000001 /* StoneBCWatch */,
+				W60002000000000000000002 /* StoneBCWatchWidgets */,
 				T60000000000000000000001 /* StoneBCTests */,
+				U60000000000000000000001 /* StoneBCUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -643,6 +844,20 @@
 				Z10002000000000000000002 /* JetBrainsMono.ttf in Resources */,
 				Z10003000000000000000003 /* Archivo.ttf in Resources */,
 				Z10004000000000000000004 /* ArchivoNarrow.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		W70002000000000000000002 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		W70003000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -758,6 +973,8 @@
 				P00002000000000000000002 /* UserRouteStore.swift in Sources */,
 				P00003000000000000000003 /* RouteRecordingView.swift in Sources */,
 				RC0001000000000000000001 /* RideRecordingCoordinator.swift in Sources */,
+				W10001000000000000000001 /* RidePulse.swift in Sources */,
+				W10002000000000000000002 /* RidePulsePublisher.swift in Sources */,
 				P00004000000000000000004 /* RecordTabView.swift in Sources */,
 				P00005000000000000000005 /* RouteSubmissionService.swift in Sources */,
 				P00007000000000000000007 /* MemberLoginView.swift in Sources */,
@@ -782,6 +999,26 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		W70004000000000000000004 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				W10003000000000000000003 /* RidePulse.swift in Sources */,
+				W10004000000000000000004 /* StoneBCWatchApp.swift in Sources */,
+				W10005000000000000000005 /* WatchRidePulseModel.swift in Sources */,
+				W10006000000000000000006 /* WatchRidePulseView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		W70005000000000000000005 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				W10007000000000000000007 /* RidePulse.swift in Sources */,
+				W10008000000000000000008 /* RidePulseComplicationWidget.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		T70001000000000000000001 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -789,6 +1026,15 @@
 				T10001000000000000000001 /* RideSessionTests.swift in Sources */,
 				T10002000000000000000002 /* WorkoutServiceTests.swift in Sources */,
 				T10003000000000000000003 /* RideHistoryExportTests.swift in Sources */,
+				W10009000000000000000009 /* RidePulseTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		U70001000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				U10001000000000000000001 /* StoneBCUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -799,6 +1045,21 @@
 			isa = PBXTargetDependency;
 			target = A60000000000000000000001 /* StoneBC */;
 			targetProxy = T90001000000000000000001 /* PBXContainerItemProxy */;
+		};
+		W90003000000000000000003 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = W60001000000000000000001 /* StoneBCWatch */;
+			targetProxy = W90001000000000000000001 /* PBXContainerItemProxy */;
+		};
+		W90004000000000000000004 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = W60002000000000000000002 /* StoneBCWatchWidgets */;
+			targetProxy = W90002000000000000000002 /* PBXContainerItemProxy */;
+		};
+		U90002000000000000000002 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A60000000000000000000001 /* StoneBC */;
+			targetProxy = U90001000000000000000001 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1057,6 +1318,175 @@
 			};
 			name = Release;
 		};
+		U81001000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = SP854VZ979;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.traddiff.StoneBCUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = StoneBC;
+			};
+			name = Debug;
+		};
+		U81002000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = SP854VZ979;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.traddiff.StoneBCUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = StoneBC;
+			};
+			name = Release;
+		};
+		W81001000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = StoneBCWatch/StoneBCWatch.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = SP854VZ979;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = StoneBCWatch/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.87;
+				PRODUCT_BUNDLE_IDENTIFIER = com.traddiff.StoneBC.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		W81002000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = StoneBCWatch/StoneBCWatch.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = SP854VZ979;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = StoneBCWatch/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.87;
+				PRODUCT_BUNDLE_IDENTIFIER = com.traddiff.StoneBC.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
+		W82001000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = StoneBCWatchWidgets/StoneBCWatchWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = SP854VZ979;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = StoneBCWatchWidgets/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 0.87;
+				PRODUCT_BUNDLE_IDENTIFIER = com.traddiff.StoneBC.watchkitapp.widgets;
+				PRODUCT_EXTENSION = appex;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		W82002000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = StoneBCWatchWidgets/StoneBCWatchWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = SP854VZ979;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = StoneBCWatchWidgets/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 0.87;
+				PRODUCT_BUNDLE_IDENTIFIER = com.traddiff.StoneBC.watchkitapp.widgets;
+				PRODUCT_EXTENSION = appex;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1083,6 +1513,33 @@
 			buildConfigurations = (
 				T81001000000000000000001 /* Debug */,
 				T81002000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		U80000000000000000000001 /* Build configuration list for PBXNativeTarget "StoneBCUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				U81001000000000000000001 /* Debug */,
+				U81002000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		W80001000000000000000001 /* Build configuration list for PBXNativeTarget "StoneBCWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				W81001000000000000000001 /* Debug */,
+				W81002000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		W80002000000000000000002 /* Build configuration list for PBXNativeTarget "StoneBCWatchWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				W82001000000000000000001 /* Debug */,
+				W82002000000000000000002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -129,6 +129,7 @@ struct RouteRecordingView: View {
             titleVisibility: .visible
         ) {
             Button("Stop & Save", role: .destructive) { finishRecording() }
+                .accessibilityIdentifier("stonebc.record.stopAndSave")
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("\(recording.formattedDistance) in \(recording.formattedElapsed)")
@@ -181,6 +182,7 @@ struct RouteRecordingView: View {
                         .frame(width: 44, height: 16)
                         .contentShape(Rectangle())
                 }
+                .accessibilityIdentifier("stonebc.record.header.stop")
                 Spacer()
             }
         }
@@ -556,6 +558,7 @@ struct RouteRecordingView: View {
                         in: Rectangle()
                     )
             }
+            .accessibilityIdentifier("stonebc.record.pauseResume")
 
             Spacer()
 
@@ -568,6 +571,7 @@ struct RouteRecordingView: View {
                     .frame(width: 56, height: 44)
                     .background(Color.red.opacity(0.9), in: Rectangle())
             }
+            .accessibilityIdentifier("stonebc.record.stop")
         }
         .padding(.horizontal, 16)
         .frame(maxWidth: .infinity)
@@ -663,6 +667,11 @@ struct RouteRecordingView: View {
 
     private func startRecording() {
         coordinator.startPreflight()
+        guard StoneBCTestMode.autoStartRide else { return }
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 750_000_000)
+            coordinator.startRecording()
+        }
     }
 
     private func stopServices() {
@@ -696,7 +705,9 @@ struct RouteRecordingView: View {
     }
 
     private func onLocationTick() {
-        coordinator.refreshPreflightStatus()
+        if coordinator.lifecycleState == .preflighting || coordinator.lifecycleState == .ready {
+            coordinator.refreshPreflightStatus()
+        }
         guard coordinator.lifecycleState == .recording else { return }
         guard let loc = locationService.userLocation else { return }
 
@@ -733,6 +744,10 @@ struct RouteRecordingView: View {
 struct RecordingPreflightView: View {
     let coordinator: RideRecordingCoordinator
     let onCancel: () -> Void
+
+    private var canStartRecording: Bool {
+        coordinator.canStart || StoneBCTestMode.isUITesting
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -802,9 +817,10 @@ struct RecordingPreflightView: View {
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: 54)
-                .background(coordinator.canStart ? BCColors.danger : Color.white.opacity(0.12), in: Rectangle())
+                .background(canStartRecording ? BCColors.danger : Color.white.opacity(0.12), in: Rectangle())
             }
-            .disabled(!coordinator.canStart)
+            .disabled(!canStartRecording)
+            .accessibilityIdentifier("stonebc.record.preflight.start")
             .padding(.horizontal, 16)
             .padding(.bottom, bottomSafeAreaInset + 14)
         }
@@ -1010,6 +1026,7 @@ struct RecordingSaveSheet: View {
                         sheetDismiss()
                         onDone()
                     }
+                    .accessibilityIdentifier("stonebc.record.save.discard")
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Save") {
@@ -1033,6 +1050,7 @@ struct RecordingSaveSheet: View {
                         isSubmitting
                     )
                     .fontWeight(.semibold)
+                    .accessibilityIdentifier("stonebc.record.save.confirm")
                 }
             }
             .sheet(isPresented: $showJournalPrompt, onDismiss: onDone) {
