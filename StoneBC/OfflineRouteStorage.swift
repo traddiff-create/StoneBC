@@ -98,9 +98,10 @@ actor OfflineRouteStorage {
     }
 
     private func saveIndex(_ entries: [CachedRouteEntry]) {
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        if let data = try? encoder.encode(entries) {
+        // Default `.deferredToDate` strategy on both encode + decode — the
+        // previous `.iso8601` write paired with a default-strategy read
+        // meant `loadIndex()` silently returned [] every launch.
+        if let data = try? JSONEncoder().encode(entries) {
             try? data.write(to: indexFile)
         }
     }
