@@ -44,10 +44,19 @@ class AudioStreamService: NSObject {
     func setupAudioSession() {
         let session = AVAudioSession.sharedInstance()
         do {
+            // `.allowBluetoothHFP` was added in iOS 18 to replace the
+            // deprecated `.allowBluetooth`. Fall back to the older option
+            // on iOS 17 so the deployment target still compiles.
+            var options: AVAudioSession.CategoryOptions = [.defaultToSpeaker, .mixWithOthers]
+            if #available(iOS 18.0, *) {
+                options.insert(.allowBluetoothHFP)
+            } else {
+                options.insert(.allowBluetooth)
+            }
             try session.setCategory(
                 .playAndRecord,
                 mode: .voiceChat,
-                options: [.defaultToSpeaker, .allowBluetoothHFP, .mixWithOthers]
+                options: options
             )
             try session.setPreferredSampleRate(RadioConfig.sampleRate)
             try session.setPreferredIOBufferDuration(0.02) // 20ms for low latency
