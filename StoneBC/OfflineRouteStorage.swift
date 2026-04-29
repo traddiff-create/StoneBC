@@ -11,20 +11,33 @@ import Foundation
 actor OfflineRouteStorage {
     static let shared = OfflineRouteStorage()
 
-    private let storageDir: URL = {
-        let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("StoneBC", isDirectory: true)
-            .appendingPathComponent("OfflineRoutes", isDirectory: true)
-        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-        return dir
-    }()
+    private let storageDir: URL
+    private let snapshotsDir: URL
+    private let legacyDir: URL
 
     private var indexFile: URL {
         storageDir.appendingPathComponent("index.json")
     }
 
-    init() {
+    /// `applicationSupportDirectory` and `cachesDirectory` default to the
+    /// system locations; tests override both with a temp root so cached
+    /// routes, snapshots, and legacy migration all stay isolated.
+    init(applicationSupportDirectory: URL = FileManager.default
+            .urls(for: .applicationSupportDirectory, in: .userDomainMask)[0],
+         cachesDirectory: URL = FileManager.default
+            .urls(for: .cachesDirectory, in: .userDomainMask)[0]) {
+        let dir = applicationSupportDirectory
+            .appendingPathComponent("StoneBC", isDirectory: true)
+            .appendingPathComponent("OfflineRoutes", isDirectory: true)
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        self.storageDir = dir
+        self.snapshotsDir = applicationSupportDirectory
+            .appendingPathComponent("StoneBC", isDirectory: true)
+            .appendingPathComponent("RouteSnapshots", isDirectory: true)
+        self.legacyDir = cachesDirectory
+            .appendingPathComponent("OfflineRoutes", isDirectory: true)
         Self.migrateLegacyCacheIfNeeded(
+            legacyDir: legacyDir,
             to: storageDir,
             indexFile: storageDir.appendingPathComponent("index.json")
         )
@@ -227,13 +240,10 @@ actor OfflineRouteStorage {
     // MARK: - Helpers
 
     private func snapshotPath(for routeId: String) -> URL {
-        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("StoneBC/RouteSnapshots/\(routeId).png")
+        snapshotsDir.appendingPathComponent("\(routeId).png")
     }
 
-    private static func migrateLegacyCacheIfNeeded(to storageDir: URL, indexFile: URL) {
-        let legacyDir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("OfflineRoutes", isDirectory: true)
+    private static func migrateLegacyCacheIfNeeded(legacyDir: URL, to storageDir: URL, indexFile: URL) {
         guard FileManager.default.fileExists(atPath: legacyDir.path) else { return }
 
         try? FileManager.default.createDirectory(at: storageDir, withIntermediateDirectories: true)

@@ -14,7 +14,11 @@ class UserRouteStore {
 
     private(set) var routes: [Route] = []
 
-    private init() {
+    private let fileURL: URL
+
+    init(documentsDirectory: URL = FileManager.default
+        .urls(for: .documentDirectory, in: .userDomainMask).first!) {
+        self.fileURL = documentsDirectory.appendingPathComponent("userRoutes.json")
         load()
     }
 
@@ -42,12 +46,6 @@ class UserRouteStore {
     }
 
     // MARK: - Persistence
-
-    private var fileURL: URL {
-        FileManager.default
-            .urls(for: .documentDirectory, in: .userDomainMask).first!
-            .appendingPathComponent("userRoutes.json")
-    }
 
     private func load() {
         guard let data = try? Data(contentsOf: fileURL),
