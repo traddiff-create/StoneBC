@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="StoneBC test fixture"
+     xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata>
+    <name>Sample Test Route</name>
+    <desc>Minimal GPX fixture for StoneBCTests and the Blitz route-saving playbook.</desc>
+  </metadata>
+  <wpt lat="44.0805" lon="-103.2310">
+    <name>Start — Trailhead</name>
+    <desc>Parking lot at trail entrance.</desc>
+  </wpt>
+  <trk>
+    <name>Sample Test Route</name>
+    <trkseg>
+      <trkpt lat="44.0805" lon="-103.2310">
+        <ele>1000</ele>
+      </trkpt>
+      <trkpt lat="44.0900" lon="-103.2400">
+        <ele>1100</ele>
+      </trkpt>
+      <trkpt lat="44.1000" lon="-103.2500">
+        <ele>1200</ele>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>

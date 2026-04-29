@@ -140,6 +140,8 @@
 		T10001000000000000000001 /* RideSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20001000000000000000001 /* RideSessionTests.swift */; };
 		T10002000000000000000002 /* WorkoutServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20002000000000000000002 /* WorkoutServiceTests.swift */; };
 		T10003000000000000000003 /* RideHistoryExportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20003000000000000000003 /* RideHistoryExportTests.swift */; };
+		T10004000000000000000004 /* UserRouteStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20004000000000000000004 /* UserRouteStoreTests.swift */; };
+		T10005000000000000000005 /* OfflineRouteStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20005000000000000000005 /* OfflineRouteStorageTests.swift */; };
 		AA0001000000000000000001 /* RouteInterchangeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1001000000000000000001 /* RouteInterchangeService.swift */; };
 		AA0002000000000000000002 /* RouteProviderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1002000000000000000002 /* RouteProviderService.swift */; };
 		JY0001000000000000000001 /* Journey.swift in Sources */ = {isa = PBXBuildFile; fileRef = JY1001000000000000000001 /* Journey.swift */; };
@@ -304,6 +306,8 @@
 		T20001000000000000000001 /* RideSessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideSessionTests.swift; sourceTree = "<group>"; };
 		T20002000000000000000002 /* WorkoutServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutServiceTests.swift; sourceTree = "<group>"; };
 		T20003000000000000000003 /* RideHistoryExportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideHistoryExportTests.swift; sourceTree = "<group>"; };
+		T20004000000000000000004 /* UserRouteStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRouteStoreTests.swift; sourceTree = "<group>"; };
+		T20005000000000000000005 /* OfflineRouteStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineRouteStorageTests.swift; sourceTree = "<group>"; };
 		T30000000000000000000001 /* StoneBCTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StoneBCTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA1001000000000000000001 /* RouteInterchangeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteInterchangeService.swift; sourceTree = "<group>"; };
 		AA1002000000000000000002 /* RouteProviderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteProviderService.swift; sourceTree = "<group>"; };
@@ -507,6 +511,8 @@
 				T20001000000000000000001 /* RideSessionTests.swift */,
 				T20002000000000000000002 /* WorkoutServiceTests.swift */,
 				T20003000000000000000003 /* RideHistoryExportTests.swift */,
+				T20004000000000000000004 /* UserRouteStoreTests.swift */,
+				T20005000000000000000005 /* OfflineRouteStorageTests.swift */,
 			);
 			path = StoneBCTests;
 			sourceTree = "<group>";
@@ -789,6 +795,8 @@
 				T10001000000000000000001 /* RideSessionTests.swift in Sources */,
 				T10002000000000000000002 /* WorkoutServiceTests.swift in Sources */,
 				T10003000000000000000003 /* RideHistoryExportTests.swift in Sources */,
+				T10004000000000000000004 /* UserRouteStoreTests.swift in Sources */,
+				T10005000000000000000005 /* OfflineRouteStorageTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
