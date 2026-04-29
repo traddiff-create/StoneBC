@@ -44,19 +44,16 @@ class AudioStreamService: NSObject {
     func setupAudioSession() {
         let session = AVAudioSession.sharedInstance()
         do {
-            // `.allowBluetoothHFP` was added in iOS 18 to replace the
-            // deprecated `.allowBluetooth`. Fall back to the older option
-            // on iOS 17 so the deployment target still compiles.
-            var options: AVAudioSession.CategoryOptions = [.defaultToSpeaker, .mixWithOthers]
-            if #available(iOS 18.0, *) {
-                options.insert(.allowBluetoothHFP)
-            } else {
-                options.insert(.allowBluetooth)
-            }
+            // `.allowBluetooth` is deprecated in iOS 26 in favor of
+            // `.allowBluetoothHFP`, but the new symbol only exists in
+            // the iOS 26+ SDK. Sticking with `.allowBluetooth` keeps
+            // the code compiling on Xcode 16 (CI's iOS 18 SDK) while
+            // remaining functional through iOS 26+. Revisit when the
+            // deployment target moves to iOS 26.
             try session.setCategory(
                 .playAndRecord,
                 mode: .voiceChat,
-                options: options
+                options: [.defaultToSpeaker, .allowBluetooth, .mixWithOthers]
             )
             try session.setPreferredSampleRate(RadioConfig.sampleRate)
             try session.setPreferredIOBufferDuration(0.02) // 20ms for low latency
