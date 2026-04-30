@@ -1,8 +1,83 @@
 # AEP Grant — Spending Tracker
 
-**Grant:** $1,000 | **Status:** Funds transferring to BHCB account 765058
-**Event:** May 2, 2026 | **Today:** April 16 — 16 days out
+**Grant:** $1,000 | **Status:** Funds in BHCB account 765058
+**Event:** May 2, 2026 | **Today:** April 30 — 2 days out
 **Primary Source:** Sam's Club (Rapid City)
+
+---
+
+## Actuals — Receipts on File (as of 2026-04-30)
+
+Receipts archived at `business-docs/receipts/` (PDFs). All 4 JotForm submissions filed with AHA on 2026-04-30 — see `aep-jotform-submissions.md` for the per-submission record.
+
+| # | Date | Vendor | Total | Category | File | AHA Filed |
+|---|------|--------|-------|----------|------|-----------|
+| 1 | 2026-04-20 | Traditionally Different Technology, LLC (INV-0043) | $238.95 | Advertising | `20260420-trad-diff-marketing-INV0043-238.95.pdf` | ✅ 2026-04-30 |
+| 2a | 2026-04-29 | Sam's Club — supplies portion | $93.32 | Event supplies (ie trash bags) | `20260429-sams-club-supplies-202.64.pdf` | ✅ 2026-04-30 |
+| 2b | 2026-04-29 | Sam's Club — food portion | $109.32 | Food/drinks for volunteers | `20260429-sams-club-supplies-202.64.pdf` | ✅ 2026-04-30 |
+| 3 | 2026-04-30 | Feeding South Dakota (cashier's check #36604, BHCB) | $350.00 | Goods to be donated | `20260430-feeding-sd-cashiers-check-350.pdf` | ✅ 2026-04-30 |
+| | | **Total reported** | **$791.59** | | | |
+
+**Remaining of $1,000 grant: $208.41** — to cover Jerry's donuts, Papa John's pizza, coffee for HLMP, any flyer/poster gaps, Amazon items.
+
+### Receipt 1 detail — Trad Diff INV-0043
+
+| Line | Amount | Maps to budget |
+|------|--------|----------------|
+| Stickers (~150 branded SBC/event) | $75.00 | Event Materials |
+| Paid Social promo (RC audience) | $100.00 | Social Promotion |
+| SBC business cards (volunteer dist.) | $50.00 | Event Materials |
+| Tax (6.2%) | $13.95 | — |
+| **Total** | **$238.95** | |
+
+### Receipt 2 detail — Sam's Club (15 items, paid 04/29 8:18 PM)
+
+| Item (receipt code) | Amt | Bucket | Notes |
+|---|---|---|---|
+| 60CT THIN ITRTF | $13.41 | Cleanup Supplies | Thin nitrile gloves (60ct) |
+| 85311 FIRST AID | $28.52 | Cleanup Supplies | First aid kit |
+| 990439397 CLIF BLDERS (–$4 inst sav) | $17.48 | Food/Snacks | Clif Builders bars |
+| 508628 VEG TRAY | $11.84 | Food/Snacks | Vegetable tray |
+| 556445 42 GALLON BA | $22.88 | Cleanup Supplies | Trash bags |
+| 990520331 BLOOM ENERG | $17.98 | Food/Snacks | Energy drinks (riders) |
+| 362153 BANANAS (2 @ $1.56) | $3.12 | Food/Snacks | |
+| 990110243 EQPT IND GL | $14.98 | Cleanup Supplies | Industrial gloves |
+| 990373528 BEEF SNACK | $11.98 | Food/Snacks | |
+| 980242818 COSMIC CRISP | $6.67 | Food/Snacks | Apples |
+| 990012945 MM 27G TOTE | $7.98 | Cleanup Supplies | 27-gal Member's Mark tote (haul/store) |
+| 990486762 GAT 24PKLS | $13.68 | Food/Snacks | Gatorade 24-pack |
+| 561914 MM WATER | $4.28 | Food/Snacks | Bottled water |
+| 258863 GATORADE VPF | $15.78 | Food/Snacks | Gatorade variety pack |
+| Subtotal | $190.58 | | |
+| Tax (6.20%) | $12.06 | | |
+| **Total** | **$202.64** | | Paid: Sam's Business Credit (cardholder GREG) |
+
+**Resolved 2026-04-30:** SBC reimbursed Greg $202.64 from BHCB operating account 765058. Greg's Sam's card was used for purchase only; cost is borne by SBC.
+
+### Receipt 3 detail — Feeding South Dakota donation
+
+- BHCB Cashier's Check #36604, $350.00, dated 2026-04-30
+- Remitter: Stone Bicycle Coalition → Payee: Feeding South Dakota
+- **Note:** Original application budgeted $333; expanded budget said $350; actual $350 issued. The $17 over comes from buffer.
+
+---
+
+## Actuals vs. Plan
+
+| Bucket | Plan | Actual to date | Delta |
+|--------|------|----------------|-------|
+| Cleanup supplies | $200 | $87.77 (Sam's, pre-tax slice) | +$112 unused — donuts/printing/Amazon may eat this |
+| Event materials | $150 | $125 (stickers + biz cards, pre-tax) | +$25 unused |
+| Food & snacks | $200 | $102.81 (Sam's food, pre-tax slice) + donuts pending | +$97 minus Jerry's |
+| Social promotion | $100 | $100 (Trad Diff paid social) | $0 |
+| Tax (Trad Diff + Sam's) | — | $26.01 | (folded into actuals) |
+| Feeding SD donation | $333 | $350 | -$17 over |
+| **Subtotal** | $983 | $791.59 | |
+| **Remaining** | $17 | **$208.41** | |
+
+**Decision points before May 2:** donuts from Jerry's (~$56), pizza from Papa John's (~$75), coffee for HLMP (~$25), any printed flyers/posters not yet ordered, Amazon grabbers/vests if not yet shipped.
+
+---
 
 ## Event Schedule (Updated Apr 16)
 - **10:30 AM** — Coffee & donuts at Hanson-Larsen Memorial Park (HLMP)
