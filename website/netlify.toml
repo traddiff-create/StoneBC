@@ -18,6 +18,16 @@
   status = 301
   force = true
 
+[[redirects]]
+  from = "/api/mailer/unsubscribe/:token"
+  to = "/.netlify/functions/mailer-unsubscribe?token=:token"
+  status = 200
+
+[[redirects]]
+  from = "/api/mailer/opt-outs"
+  to = "/.netlify/functions/mailer-opt-outs"
+  status = 200
+
 # Custom 404 page
 [[redirects]]
   from = "/*"

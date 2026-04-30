@@ -15,6 +15,13 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy("src/404.html");
 
   // Date formatting filter
+  eleventyConfig.addFilter("date", (value, format) => {
+    const date = value === "now" ? new Date() : new Date(value);
+    if (Number.isNaN(date.getTime())) return value;
+    if (format === "Y") return String(date.getFullYear());
+    return date.toISOString();
+  });
+
   eleventyConfig.addFilter("dateDisplay", (dateStr) => {
     if (!dateStr) return "";
     const date = new Date(dateStr);
