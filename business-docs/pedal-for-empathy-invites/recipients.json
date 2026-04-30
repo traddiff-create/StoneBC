@@ -1,0 +1,165 @@
+{
+  "_doc": "Tier 1 personal invites for Pedal for Empathy (Sat May 2, 2026). Edit emails + flip `send: true` when ready. Run `node send.mjs --dry-run` first; then live without the flag. Sent records land in sent-log.json.",
+  "_event": {
+    "name": "Pedal for Empathy",
+    "date": "Saturday, May 2, 2026",
+    "time": "10:30 AM",
+    "start": "Hanson-Larsen Memorial Park (coffee + donuts before ride out)",
+    "rsvp": "https://mobilize.us/s/JFgFN6"
+  },
+  "recipients": [
+    {
+      "id": "T1-melissa-petersen",
+      "name": "Melissa Petersen",
+      "first_name": "Melissa",
+      "email": "",
+      "personal_line": "Thanks again for handling the waiver coordination — we're locked in on our end. Drop the trash question if you'd rather just chat Saturday morning.",
+      "notes_for_rory": "Pull email from Mar 31 / Apr 1 thread. She's already a partner — this is a courtesy 'see you Saturday' rather than a recruit.",
+      "send": true
+    },
+    {
+      "id": "T1-laura-minneluzahan",
+      "name": "Laura (Minneluzahan Senior Center)",
+      "first_name": "Laura",
+      "email": "",
+      "personal_line": "Hope the newsletter blast went out — appreciate you including us. Would love to see anyone from Minneluzahan come ride or just hang at the start. We'll have coffee and donuts at Hanson-Larsen.",
+      "notes_for_rory": "Pull email from Apr 13 newsletter thread. Already engaged — this is a 'come on Saturday' nudge.",
+      "send": false
+    },
+    {
+      "id": "T1-marinell-nells",
+      "name": "Marinell Simpson (Nell's Gourmet)",
+      "first_name": "Marinell",
+      "email": "",
+      "personal_line": "Just confirming we're all set on the coffee for Saturday morning at Hanson-Larsen. I'll swing by Friday afternoon for the airpots if that still works — let me know what time is best. Thanks again for partnering on this.",
+      "notes_for_rory": "Pull email from Apr 16 coffee thread. Confirming logistics, not first invite.",
+      "send": false
+    },
+    {
+      "id": "T1-acme-bikes",
+      "name": "Acme Bikes (owner / manager)",
+      "first_name": "",
+      "email": "",
+      "personal_line": "We're co-hosting Saturday and would love to have your full team out — staff in shop t-shirts, customers welcome. Anything you need from us between now and then, say the word. I'll be by Friday with last-minute logistics.",
+      "notes_for_rory": "Tim Rangitsch / Acme Bikes — already partner. This is the 'rally your staff' nudge. Tim's email per memory acme-bikes-tim.md. Or do this in-person Friday; flip send=false if going in person.",
+      "send": false
+    },
+    {
+      "id": "T1-greg-stone",
+      "name": "Greg Stone",
+      "first_name": "Dad",
+      "email": "",
+      "personal_line": "Saturday May 2, 10:30 at Hanson-Larsen. Coffee and donuts, easy ride, family-friendly. Would love to have you out there. No pressure — but it'd mean a lot.",
+      "notes_for_rory": "Channel is text/call per invite list. Email is a backup only — recommend texting (see text-scripts.md). If sending, use your dad's email.",
+      "send": false
+    },
+    {
+      "id": "T1-mato-tracy",
+      "name": "Mato & Tracy (Strong Bear Media)",
+      "first_name": "Mato + Tracy",
+      "email": "",
+      "personal_line": "First grant-funded SBC event — community ride + bike-path cleanup, Saturday May 2 at 10:30 from Hanson-Larsen. Family-friendly. Would love to have y'all there even if just for coffee at the start. Spread the word too if it lands right with anyone in your circle.",
+      "notes_for_rory": "Channel is text per invite list. Use text-scripts.md instead unless they're easier to reach by email.",
+      "send": false
+    },
+    {
+      "id": "T1-sheely-horsepower",
+      "name": "Sheely (Horsepower Ranch)",
+      "first_name": "Sheely",
+      "email": "",
+      "personal_line": "Long shot since you're outside the city, but Saturday May 2 at 10:30 we're doing a free community ride + cleanup from Hanson-Larsen. Would be great to see you. Bring the kids if it works.",
+      "notes_for_rory": "Text channel preferred per invite list.",
+      "send": false
+    },
+    {
+      "id": "T1-atk-landscaping",
+      "name": "ATK Landscaping (contact)",
+      "first_name": "",
+      "email": "",
+      "personal_line": "Saturday May 2 at 10:30 — community ride + bike-path cleanup. Trades-and-outdoors angle felt like your kind of thing. Family-friendly, free, starts at Hanson-Larsen. Bring the team if you want.",
+      "notes_for_rory": "Pull contact from Trad Diff/Clients/ATKLandscaping/. Could go email or text.",
+      "send": false
+    },
+    {
+      "id": "T1-slipknits-owner",
+      "name": "SlipKnits owner",
+      "first_name": "",
+      "email": "",
+      "personal_line": "Doing a free downtown-adjacent community ride + bike-path cleanup Saturday May 2 at 10:30 from Hanson-Larsen — would love to drop a flyer at the shop and have you come if it fits.",
+      "notes_for_rory": "Better as in-person drop-by Thursday/Friday (see dropby-checklist.md). Email only as fallback.",
+      "send": false
+    },
+    {
+      "id": "T1-prairie-edge",
+      "name": "Prairie Edge",
+      "first_name": "",
+      "email": "",
+      "personal_line": "Saturday May 2 — Pedal for Empathy, community ride + bike-path cleanup, 10:30 from Hanson-Larsen. Would love to leave a flyer on your community board and have folks know about it.",
+      "notes_for_rory": "Better as in-person drop-by (see dropby-checklist.md). Email is fallback.",
+      "send": false
+    },
+    {
+      "id": "T1-firehouse-brewing",
+      "name": "Firehouse Brewing",
+      "first_name": "",
+      "email": "",
+      "personal_line": "Wanted you on the radar for our community event Saturday May 2 — bike ride + bike-path cleanup, family-friendly, free. Starts 10:30 at Hanson-Larsen. Will leave a flyer if y'all have a community board.",
+      "notes_for_rory": "Better as in-person drop-by. Email is fallback.",
+      "send": false
+    },
+    {
+      "id": "T1-chris-innerearth",
+      "name": "Chris (Inner Earth Breathwork)",
+      "first_name": "Chris",
+      "email": "",
+      "personal_line": "Saturday May 2, 10:30 from Hanson-Larsen — free community ride + bike-path cleanup. Wellness, movement, community — felt like your crowd would love it. Come if it fits, and feel free to share with anyone.",
+      "notes_for_rory": "Per invite list, Nicole texts him. Probably skip email — see text-scripts.md.",
+      "send": false
+    },
+    {
+      "id": "T1-ignite-rc",
+      "name": "Ignite RC contacts",
+      "first_name": "",
+      "email": "",
+      "personal_line": "Hackathon was a great time. Quick share — we're hosting a free community ride + bike-path cleanup this Saturday May 2 at 10:30 from Hanson-Larsen. Funded by an empathy grant we won out of 600 applicants. Family-friendly. Come if it fits, and feel free to forward.",
+      "notes_for_rory": "Per invite list TBD after Apr 24-26 hackathon. Pick the 1-3 most relevant Ignite contacts to add as separate entries with their emails.",
+      "send": false
+    },
+    {
+      "id": "T1-karen-jelsma",
+      "name": "Karen Jelsma",
+      "first_name": "Karen",
+      "email": "",
+      "personal_line": "Saturday May 2, 10:30 from Hanson-Larsen — community ride + bike-path cleanup. Wellness + community + outdoors. Would love to see you there.",
+      "notes_for_rory": "Nicole's invite. Channel is text per invite list — see text-scripts.md.",
+      "send": false
+    },
+    {
+      "id": "T1-dakota-doulas",
+      "name": "Dakota Doulas",
+      "first_name": "",
+      "email": "",
+      "personal_line": "Wanted to share — Stone Bicycle Coalition is hosting a free, family-friendly community ride + cleanup on Saturday May 2 at 10:30 from Hanson-Larsen. Strollers and slow rollers welcome. Would love to have your group on the radar.",
+      "notes_for_rory": "Nicole's invite. Pull email from her wellness inquiry thread.",
+      "send": false
+    },
+    {
+      "id": "T1-dharma-ce-attendees",
+      "name": "Dharma CE attendees",
+      "first_name": "",
+      "email": "",
+      "personal_line": "Pedal for Empathy — Saturday May 2 at 10:30 from Hanson-Larsen. Free community ride + bike-path cleanup, family-friendly. Body-movement and community-connection angle felt right for this group. Come ride or just hang at the start.",
+      "notes_for_rory": "Nicole's invite. Bulk-able list — pull from Dharma CE roster. Consider sending as one bcc'd batch by adding multiple entries (one per attendee) with same body.",
+      "send": false
+    },
+    {
+      "id": "T1-nicole-active-clients",
+      "name": "Nicole's active/outdoorsy contacts (NOT clients)",
+      "first_name": "",
+      "email": "",
+      "personal_line": "Saturday May 2 at 10:30 from Hanson-Larsen — free community ride + bike-path cleanup. Family-friendly. Would love to see you out there.",
+      "notes_for_rory": "Per invite list these are colleagues/contacts, not therapy clients. Nicole picks who. Better as text — see text-scripts.md.",
+      "send": false
+    }
+  ]
+}

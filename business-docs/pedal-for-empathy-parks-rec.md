@@ -61,12 +61,29 @@
 - **Guardians** sign on behalf of minors
 - **Return:** Email signed waivers back to Melissa after the event
 
+## Separate AEP Media Release
+
+The American Empathy Project media release is separate from the City liability waiver.
+
+- **Digital form:** https://form.jotform.com/americanhumanist/AEP
+- **QR asset:** `business-docs/pedal-for-empathy-assets/aep-media-release-qr.png`
+- **Paper backup:** `business-docs/pedal-for-empathy-assets/AHA-MEDIA-RELEASE-FORM.pdf`
+- **Use case:** only for participants whose identifiable face may appear in photos/videos shared with AEP/AHA
+- **Do not substitute:** this does not replace the City liability waiver
+
 ### Event Day Waiver Process
 1. Print 50+ copies (expect 30-40 participants, extras for walk-ups)
 2. Set up sign-in table at start with waivers + pens
 3. Collect all signed forms
 4. Scan or photograph all signed waivers
 5. Email scans to Melissa post-event
+
+### Media Release Process
+1. Print 4 AEP QR signs from `business-docs/pedal-for-empathy-aep-media-qr-signs.pdf`
+2. Print 30 AHA paper media releases as backup
+3. Track photo preference on `business-docs/pedal-for-empathy-checkin-sheet.pdf`
+4. Only photograph identifiable faces for participants marked `OK for photos`
+5. Email paper AHA media releases, if any, to `empathy@americanhumanist.org`
 
 ## Timeline
 

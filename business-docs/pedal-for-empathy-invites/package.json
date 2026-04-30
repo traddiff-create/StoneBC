@@ -1,0 +1,14 @@
+{
+  "name": "pedal-for-empathy-invites",
+  "private": true,
+  "version": "1.0.0",
+  "description": "One-off Tier 1 invite sender for Pedal for Empathy (May 2, 2026).",
+  "type": "module",
+  "scripts": {
+    "dry": "node send.mjs --dry-run",
+    "send": "node send.mjs"
+  },
+  "dependencies": {
+    "resend": "^4.0.0"
+  }
+}
