@@ -41,8 +41,26 @@
 			</array>
 		</dict>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Take photos and short videos to add to your expedition journals during rides.</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Stone Bicycle Coalition uses your cycling workout routes to display GPS maps for past rides.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Saves your bike rides as workouts in Apple Health so they appear in your activity rings and exercise minutes.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Rally Radio finds nearby riders on the same Wi-Fi or hotspot for peer-to-peer voice chat — no cell service needed.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Lets ride tracking keep recording while your phone is in a pocket, bag, or with the screen off.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Records your rides, shows your position on route maps, and shares your location with riders in your group.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Rally Radio uses your microphone for push-to-talk voice chat with nearby riders.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Reads barometer and motion data to measure elevation gain and climb totals during rides.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Save expedition photos and ride summaries back to your Photos library.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Pick photos from your library to attach to expedition journal entries and ride reports.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>StardosStencil-Bold.ttf</string>
