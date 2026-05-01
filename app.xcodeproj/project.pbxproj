@@ -142,6 +142,9 @@
 		T10003000000000000000003 /* RideHistoryExportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20003000000000000000003 /* RideHistoryExportTests.swift */; };
 		T10004000000000000000004 /* UserRouteStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20004000000000000000004 /* UserRouteStoreTests.swift */; };
 		T10005000000000000000005 /* OfflineRouteStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20005000000000000000005 /* OfflineRouteStorageTests.swift */; };
+		T10006000000000000000006 /* RouteInterchangeServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20006000000000000000006 /* RouteInterchangeServiceTests.swift */; };
+		T10007000000000000000007 /* RadioConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20007000000000000000007 /* RadioConfigTests.swift */; };
+		T10008000000000000000008 /* AudioStreamServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20008000000000000000008 /* AudioStreamServiceTests.swift */; };
 		AA0001000000000000000001 /* RouteInterchangeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1001000000000000000001 /* RouteInterchangeService.swift */; };
 		AA0002000000000000000002 /* RouteProviderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1002000000000000000002 /* RouteProviderService.swift */; };
 		JY0001000000000000000001 /* Journey.swift in Sources */ = {isa = PBXBuildFile; fileRef = JY1001000000000000000001 /* Journey.swift */; };
@@ -308,6 +311,9 @@
 		T20003000000000000000003 /* RideHistoryExportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideHistoryExportTests.swift; sourceTree = "<group>"; };
 		T20004000000000000000004 /* UserRouteStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRouteStoreTests.swift; sourceTree = "<group>"; };
 		T20005000000000000000005 /* OfflineRouteStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineRouteStorageTests.swift; sourceTree = "<group>"; };
+		T20006000000000000000006 /* RouteInterchangeServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteInterchangeServiceTests.swift; sourceTree = "<group>"; };
+		T20007000000000000000007 /* RadioConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioConfigTests.swift; sourceTree = "<group>"; };
+		T20008000000000000000008 /* AudioStreamServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioStreamServiceTests.swift; sourceTree = "<group>"; };
 		T30000000000000000000001 /* StoneBCTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StoneBCTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA1001000000000000000001 /* RouteInterchangeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteInterchangeService.swift; sourceTree = "<group>"; };
 		AA1002000000000000000002 /* RouteProviderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteProviderService.swift; sourceTree = "<group>"; };
@@ -513,6 +519,9 @@
 				T20003000000000000000003 /* RideHistoryExportTests.swift */,
 				T20004000000000000000004 /* UserRouteStoreTests.swift */,
 				T20005000000000000000005 /* OfflineRouteStorageTests.swift */,
+				T20006000000000000000006 /* RouteInterchangeServiceTests.swift */,
+				T20007000000000000000007 /* RadioConfigTests.swift */,
+				T20008000000000000000008 /* AudioStreamServiceTests.swift */,
 			);
 			path = StoneBCTests;
 			sourceTree = "<group>";
@@ -797,6 +806,9 @@
 				T10003000000000000000003 /* RideHistoryExportTests.swift in Sources */,
 				T10004000000000000000004 /* UserRouteStoreTests.swift in Sources */,
 				T10005000000000000000005 /* OfflineRouteStorageTests.swift in Sources */,
+				T10006000000000000000006 /* RouteInterchangeServiceTests.swift in Sources */,
+				T10007000000000000000007 /* RadioConfigTests.swift in Sources */,
+				T10008000000000000000008 /* AudioStreamServiceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

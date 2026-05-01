@@ -23,9 +23,20 @@ booted simulator, and a built/installed app. It is not a CI step.
 - Fresh debug install of StoneBC (delete and reinstall, or use a fresh
   simulator clone, so user routes start empty)
 - The fixture `StoneBCTests/Fixtures/sample.gpx` accessible to the
-  simulator's Files app — easiest is to drag the file onto the
-  simulator window or place it in the simulator's Documents folder
-  via `xcrun simctl`
+  simulator's Files app. Pre-stage it with `simctl` before the run:
+
+  ```bash
+  # 1. Get the booted simulator's UDID
+  UDID=$(xcrun simctl list devices booted | awk -F '[()]' '/Booted/ {print $2; exit}')
+
+  # 2. Push sample.gpx into the simulator's Files app shared container
+  xcrun simctl push "$UDID" \
+    com.apple.DocumentsApp \
+    /Applications/Apps/StoneBC/StoneBCTests/Fixtures/sample.gpx
+
+  # Or, simplest fallback: drag StoneBCTests/Fixtures/sample.gpx
+  # onto the simulator window — iOS auto-opens it in the Files app.
+  ```
 
 ## Tooling cheat-sheet
 
