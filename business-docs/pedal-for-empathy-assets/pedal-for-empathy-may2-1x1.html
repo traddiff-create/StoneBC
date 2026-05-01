@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: "BigShoulders";    src: url("file:///Users/rorystone/.claude/skills/canvas-design/canvas-fonts/BigShoulders-Bold.ttf")      format("truetype"); font-weight: 700; }
+  @font-face { font-family: "ArsenalSC";       src: url("file:///Users/rorystone/.claude/skills/canvas-design/canvas-fonts/ArsenalSC-Regular.ttf")     format("truetype"); font-weight: 400; }
+  @font-face { font-family: "CrimsonPro";      src: url("file:///Users/rorystone/.claude/skills/canvas-design/canvas-fonts/CrimsonPro-Italic.ttf")    format("truetype"); font-style: italic; font-weight: 400; }
+  @font-face { font-family: "CrimsonPro";      src: url("file:///Users/rorystone/.claude/skills/canvas-design/canvas-fonts/CrimsonPro-Regular.ttf")   format("truetype"); font-weight: 400; }
+  @font-face { font-family: "InstrumentSans";  src: url("file:///Users/rorystone/.claude/skills/canvas-design/canvas-fonts/InstrumentSans-Regular.ttf") format("truetype"); font-weight: 400; }
+
+  :root {
+    --cream:    #FFF8E7;
+    --ink:      #0F172A;
+    --ink-soft: #1E293B;
+    --accent:   #10B981;
+    --gold:     #FBBF24;
+    --sky:      #87CEEB;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1080px; }
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: "InstrumentSans", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+  .poster { width: 1080px; height: 1080px; position: relative; }
+
+  /* EYEBROW (0–130) */
+  .eyebrow {
+    position: absolute; top: 0; left: 0; right: 0; height: 130px;
+    background: var(--cream);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    border-bottom: 1px solid rgba(15,23,42,0.10);
+  }
+  .eyebrow .tiny     { font-family: "ArsenalSC"; font-size: 16px; letter-spacing: 0.48em; color: var(--ink-soft); text-transform: uppercase; margin-bottom: 14px; padding-left: 0.48em; }
+  .eyebrow .partners { font-family: "ArsenalSC"; font-size: 22px; letter-spacing: 0.28em; color: var(--ink); text-transform: uppercase; padding-left: 0.28em; white-space: nowrap; }
+  .eyebrow .partners .x { color: var(--accent); margin: 0 0.4em; font-family: "InstrumentSans"; letter-spacing: 0; font-weight: 700; }
+
+  /* HERO (130–650) */
+  .hero     { position: absolute; top: 130px; left: 0; right: 0; height: 520px; overflow: hidden; }
+  .hero svg { display: block; width: 100%; height: 100%; }
+
+  /* HEADLINE (650–810) */
+  .headline   { position: absolute; top: 650px; left: 0; right: 0; height: 160px; background: var(--cream); display: flex; align-items: center; justify-content: center; }
+  .headline h1 {
+    font-family: "BigShoulders"; font-weight: 700;
+    font-size: 138px; line-height: 0.9; letter-spacing: 0.005em;
+    color: var(--ink); text-transform: uppercase; transform: translateY(8px);
+    white-space: nowrap;
+  }
+  .headline h1 .heart { color: var(--accent); }
+
+  /* DETAILS (810–970) */
+  .details { position: absolute; top: 810px; left: 0; right: 0; height: 160px; background: var(--cream); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 0 40px; }
+  .details .pledge    { font-family: "CrimsonPro"; font-style: italic; font-size: 40px; color: var(--ink); line-height: 1.05; text-align: center; }
+  .details .pledge .amount { font-family: "BigShoulders"; font-weight: 700; font-style: normal; font-size: 52px; color: var(--accent); letter-spacing: 0.01em; vertical-align: -2px; }
+  .details .when      { font-family: "CrimsonPro"; font-size: 26px; color: var(--ink); letter-spacing: 0.02em; line-height: 1; }
+  .details .when .dot { color: var(--accent); margin: 0 0.55em; font-weight: 700; }
+  .details .where     { font-family: "InstrumentSans"; font-size: 17px; color: var(--ink-soft); letter-spacing: 0.16em; text-transform: uppercase; line-height: 1; margin-top: 4px; }
+
+  /* FOOTER (bottom: 0) */
+  .footer { position: absolute; bottom: 0; left: 0; right: 0; height: 110px; background: var(--cream); display: flex; align-items: center; justify-content: center; border-top: 1px solid rgba(15,23,42,0.10); }
+  .footer .tag         { font-family: "InstrumentSans", system-ui, sans-serif; font-size: 15px; font-weight: 400; letter-spacing: 0.36em; text-transform: uppercase; color: var(--ink); padding-left: 0.36em; opacity: 0.78; white-space: nowrap; }
+  .footer .tag .accent { color: var(--accent); opacity: 1; font-weight: 700; }
+
+  /* hairline rules flanking headline */
+  .rule            { position: absolute; height: 2px; background: var(--ink); opacity: 0.85; top: 730px; }
+  .rule.left       { left: 60px;  width: 70px; }
+  .rule.right      { right: 60px; width: 70px; }
+</style>
+</head>
+<body>
+<div class="poster">
+
+  <!-- EYEBROW -->
+  <div class="eyebrow">
+    <div class="tiny">Saturday · May 2 · 10:30 AM</div>
+    <div class="partners">
+      Stone Bicycle Coalition
+      <span class="x">×</span>
+      Feeding South Dakota
+    </div>
+  </div>
+
+  <!-- HERO ILLUSTRATION -->
+  <div class="hero">
+    <svg viewBox="0 0 1080 520" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#87CEEB" stop-opacity="0.5"/>
+          <stop offset="1" stop-color="#FFF8E7" stop-opacity="0"/>
+        </linearGradient>
+        <radialGradient id="heartglow" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#FBBF24" stop-opacity="0.55"/>
+          <stop offset="1" stop-color="#FBBF24" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+
+      <!-- sky wash -->
+      <rect x="0" y="0" width="1080" height="520" fill="url(#sky)"/>
+
+      <!-- distant hills -->
+      <path d="M 0,360 Q 220,300 440,335 T 880,330 T 1080,348 L 1080,520 L 0,520 Z" fill="#10B981" opacity="0.22"/>
+      <!-- mid hills -->
+      <path d="M 0,420 Q 240,375 500,400 T 920,400 T 1080,410 L 1080,520 L 0,520 Z" fill="#10B981" opacity="0.40"/>
+
+      <!-- ground -->
+      <line x1="40" y1="478" x2="1040" y2="478" stroke="#0F172A" stroke-width="2.5" opacity="0.25" stroke-linecap="round" stroke-dasharray="2 8"/>
+
+      <!-- emerald HEART rising-sun -->
+      <circle cx="900" cy="135" r="120" fill="url(#heartglow)"/>
+      <path d="M 900 215
+               C 858 178, 822 158, 822 122
+               C 822 92, 858 78, 888 100
+               C 894 105, 898 110, 900 115
+               C 902 110, 906 105, 912 100
+               C 942 78, 978 92, 978 122
+               C 978 158, 942 178, 900 215 Z"
+            fill="#10B981" stroke="#0F172A" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M 850 110 C 842 120, 845 138, 854 150"
+            fill="none" stroke="#FBBF24" stroke-width="5" stroke-linecap="round" opacity="0.9"/>
+
+      <!-- ============================================ -->
+      <!-- BICYCLE — FontAwesome bicycle silhouette     -->
+      <!-- Source: FontAwesome 6 Free, CC BY 4.0        -->
+      <!-- viewBox: 0 0 640 512, scaled & translated    -->
+      <!-- ============================================ -->
+      <!-- soft shadow -->
+      <ellipse cx="540" cy="478" rx="320" ry="8" fill="#0F172A" opacity="0.18"/>
+
+      <g transform="translate(170, 30) scale(1.16)" fill="#0F172A">
+        <path d="M312 32c-13.3 0-24 10.7-24 24s10.7 24 24 24l25.7 0 34.6 64-149.4 0-27.4-38C191 99.7 183.7 96 176 96l-56 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l43.7 0 22.1 30.7-26.6 53.1c-10-2.5-20.5-3.8-31.2-3.8C57.3 224 0 281.3 0 352s57.3 128 128 128c65.3 0 119.1-48.9 127-112l49 0c8.5 0 16.3-4.5 20.7-11.8l84.8-143.5 21.7 40.1C402.4 276.3 384 312 384 352c0 70.7 57.3 128 128 128s128-57.3 128-128s-57.3-128-128-128c-13.5 0-26.5 2.1-38.7 6L375.4 48.8C369.8 38.4 359 32 347.2 32L312 32zM458.6 303.7l32.3 59.7c6.3 11.7 20.9 16 32.5 9.7s16-20.9 9.7-32.5l-32.3-59.7c3.6-.6 7.4-.9 11.2-.9c39.8 0 72 32.2 72 72s-32.2 72-72 72s-72-32.2-72-72c0-18.6 7-35.5 18.6-48.3zM133.2 368l65 0c-7.3 32.1-36 56-70.2 56c-39.8 0-72-32.2-72-72s32.2-72 72-72c1.7 0 3.4 .1 5.1 .2l-24.2 48.5c-9 18.1 4.1 39.4 24.3 39.4zm33.7-48l50.7-101.3 72.9 101.2-.1 .1-123.5 0zm90.6-128l108.5 0L317 274.8 257.4 192z"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- HEADLINE -->
+  <div class="headline"><h1>Pedal <span class="heart">for</span> Empathy</h1></div>
+  <div class="rule left"></div>
+  <div class="rule right"></div>
+
+  <!-- DETAILS -->
+  <div class="details">
+    <div class="pledge">we&rsquo;re donating <span class="amount">$350</span> to feeding south dakota</div>
+    <div class="when">Hanson-Larsen Memorial Park<span class="dot">·</span>Rapid City</div>
+    <div class="where">Free &nbsp;·&nbsp; All ages &nbsp;·&nbsp; No RSVP needed</div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="tag">Coffee <span class="accent">·</span> Donuts <span class="accent">·</span> Pizza <span class="accent">·</span> Bikes <span class="accent">·</span> Community</div>
+  </div>
+
+</div>
+</body>
+</html>
