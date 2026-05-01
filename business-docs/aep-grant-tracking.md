@@ -196,11 +196,38 @@ Three new items + reminders. Captured here so they don't get lost:
 
 **Reminders re-confirmed:** Organizer Resource Kit, media waivers (✅ packet built), expense tracker (ongoing), Mobilize sign-ups (even known volunteers), photo/video documentation.
 
-## Apr 30, 2026 — Receipts Compiled, JotForm Submissions Queued
+## May 1, 2026 — AEP Day-of-Eve Email ("Tomorrow is the day!")
 
-3 receipts archived to `business-docs/receipts/` (Trad Diff INV-0043 marketing $238.95, Sam's Club supplies+food $202.64, Feeding SD donation $350.00). Total committed: $791.59 of $1,000 grant. Remaining: $208.41 for donuts/pizza/coffee/print/Amazon gaps.
+Final cohort-wide email from the AEP team. No new asks beyond what's already in flight; mostly reminders and good-luck.
 
-JotForm cheat sheet at `business-docs/aep-jotform-submissions.md` has 4 submissions filed with AHA on 2026-04-30 (Sam's Club splits into 2 by category since the form forces single-category-per-submission). Status: ✅ ALL 4 SUBMITTED. $791.59 of $1,000 grant reported; $208.41 remaining for future receipts.
+**Asks:**
+- Send last-minute Mobilize reminder to volunteers — where, when, what to bring, who to contact. **Do today (May 1).**
+- Tag AEP/AHA on social posts: `@AmericanHumanist` (IG/Threads/X), American Humanist Association (FB/LinkedIn), `@americanhumanist.bsky.social` (Bluesky), `@HumanistTok` (TikTok). Add to event-day photo posts and the May 3 recap.
+
+**Reminders re-confirmed (no change in status):**
+- Day-of contact: Court Beyer 202-936-3672 / `empathy@americanhumanist.org` (already in SOP)
+- Media waivers: ✅ packet built (`pedal-for-empathy-aep-media-qr-signs.pdf`, paper backups)
+- AHA membership QR: ✅ in print packet (2 copies 8.5x11, coffee table + Acme table)
+- Mobilize: ongoing — sign people up at registration even if known
+- Organizer Resource Kit: bookmarked for any last-minute graphics
+- Photo/video documenting: ✅ check-in sheet tracks photo consent
+- **Expense tracker form: all expenses must be reported by May 15** — we're at 5/$874.22 of $1,000; ~$125.78 capacity left for Jerry's donuts + Papa John's + coffee receipts to be filed by May 15.
+- **Post-grant report: due May 15** — calendar event already set (id `n0ia3npv5oq8jc7073v629c68g`).
+
+**Net:** All operational items handled. Day-of action is the Mobilize nudge; everything else is execute-the-plan.
+
+### Round 2 receipts (May 1)
+
+- **Walmart Cups** (LaCrosse St store, 11:41 AM, $10.56) — 40 disposable 16oz cups for HLMP coffee service. Filed as **Submission #6** under Food/drinks for volunteers. Receipt archived `20260501-walmart-cups-10.56.pdf`. Paid SBC debit ****7034.
+- **Feeding South Dakota acknowledgement** (donor receipt issued 5/1, references Check #36604, Value $350) — archived as supplemental documentation under Submission #4 (`20260501-feeding-sd-donation-acknowledgement-350.pdf`). NOT re-filed to avoid double-counting the $350 already submitted.
+
+**Running totals after Round 2:** 6 submissions filed, $884.78 of $1,000 (88.5%). Remaining capacity: $115.22.
+
+## Apr 30, 2026 — Receipts Compiled, JotForm Submissions Filed
+
+4 receipts archived to `business-docs/receipts/` (Trad Diff INV-0043 marketing $238.95, Sam's Club supplies+food $202.64, Feeding SD donation $350.00, Walmart food/drinks $82.63). Total committed Apr 30: $874.22 of $1,000 grant.
+
+JotForm cheat sheet at `business-docs/aep-jotform-submissions.md` has 5 submissions filed with AHA on 2026-04-30 (Sam's Club splits into 2 by category since the form forces single-category-per-submission; Walmart added 21:46 MDT as the 5th). Status as of 04-30: ✅ 5 SUBMITTED. (See May 1 entry below for Submission #6 + FSD acknowledgement archive.)
 
 events.traddiff.com `pedal-for-empathy-2026` description patched $333→$350 and deployed via push to main (commit 04270af on `traddiff-create/events`).
 

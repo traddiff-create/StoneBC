@@ -1,6 +1,6 @@
 # AEP Expense Tracker — JotForm Submissions
 
-**Status (2026-04-30):** ✅ ALL 4 SUBMITTED to AHA expense tracker on 2026-04-30. Total reported: $791.59 of $1,000 grant. Remaining: $208.41 for future receipts (Jerry's donuts, Papa John's pizza, coffee, any print/Amazon gaps) — each new receipt gets its own form submission using this same template.
+**Status (2026-05-01):** ✅ 6 SUBMITTED to AHA expense tracker (5 on 2026-04-30, +1 on 2026-05-01). Total reported: $884.78 of $1,000 grant. Remaining: $115.22 for future receipts (Jerry's donuts, Papa John's pizza, coffee, any print/Amazon gaps) — each new receipt gets its own form submission using this same template.
 
 **Form:** https://form.jotform.com/261046485449161 — "AEP Grant Expense Report Form"
 **Rule:** ONE expense at a time per form. The form re-prompts for another after each submission.
@@ -22,7 +22,7 @@
 - Advertising
 - Other
 
-## Submission queue (4 total, in order)
+## Submission queue (6 total, in order)
 
 | # | Receipt | Category | Amount | Date |
 |---|---------|----------|--------|------|
@@ -30,9 +30,13 @@
 | 2 | Sam's Club — supplies portion | Event supplies (ie trash bags) | $93.32 | 2026-04-29 |
 | 3 | Sam's Club — food portion | Food/drinks for volunteers | $109.32 | 2026-04-29 |
 | 4 | Feeding South Dakota donation | Goods to be donated (ie food for meal kits) | $350.00 | 2026-04-30 |
-| | **Total** | | **$791.59** | |
+| 5 | Walmart Supercenter (Stumer Rd, evening run) | Food/drinks for volunteers | $82.63 | 2026-04-30 |
+| 6 | Walmart Supercenter (LaCrosse St, cups) | Food/drinks for volunteers | $10.56 | 2026-05-01 |
+| | **Total** | | **$884.78** | |
 
 The Sam's Club PDF is attached to **both** #2 and #3 (same source receipt, two categories).
+
+Submission #4 has TWO supporting documents both archived under receipts/: (a) BHCB Cashier's Check #36604 customer copy = proof of payment (uploaded to JotForm), and (b) Feeding South Dakota's own donation acknowledgement form dated 2026-05-01 = proof of receipt (archive only, not re-filed to avoid double-counting).
 
 ---
 
@@ -100,6 +104,42 @@ The Sam's Club PDF is attached to **both** #2 and #3 (same source receipt, two c
 
 ---
 
+## SUBMISSION 5 — Walmart Supercenter (food/drinks late add)
+
+| Field | Paste this |
+|---|---|
+| Name (First) | `Rory` |
+| Name (Last) | `Stone` |
+| Zip code | `57701 RS` |
+| Expense Date | `04 / 30 / 2026` |
+| Expense Category | **Food/drinks for volunteers** |
+| Expense description | `Walmart run for Pedal for Empathy May 2: water jug, GU energy gels, Honey Stinger chews, fresh fruit (berries, grapes, banana, pineapple), mushrooms, chicken & rice soup. Receipt total $132.63 attached; $50.00 of personal/non-event items charged separately and NOT claimed.` |
+| Expense amount | `82.63` |
+| Upload | `business-docs/receipts/20260430-walmart-food-drinks-82.63.pdf` |
+| Additional Comments | `Receipt total $132.63 (Walmart 04/30/26 20:57). Claimed against AEP grant: $82.63 (debit card ****7034 — SBC). Excluded as personal/Trad Diff (debit card ****4737, $50.00): mixed flower bouquet $12.88, Horizon organic milk $9.97, cookie dough $6.48, cream peanut $6.48, Chobani 32oz yogurt $5.37, chicken noodle soup 32oz $5.97. Pedal for Empathy ride is May 2.` |
+
+**Submitted:** 2026-04-30 21:46 MDT (via Chrome JotForm submission). Confirmation: "Thank You! Your submission has been received." page captured.
+
+---
+
+## SUBMISSION 6 — Walmart Cups (HLMP coffee service)
+
+| Field | Paste this |
+|---|---|
+| Name (First) | `Rory` |
+| Name (Last) | `Stone` |
+| Zip code | `57701 RS` |
+| Expense Date | `05 / 01 / 2026` |
+| Expense Category | **Food/drinks for volunteers** |
+| Expense description | `40 disposable 16oz cups (2 packs × 20-ct Great Value) from Walmart for the coffee service at the Pedal for Empathy May 2 morning gathering at Hanson-Larsen Memorial Park.` |
+| Expense amount | `10.56` |
+| Upload | `business-docs/receipts/20260501-walmart-cups-10.56.pdf` |
+| Additional Comments | `Receipt total $10.56, fully claimed against AEP grant. Paid SBC debit ****7034. Companion to the Apr 30 Walmart food/drinks submission (#5) — that run covered ride hydration/fueling; this run covers HLMP coffee service paper goods.` |
+
+**Submitted:** 2026-05-01 12:35 MDT (via Chrome JotForm submission). Confirmation: "Thank You! Your submission has been received." page captured.
+
+---
+
 ## Walkthrough order on the form
 
 For each submission:
@@ -117,7 +157,7 @@ For each submission:
 
 ---
 
-## Running totals after all 4 submissions
+## Running totals after all 6 submissions
 
 | Submission | Amount |
 |---|---|
@@ -125,8 +165,20 @@ For each submission:
 | 2 — Sam's Club supplies | $93.32 |
 | 3 — Sam's Club food | $109.32 |
 | 4 — Feeding SD donation | $350.00 |
-| **Total submitted** | **$791.59** |
-| **Remaining of $1,000 grant** | **$208.41** |
+| 5 — Walmart food/drinks | $82.63 |
+| 6 — Walmart cups | $10.56 |
+| **Total submitted** | **$884.78** |
+| **Remaining of $1,000 grant** | **$115.22** |
+
+### By category
+
+| Category | Submitted |
+|---|---|
+| Advertising | $238.95 |
+| Event supplies (ie trash bags) | $93.32 |
+| Food/drinks for volunteers | $202.51 |
+| Goods to be donated | $350.00 |
+| **Total** | **$884.78** |
 
 ---
 
@@ -136,11 +188,13 @@ Each gets its own form with its own PDF receipt:
 
 - Jerry's Cakes & Donuts — 4 dozen donuts → **Food/drinks for volunteers**
 - Papa John's pizza (post-ride at Acme) → **Food/drinks for volunteers**
-- Coffee for HLMP morning → **Food/drinks for volunteers**
+- Coffee grounds for HLMP morning → **Food/drinks for volunteers**
 - Print shop (flyers/posters/route maps) → **Advertising** (or **Other** if the form pushes back)
 - Amazon (grabbers, vests, banner) → **Event supplies (ie trash bags)**
 - Meta ad boosts beyond the $100 already on the Trad Diff invoice → **Advertising**
 
+$115.22 remaining caps the queue — if Jerry's ($56) + Papa John's ($75) + coffee grounds (~$25) come to ~$156, need to trim ~$41 or absorb in SBC operating account.
+
 ---
 
-*Created: 2026-04-30 · Rebuilt against actual JotForm fields after Chrome scout.*
+*Created: 2026-04-30 · Rebuilt against actual JotForm fields after Chrome scout. Updated 2026-04-30 21:50 with Walmart submission #5. Updated 2026-05-01 with Walmart Cups submission #6 + FSD acknowledgement archived as supplemental documentation under Submission #4.*
