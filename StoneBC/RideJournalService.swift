@@ -5,9 +5,14 @@ class RideJournalService {
     static let shared = RideJournalService()
 
     private(set) var journals: [RideJournal] = []
-    private let key = "rideJournals"
+    private let defaults: UserDefaults
+    private let key: String
 
-    private init() { load() }
+    init(defaults: UserDefaults = .standard, key: String = "rideJournals") {
+        self.defaults = defaults
+        self.key = key
+        load()
+    }
 
     func save(_ journal: RideJournal) {
         if let idx = journals.firstIndex(where: { $0.id == journal.id }) {
@@ -28,7 +33,7 @@ class RideJournalService {
     }
 
     private func load() {
-        guard let data = UserDefaults.standard.data(forKey: key),
+        guard let data = defaults.data(forKey: key),
               let decoded = try? JSONDecoder().decode([RideJournal].self, from: data)
         else { return }
         journals = decoded
@@ -36,6 +41,6 @@ class RideJournalService {
 
     private func persist() {
         guard let data = try? JSONEncoder().encode(journals) else { return }
-        UserDefaults.standard.set(data, forKey: key)
+        defaults.set(data, forKey: key)
     }
 }

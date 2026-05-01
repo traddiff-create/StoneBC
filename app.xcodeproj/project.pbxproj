@@ -145,6 +145,14 @@
 		T10006000000000000000006 /* RouteInterchangeServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20006000000000000000006 /* RouteInterchangeServiceTests.swift */; };
 		T10007000000000000000007 /* RadioConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20007000000000000000007 /* RadioConfigTests.swift */; };
 		T10008000000000000000008 /* AudioStreamServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20008000000000000000008 /* AudioStreamServiceTests.swift */; };
+		T10009000000000000000009 /* PhotoGeotaggingServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20009000000000000000009 /* PhotoGeotaggingServiceTests.swift */; };
+		T1000A00000000000000000A /* ExpeditionJournalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T2000A00000000000000000A /* ExpeditionJournalTests.swift */; };
+		T1000B00000000000000000B /* RideJournalServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T2000B00000000000000000B /* RideJournalServiceTests.swift */; };
+		T1000C00000000000000000C /* MediaCaptureServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T2000C00000000000000000C /* MediaCaptureServiceTests.swift */; };
+		T1000D00000000000000000D /* WatchRideMessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T2000D00000000000000000D /* WatchRideMessageTests.swift */; };
+		T1000E00000000000000000E /* PhoneToWatchServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T2000E00000000000000000E /* PhoneToWatchServiceTests.swift */; };
+		AA0003000000000000000003 /* WatchRideMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1003000000000000000003 /* WatchRideMessage.swift */; };
+		AA0004000000000000000004 /* PhoneToWatchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1004000000000000000004 /* PhoneToWatchService.swift */; };
 		AA0001000000000000000001 /* RouteInterchangeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1001000000000000000001 /* RouteInterchangeService.swift */; };
 		AA0002000000000000000002 /* RouteProviderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1002000000000000000002 /* RouteProviderService.swift */; };
 		JY0001000000000000000001 /* Journey.swift in Sources */ = {isa = PBXBuildFile; fileRef = JY1001000000000000000001 /* Journey.swift */; };
@@ -314,6 +322,14 @@
 		T20006000000000000000006 /* RouteInterchangeServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteInterchangeServiceTests.swift; sourceTree = "<group>"; };
 		T20007000000000000000007 /* RadioConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioConfigTests.swift; sourceTree = "<group>"; };
 		T20008000000000000000008 /* AudioStreamServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioStreamServiceTests.swift; sourceTree = "<group>"; };
+		T20009000000000000000009 /* PhotoGeotaggingServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoGeotaggingServiceTests.swift; sourceTree = "<group>"; };
+		T2000A00000000000000000A /* ExpeditionJournalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpeditionJournalTests.swift; sourceTree = "<group>"; };
+		T2000B00000000000000000B /* RideJournalServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideJournalServiceTests.swift; sourceTree = "<group>"; };
+		T2000C00000000000000000C /* MediaCaptureServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaCaptureServiceTests.swift; sourceTree = "<group>"; };
+		T2000D00000000000000000D /* WatchRideMessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchRideMessageTests.swift; sourceTree = "<group>"; };
+		T2000E00000000000000000E /* PhoneToWatchServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneToWatchServiceTests.swift; sourceTree = "<group>"; };
+		AA1003000000000000000003 /* WatchRideMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchRideMessage.swift; sourceTree = "<group>"; };
+		AA1004000000000000000004 /* PhoneToWatchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneToWatchService.swift; sourceTree = "<group>"; };
 		T30000000000000000000001 /* StoneBCTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StoneBCTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA1001000000000000000001 /* RouteInterchangeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteInterchangeService.swift; sourceTree = "<group>"; };
 		AA1002000000000000000002 /* RouteProviderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteProviderService.swift; sourceTree = "<group>"; };
@@ -406,6 +422,8 @@
 				F10001000000000000000001 /* GPXService.swift */,
 				AA1001000000000000000001 /* RouteInterchangeService.swift */,
 				AA1002000000000000000002 /* RouteProviderService.swift */,
+				AA1003000000000000000003 /* WatchRideMessage.swift */,
+				AA1004000000000000000004 /* PhoneToWatchService.swift */,
 				JY1001000000000000000001 /* Journey.swift */,
 				JY1002000000000000000002 /* JourneyStore.swift */,
 				JY1003000000000000000003 /* JourneyReadinessService.swift */,
@@ -522,6 +540,12 @@
 				T20006000000000000000006 /* RouteInterchangeServiceTests.swift */,
 				T20007000000000000000007 /* RadioConfigTests.swift */,
 				T20008000000000000000008 /* AudioStreamServiceTests.swift */,
+				T20009000000000000000009 /* PhotoGeotaggingServiceTests.swift */,
+				T2000A00000000000000000A /* ExpeditionJournalTests.swift */,
+				T2000B00000000000000000B /* RideJournalServiceTests.swift */,
+				T2000C00000000000000000C /* MediaCaptureServiceTests.swift */,
+				T2000D00000000000000000D /* WatchRideMessageTests.swift */,
+				T2000E00000000000000000E /* PhoneToWatchServiceTests.swift */,
 			);
 			path = StoneBCTests;
 			sourceTree = "<group>";
@@ -711,6 +735,8 @@
 				F00001000000000000000001 /* GPXService.swift in Sources */,
 				AA0001000000000000000001 /* RouteInterchangeService.swift in Sources */,
 				AA0002000000000000000002 /* RouteProviderService.swift in Sources */,
+				AA0003000000000000000003 /* WatchRideMessage.swift in Sources */,
+				AA0004000000000000000004 /* PhoneToWatchService.swift in Sources */,
 				JY0001000000000000000001 /* Journey.swift in Sources */,
 				JY0002000000000000000002 /* JourneyStore.swift in Sources */,
 				JY0003000000000000000003 /* JourneyReadinessService.swift in Sources */,
@@ -809,6 +835,12 @@
 				T10006000000000000000006 /* RouteInterchangeServiceTests.swift in Sources */,
 				T10007000000000000000007 /* RadioConfigTests.swift in Sources */,
 				T10008000000000000000008 /* AudioStreamServiceTests.swift in Sources */,
+				T10009000000000000000009 /* PhotoGeotaggingServiceTests.swift in Sources */,
+				T1000A00000000000000000A /* ExpeditionJournalTests.swift in Sources */,
+				T1000B00000000000000000B /* RideJournalServiceTests.swift in Sources */,
+				T1000C00000000000000000C /* MediaCaptureServiceTests.swift in Sources */,
+				T1000D00000000000000000D /* WatchRideMessageTests.swift in Sources */,
+				T1000E00000000000000000E /* PhoneToWatchServiceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
