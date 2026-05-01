@@ -30,6 +30,7 @@ final class RideRecordingCoordinator {
     let audioService = NavigationAudioService()
     let workoutService = WorkoutService()
     let activityManager = RideActivityManager()
+    let watchService = PhoneToWatchService()
     let alertService = RideAlertService.shared
     let safetyService = EmergencySafetyService.shared
     let recording: RideSession
@@ -358,6 +359,19 @@ final class RideRecordingCoordinator {
             powerMode: powerMode,
             force: force
         )
+        broadcastToWatch()
+    }
+
+    private func broadcastToWatch() {
+        watchService.broadcast(WatchRideMessage(
+            distanceMiles: recording.distanceMiles,
+            movingSeconds: recording.movingSeconds,
+            elevationGainFeet: Int(recording.totalAscentFeet),
+            currentSpeedMPH: locationService.speedMPH,
+            isOffRoute: route == nil ? false : recording.isOffRoute,
+            isPaused: recording.pausedAt != nil,
+            timestamp: Date()
+        ))
     }
 
     private func handleRouteFollowEvents() {
