@@ -140,6 +140,19 @@
 		T10001000000000000000001 /* RideSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20001000000000000000001 /* RideSessionTests.swift */; };
 		T10002000000000000000002 /* WorkoutServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20002000000000000000002 /* WorkoutServiceTests.swift */; };
 		T10003000000000000000003 /* RideHistoryExportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20003000000000000000003 /* RideHistoryExportTests.swift */; };
+		T10004000000000000000004 /* UserRouteStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20004000000000000000004 /* UserRouteStoreTests.swift */; };
+		T10005000000000000000005 /* OfflineRouteStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20005000000000000000005 /* OfflineRouteStorageTests.swift */; };
+		T10006000000000000000006 /* RouteInterchangeServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20006000000000000000006 /* RouteInterchangeServiceTests.swift */; };
+		T10007000000000000000007 /* RadioConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20007000000000000000007 /* RadioConfigTests.swift */; };
+		T10008000000000000000008 /* AudioStreamServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20008000000000000000008 /* AudioStreamServiceTests.swift */; };
+		T10009000000000000000009 /* PhotoGeotaggingServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20009000000000000000009 /* PhotoGeotaggingServiceTests.swift */; };
+		T1000A00000000000000000A /* ExpeditionJournalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T2000A00000000000000000A /* ExpeditionJournalTests.swift */; };
+		T1000B00000000000000000B /* RideJournalServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T2000B00000000000000000B /* RideJournalServiceTests.swift */; };
+		T1000C00000000000000000C /* MediaCaptureServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T2000C00000000000000000C /* MediaCaptureServiceTests.swift */; };
+		T1000D00000000000000000D /* WatchRideMessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T2000D00000000000000000D /* WatchRideMessageTests.swift */; };
+		T1000E00000000000000000E /* PhoneToWatchServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T2000E00000000000000000E /* PhoneToWatchServiceTests.swift */; };
+		AA0003000000000000000003 /* WatchRideMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1003000000000000000003 /* WatchRideMessage.swift */; };
+		AA0004000000000000000004 /* PhoneToWatchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1004000000000000000004 /* PhoneToWatchService.swift */; };
 		AA0001000000000000000001 /* RouteInterchangeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1001000000000000000001 /* RouteInterchangeService.swift */; };
 		AA0002000000000000000002 /* RouteProviderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1002000000000000000002 /* RouteProviderService.swift */; };
 		JY0001000000000000000001 /* Journey.swift in Sources */ = {isa = PBXBuildFile; fileRef = JY1001000000000000000001 /* Journey.swift */; };
@@ -154,6 +167,12 @@
 		Z10002000000000000000002 /* JetBrainsMono.ttf in Resources */ = {isa = PBXBuildFile; fileRef = Z20002000000000000000002 /* JetBrainsMono.ttf */; };
 		Z10003000000000000000003 /* Archivo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = Z20003000000000000000003 /* Archivo.ttf */; };
 		Z10004000000000000000004 /* ArchivoNarrow.ttf in Resources */ = {isa = PBXBuildFile; fileRef = Z20004000000000000000004 /* ArchivoNarrow.ttf */; };
+		W11001000000000000000001 /* StoneBCWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = W21001000000000000000001 /* StoneBCWatchApp.swift */; };
+		W11002000000000000000002 /* RideStatsWatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = W21002000000000000000002 /* RideStatsWatchView.swift */; };
+		W11003000000000000000003 /* WatchRadioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = W21003000000000000000003 /* WatchRadioView.swift */; };
+		W11004000000000000000004 /* WatchConnectivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = W21004000000000000000004 /* WatchConnectivityService.swift */; };
+		W11005000000000000000005 /* WatchRideState.swift in Sources */ = {isa = PBXBuildFile; fileRef = W21005000000000000000005 /* WatchRideState.swift */; };
+		W11100000000000000000100 /* StoneBCWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = W40001000000000000000001 /* StoneBCWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -163,6 +182,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = A60000000000000000000001;
 			remoteInfo = StoneBC;
+		};
+		W90001000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A90000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = W60001000000000000000001;
+			remoteInfo = StoneBCWatch;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -304,6 +330,19 @@
 		T20001000000000000000001 /* RideSessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideSessionTests.swift; sourceTree = "<group>"; };
 		T20002000000000000000002 /* WorkoutServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutServiceTests.swift; sourceTree = "<group>"; };
 		T20003000000000000000003 /* RideHistoryExportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideHistoryExportTests.swift; sourceTree = "<group>"; };
+		T20004000000000000000004 /* UserRouteStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRouteStoreTests.swift; sourceTree = "<group>"; };
+		T20005000000000000000005 /* OfflineRouteStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineRouteStorageTests.swift; sourceTree = "<group>"; };
+		T20006000000000000000006 /* RouteInterchangeServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteInterchangeServiceTests.swift; sourceTree = "<group>"; };
+		T20007000000000000000007 /* RadioConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioConfigTests.swift; sourceTree = "<group>"; };
+		T20008000000000000000008 /* AudioStreamServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioStreamServiceTests.swift; sourceTree = "<group>"; };
+		T20009000000000000000009 /* PhotoGeotaggingServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoGeotaggingServiceTests.swift; sourceTree = "<group>"; };
+		T2000A00000000000000000A /* ExpeditionJournalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpeditionJournalTests.swift; sourceTree = "<group>"; };
+		T2000B00000000000000000B /* RideJournalServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideJournalServiceTests.swift; sourceTree = "<group>"; };
+		T2000C00000000000000000C /* MediaCaptureServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaCaptureServiceTests.swift; sourceTree = "<group>"; };
+		T2000D00000000000000000D /* WatchRideMessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchRideMessageTests.swift; sourceTree = "<group>"; };
+		T2000E00000000000000000E /* PhoneToWatchServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneToWatchServiceTests.swift; sourceTree = "<group>"; };
+		AA1003000000000000000003 /* WatchRideMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchRideMessage.swift; sourceTree = "<group>"; };
+		AA1004000000000000000004 /* PhoneToWatchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneToWatchService.swift; sourceTree = "<group>"; };
 		T30000000000000000000001 /* StoneBCTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StoneBCTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA1001000000000000000001 /* RouteInterchangeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteInterchangeService.swift; sourceTree = "<group>"; };
 		AA1002000000000000000002 /* RouteProviderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteProviderService.swift; sourceTree = "<group>"; };
@@ -323,7 +362,28 @@
 		Z20006000000000000000006 /* OFL-JetBrainsMono.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "OFL-JetBrainsMono.txt"; sourceTree = "<group>"; };
 		Z20007000000000000000007 /* OFL-Archivo.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "OFL-Archivo.txt"; sourceTree = "<group>"; };
 		Z20008000000000000000008 /* OFL-ArchivoNarrow.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "OFL-ArchivoNarrow.txt"; sourceTree = "<group>"; };
+		W21001000000000000000001 /* StoneBCWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoneBCWatchApp.swift; sourceTree = "<group>"; };
+		W21002000000000000000002 /* RideStatsWatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideStatsWatchView.swift; sourceTree = "<group>"; };
+		W21003000000000000000003 /* WatchRadioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchRadioView.swift; sourceTree = "<group>"; };
+		W21004000000000000000004 /* WatchConnectivityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConnectivityService.swift; sourceTree = "<group>"; };
+		W21005000000000000000005 /* WatchRideState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchRideState.swift; sourceTree = "<group>"; };
+		W21100000000000000000100 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		W40001000000000000000001 /* StoneBCWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StoneBCWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		W70100000000000000000100 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				W11100000000000000000100 /* StoneBCWatch.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		A40000000000000000000001 /* Frameworks */ = {
@@ -340,6 +400,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		W70002000000000000000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -348,6 +415,7 @@
 			children = (
 				A50002000000000000000002 /* StoneBC */,
 				T50000000000000000000001 /* StoneBCTests */,
+				W50001000000000000000001 /* StoneBCWatch */,
 				A50003000000000000000003 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -396,6 +464,8 @@
 				F10001000000000000000001 /* GPXService.swift */,
 				AA1001000000000000000001 /* RouteInterchangeService.swift */,
 				AA1002000000000000000002 /* RouteProviderService.swift */,
+				AA1003000000000000000003 /* WatchRideMessage.swift */,
+				AA1004000000000000000004 /* PhoneToWatchService.swift */,
 				JY1001000000000000000001 /* Journey.swift */,
 				JY1002000000000000000002 /* JourneyStore.swift */,
 				JY1003000000000000000003 /* JourneyReadinessService.swift */,
@@ -497,6 +567,7 @@
 			children = (
 				A30000000000000000000001 /* StoneBC.app */,
 				T30000000000000000000001 /* StoneBCTests.xctest */,
+				W40001000000000000000001 /* StoneBCWatch.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -507,6 +578,17 @@
 				T20001000000000000000001 /* RideSessionTests.swift */,
 				T20002000000000000000002 /* WorkoutServiceTests.swift */,
 				T20003000000000000000003 /* RideHistoryExportTests.swift */,
+				T20004000000000000000004 /* UserRouteStoreTests.swift */,
+				T20005000000000000000005 /* OfflineRouteStorageTests.swift */,
+				T20006000000000000000006 /* RouteInterchangeServiceTests.swift */,
+				T20007000000000000000007 /* RadioConfigTests.swift */,
+				T20008000000000000000008 /* AudioStreamServiceTests.swift */,
+				T20009000000000000000009 /* PhotoGeotaggingServiceTests.swift */,
+				T2000A00000000000000000A /* ExpeditionJournalTests.swift */,
+				T2000B00000000000000000B /* RideJournalServiceTests.swift */,
+				T2000C00000000000000000C /* MediaCaptureServiceTests.swift */,
+				T2000D00000000000000000D /* WatchRideMessageTests.swift */,
+				T2000E00000000000000000E /* PhoneToWatchServiceTests.swift */,
 			);
 			path = StoneBCTests;
 			sourceTree = "<group>";
@@ -544,6 +626,19 @@
 			path = Fonts;
 			sourceTree = "<group>";
 		};
+		W50001000000000000000001 /* StoneBCWatch */ = {
+			isa = PBXGroup;
+			children = (
+				W21001000000000000000001 /* StoneBCWatchApp.swift */,
+				W21002000000000000000002 /* RideStatsWatchView.swift */,
+				W21003000000000000000003 /* WatchRadioView.swift */,
+				W21004000000000000000004 /* WatchConnectivityService.swift */,
+				W21005000000000000000005 /* WatchRideState.swift */,
+				W21100000000000000000100 /* Info.plist */,
+			);
+			path = StoneBCWatch;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -554,10 +649,12 @@
 				A70001000000000000000001 /* Sources */,
 				A40000000000000000000001 /* Frameworks */,
 				A70002000000000000000002 /* Resources */,
+				W70100000000000000000100 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				W90002000000000000000002 /* PBXTargetDependency */,
 			);
 			name = StoneBC;
 			productName = StoneBC;
@@ -580,6 +677,23 @@
 			productName = StoneBCTests;
 			productReference = T30000000000000000000001 /* StoneBCTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		W60001000000000000000001 /* StoneBCWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = W80001000000000000000001 /* Build configuration list for PBXNativeTarget "StoneBCWatch" */;
+			buildPhases = (
+				W70001000000000000000001 /* Sources */,
+				W70002000000000000000002 /* Frameworks */,
+				W70003000000000000000003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = StoneBCWatch;
+			productName = StoneBCWatch;
+			productReference = W40001000000000000000001 /* StoneBCWatch.app */;
+			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
@@ -615,6 +729,7 @@
 			targets = (
 				A60000000000000000000001 /* StoneBC */,
 				T60000000000000000000001 /* StoneBCTests */,
+				W60001000000000000000001 /* StoneBCWatch */,
 			);
 		};
 /* End PBXProject section */
@@ -643,6 +758,13 @@
 				Z10002000000000000000002 /* JetBrainsMono.ttf in Resources */,
 				Z10003000000000000000003 /* Archivo.ttf in Resources */,
 				Z10004000000000000000004 /* ArchivoNarrow.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		W70003000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -696,6 +818,8 @@
 				F00001000000000000000001 /* GPXService.swift in Sources */,
 				AA0001000000000000000001 /* RouteInterchangeService.swift in Sources */,
 				AA0002000000000000000002 /* RouteProviderService.swift in Sources */,
+				AA0003000000000000000003 /* WatchRideMessage.swift in Sources */,
+				AA0004000000000000000004 /* PhoneToWatchService.swift in Sources */,
 				JY0001000000000000000001 /* Journey.swift in Sources */,
 				JY0002000000000000000002 /* JourneyStore.swift in Sources */,
 				JY0003000000000000000003 /* JourneyReadinessService.swift in Sources */,
@@ -789,6 +913,29 @@
 				T10001000000000000000001 /* RideSessionTests.swift in Sources */,
 				T10002000000000000000002 /* WorkoutServiceTests.swift in Sources */,
 				T10003000000000000000003 /* RideHistoryExportTests.swift in Sources */,
+				T10004000000000000000004 /* UserRouteStoreTests.swift in Sources */,
+				T10005000000000000000005 /* OfflineRouteStorageTests.swift in Sources */,
+				T10006000000000000000006 /* RouteInterchangeServiceTests.swift in Sources */,
+				T10007000000000000000007 /* RadioConfigTests.swift in Sources */,
+				T10008000000000000000008 /* AudioStreamServiceTests.swift in Sources */,
+				T10009000000000000000009 /* PhotoGeotaggingServiceTests.swift in Sources */,
+				T1000A00000000000000000A /* ExpeditionJournalTests.swift in Sources */,
+				T1000B00000000000000000B /* RideJournalServiceTests.swift in Sources */,
+				T1000C00000000000000000C /* MediaCaptureServiceTests.swift in Sources */,
+				T1000D00000000000000000D /* WatchRideMessageTests.swift in Sources */,
+				T1000E00000000000000000E /* PhoneToWatchServiceTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		W70001000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				W11001000000000000000001 /* StoneBCWatchApp.swift in Sources */,
+				W11002000000000000000002 /* RideStatsWatchView.swift in Sources */,
+				W11003000000000000000003 /* WatchRadioView.swift in Sources */,
+				W11004000000000000000004 /* WatchConnectivityService.swift in Sources */,
+				W11005000000000000000005 /* WatchRideState.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -799,6 +946,11 @@
 			isa = PBXTargetDependency;
 			target = A60000000000000000000001 /* StoneBC */;
 			targetProxy = T90001000000000000000001 /* PBXContainerItemProxy */;
+		};
+		W90002000000000000000002 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = W60001000000000000000001 /* StoneBCWatch */;
+			targetProxy = W90001000000000000000001 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -929,7 +1081,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = StoneBC/StoneBC.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = SP854VZ979;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -970,7 +1122,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = StoneBC/StoneBC.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = SP854VZ979;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1057,6 +1209,68 @@
 			};
 			name = Release;
 		};
+		W91001000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 6;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = SP854VZ979;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = StoneBCWatch/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.87;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.traddiff.StoneBC.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchsimulator watchos";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Debug;
+		};
+		W91002000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 6;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = SP854VZ979;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = StoneBCWatch/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.87;
+				PRODUCT_BUNDLE_IDENTIFIER = com.traddiff.StoneBC.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchsimulator watchos";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1083,6 +1297,15 @@
 			buildConfigurations = (
 				T81001000000000000000001 /* Debug */,
 				T81002000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		W80001000000000000000001 /* Build configuration list for PBXNativeTarget "StoneBCWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				W91001000000000000000001 /* Debug */,
+				W91002000000000000000002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -12,28 +12,34 @@ import UIKit
 actor ExpeditionStorage {
     static let shared = ExpeditionStorage()
 
-    private let baseDir: URL = {
-        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let dir = docs.appendingPathComponent("Expeditions", isDirectory: true)
-        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-        return dir
-    }()
+    private let baseDir: URL
 
     /// iCloud Drive shared drop zone for contributions.
     /// On iOS, uses the ubiquity container. On macOS, uses direct path.
-    private let iCloudDropZone: URL? = {
-        // Use iCloud ubiquity container on iOS
-        if let ubiquity = FileManager.default.url(forUbiquityContainerIdentifier: nil) {
-            let path = ubiquity.appendingPathComponent("Documents/8o7", isDirectory: true)
-            try? FileManager.default.createDirectory(at: path, withIntermediateDirectories: true)
-            return path
+    private let iCloudDropZone: URL?
+
+    init(documentsDirectory: URL? = nil) {
+        let docs = documentsDirectory
+            ?? FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let base = docs.appendingPathComponent("Expeditions", isDirectory: true)
+        try? FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
+        self.baseDir = base
+
+        if documentsDirectory != nil {
+            // Test override: route the drop zone under the same temp tree.
+            let zone = docs.appendingPathComponent("8o7", isDirectory: true)
+            try? FileManager.default.createDirectory(at: zone, withIntermediateDirectories: true)
+            self.iCloudDropZone = zone
+        } else if let ubiquity = FileManager.default.url(forUbiquityContainerIdentifier: nil) {
+            let zone = ubiquity.appendingPathComponent("Documents/8o7", isDirectory: true)
+            try? FileManager.default.createDirectory(at: zone, withIntermediateDirectories: true)
+            self.iCloudDropZone = zone
+        } else {
+            let zone = docs.appendingPathComponent("8o7", isDirectory: true)
+            try? FileManager.default.createDirectory(at: zone, withIntermediateDirectories: true)
+            self.iCloudDropZone = zone
         }
-        // Fallback: app's Documents/8o7
-        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let path = docs.appendingPathComponent("8o7", isDirectory: true)
-        try? FileManager.default.createDirectory(at: path, withIntermediateDirectories: true)
-        return path
-    }()
+    }
 
     // MARK: - Journal CRUD
 

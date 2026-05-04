@@ -22,9 +22,19 @@ class MediaCaptureService {
 
     // MARK: - Voice Memo
 
+    static func voiceMemoFilename(at date: Date = Date()) -> String {
+        "voice_\(Int(date.timeIntervalSince1970)).m4a"
+    }
+
+    static func formattedDuration(_ seconds: TimeInterval) -> String {
+        let m = Int(seconds) / 60
+        let s = Int(seconds) % 60
+        return String(format: "%d:%02d", m, s)
+    }
+
     /// Start recording a voice memo, returns filename
     func startVoiceMemo(journalId: String, dayNumber: Int) -> String? {
-        let filename = "voice_\(Int(Date().timeIntervalSince1970)).m4a"
+        let filename = Self.voiceMemoFilename()
 
         let docDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let mediaDir = docDir.appendingPathComponent("Expeditions/\(journalId)/media/day\(dayNumber)", isDirectory: true)
@@ -74,9 +84,7 @@ class MediaCaptureService {
     }
 
     var formattedRecordingDuration: String {
-        let m = Int(audioRecordingDuration) / 60
-        let s = Int(audioRecordingDuration) % 60
-        return String(format: "%d:%02d", m, s)
+        Self.formattedDuration(audioRecordingDuration)
     }
 
     // MARK: - Photo from UIImage

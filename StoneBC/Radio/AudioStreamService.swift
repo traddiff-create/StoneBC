@@ -18,6 +18,12 @@ protocol AudioStreamDelegate: AnyObject {
 class AudioStreamService: NSObject {
     private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.traddiff.StoneBC", category: "AudioStream")
 
+    static let audioSessionOptions: AVAudioSession.CategoryOptions = [
+        .defaultToSpeaker,
+        .allowBluetoothHFP,
+        .mixWithOthers
+    ]
+
     // Separate engines — capture and playback must not interfere
     private var captureEngine: AVAudioEngine?
     private var playbackEngine: AVAudioEngine?
@@ -47,7 +53,7 @@ class AudioStreamService: NSObject {
             try session.setCategory(
                 .playAndRecord,
                 mode: .voiceChat,
-                options: [.defaultToSpeaker, .allowBluetoothHFP, .mixWithOthers]
+                options: Self.audioSessionOptions
             )
             try session.setPreferredSampleRate(RadioConfig.sampleRate)
             try session.setPreferredIOBufferDuration(0.02) // 20ms for low latency

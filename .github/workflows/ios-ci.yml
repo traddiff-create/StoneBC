@@ -1,0 +1,68 @@
+name: iOS CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "StoneBC/**"
+      - "StoneBCTests/**"
+      - "app.xcodeproj/**"
+      - ".github/workflows/ios-ci.yml"
+  pull_request:
+    paths:
+      - "StoneBC/**"
+      - "StoneBCTests/**"
+      - "app.xcodeproj/**"
+      - ".github/workflows/ios-ci.yml"
+
+jobs:
+  test:
+    name: Build + test on iOS Simulator
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show Xcode + simulator state
+        run: |
+          xcodebuild -version
+          xcrun simctl list runtimes available
+
+      - name: Pick first available iPhone simulator
+        id: sim
+        run: |
+          NAME=$(xcrun simctl list devices available --json \
+            | jq -r '
+                .devices
+                | to_entries[]
+                | select(.key | test("iOS"))
+                | .value[]
+                | select(.name | test("^iPhone"))
+                | .name
+              ' \
+            | head -1)
+          if [ -z "$NAME" ]; then
+            echo "::error::No iPhone simulator available on this runner"
+            exit 1
+          fi
+          DEST="platform=iOS Simulator,name=$NAME,OS=latest"
+          echo "destination=$DEST" >> "$GITHUB_OUTPUT"
+          echo "Using destination: $DEST"
+
+      - name: Run unit tests
+        run: |
+          xcodebuild test \
+            -scheme StoneBC \
+            -project app.xcodeproj \
+            -destination '${{ steps.sim.outputs.destination }}' \
+            -resultBundlePath TestResults.xcresult \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Upload test results on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TestResults.xcresult
+          path: TestResults.xcresult
+          if-no-files-found: ignore
+          retention-days: 14
