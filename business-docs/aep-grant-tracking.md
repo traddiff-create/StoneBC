@@ -1,6 +1,6 @@
 # American Empathy Project Grant — Stone Bicycle Coalition
 
-**Status:** FUNDED — $1,000 (transferring to bank as of 2026-04-14)
+**Status:** ✅ CLOSED — Post-grant report + photos submitted 2026-05-05 (10 days early, deadline was 2026-05-15)
 **Grantor:** American Humanist Association (American Empathy Project)
 **Recipient:** Stone Bicycle Coalition L.L.C.
 **Applied:** 2026-03-10 | **Notified:** 2026-03-23 | **Awarded:** 2026-03-31
@@ -74,15 +74,15 @@
 - [ ] **Recruit volunteers** — through SBC network, Acme Bikes, social media
 
 ### Event Day — May 2
-- [ ] **Execute Pedal for Empathy event**
-- [ ] **Photo documentation** throughout the day
+- [x] **Execute Pedal for Empathy event** (2026-05-02 — 9 riders, 9 volunteers, ~5 miles cleaned, 2 large bags)
+- [x] **Photo documentation** throughout the day (Fujifilm DSCF set, archived `business-docs/pedal-for-empathy-assets/event-day/`)
 
 ### Post-Event — May 3-15
-- [ ] **Submit photos/videos** as soon as ready (link in Apr 29 AEP email — separate from final report)
-- [ ] **Impact summary report** to AHA (participants, miles cleaned, photos)
-- [ ] **Social media recap** posts tagging AHA/AEP
-- [ ] **Donate to Feeding South Dakota** — feedingsouthdakota.org/ways-to-give/donate (one-time gift) or in-person at 1111 N Creek Dr, RC. **Amount:** $333 per AEP application budget; Sam's Club planning doc says $350. Pick one before sending.
-- [ ] **Post-grant report** — due **May 15, 2026**. Sneak peek shared in Apr 29 AEP email; complete after recap mailings go out.
+- [x] **Submit photos/videos** (2026-05-05 via https://forms.gle/TsYmwrVzif2H5ykm6 — 12 curated photos)
+- [x] **Impact summary report** to AHA (2026-05-05 — `aep-post-grant-report.md` + Google Form post-grant report submitted)
+- [ ] **Social media recap** posts tagging AHA/AEP — optional, not required for grant close
+- [x] **Donate to Feeding South Dakota** (2026-04-30 — $350 BHCB cashier's check #36604, in-person delivery; FSD acknowledgement filed 2026-05-01)
+- [x] **Post-grant report** (2026-05-05 via https://forms.gle/omCNa7qUEaibRErY7 — confirmation: "Your response has been recorded")
 
 ---
 

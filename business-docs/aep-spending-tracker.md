@@ -1,14 +1,14 @@
 # AEP Grant — Spending Tracker
 
 **Grant:** $1,000 | **Status:** Funds in BHCB account 765058
-**Event:** May 2, 2026 | **Today:** April 30 — 2 days out
+**Event:** May 2, 2026 | **Today:** May 4 — 2 days post-event
 **Primary Source:** Sam's Club (Rapid City)
 
 ---
 
-## Actuals — Receipts on File (as of 2026-05-01)
+## Actuals — Receipts on File (as of 2026-05-04)
 
-Receipts archived at `business-docs/receipts/` (PDFs). 6 JotForm submissions filed with AHA (5 on 2026-04-30, +1 on 2026-05-01) — see `aep-jotform-submissions.md` for the per-submission record.
+Receipts archived at `business-docs/receipts/` (PDFs). All 9 JotForm submissions filed with AHA (5 on 2026-04-30, +1 on 2026-05-01, +2 on 2026-05-03, +1 on 2026-05-04). See `aep-jotform-submissions.md` for the per-submission record.
 
 | # | Date | Vendor | Total | Category | File | AHA Filed |
 |---|------|--------|-------|----------|------|-----------|
@@ -18,9 +18,12 @@ Receipts archived at `business-docs/receipts/` (PDFs). 6 JotForm submissions fil
 | 3 | 2026-04-30 | Feeding South Dakota (cashier's check #36604, BHCB) | $350.00 | Goods to be donated | `20260430-feeding-sd-cashiers-check-350.pdf` (+ FSD acknowledgement `20260501-feeding-sd-donation-acknowledgement-350.pdf` archived as supplemental, NOT re-filed) | ✅ 2026-04-30 |
 | 4 | 2026-04-30 | Walmart Supercenter (Stumer Rd, evening) | $82.63 | Food/drinks for volunteers | `20260430-walmart-food-drinks-82.63.pdf` | ✅ 2026-04-30 |
 | 5 | 2026-05-01 | Walmart Supercenter (LaCrosse St, cups) | $10.56 | Food/drinks for volunteers | `20260501-walmart-cups-10.56.pdf` | ✅ 2026-05-01 |
-| | | **Total reported** | **$884.78** | | | |
+| 6 | 2026-05-02 | Corner Pantry (Deadwood Ave, event-morning ice) | $6.57 | Food/drinks for volunteers | `20260502-corner-pantry-ice-6.57.pdf` | ✅ 2026-05-03 |
+| 7 | 2026-05-02 | Papa John's #1394 (post-ride pizza at Acme) | $50.04 | Food/drinks for volunteers | `20260502-papa-johns-acme-postride-50.04.pdf` | ✅ 2026-05-03 |
+| 8 | 2026-05-02 | Jerry's Cakes and Donuts (HLMP morning service) | $57.89 | Food/drinks for volunteers | `20260502-jerrys-cakes-donuts-57.89.pdf` | ✅ 2026-05-04 |
+| | | **Total reported** | **$999.28** | | | |
 
-**Remaining of $1,000 grant: $115.22** — to cover Jerry's donuts, Papa John's pizza, coffee grounds for HLMP, any flyer/poster gaps, Amazon items.
+**Remaining of $1,000 grant: $0.72** — submission queue closed. Coffee grounds, any late flyers/posters, and any Amazon top-ups now absorbed by SBC operating account. Next obligation is the AHA post-grant impact report due **2026-05-15**.
 
 ### Receipt 1 detail — Trad Diff INV-0043
 
@@ -106,22 +109,60 @@ Mixed-cart run; SBC and Trad Diff items split at register across two debit cards
 
 For the 10:30 AM coffee service at Hanson-Larsen Memorial Park (HLMP). 100% SBC purchase; no Trad Diff/personal items.
 
+### Receipt 6 detail — Corner Pantry (Deadwood Ave, 05/02 9:36 AM)
+
+| Item (receipt code) | Amt | Bucket | Notes |
+|---|---|---|---|
+| CORNER PANTRY ICE LARGE | $6.19 | Food/Snacks | Single large bag of ice |
+| Subtotal | $6.19 | | |
+| Tax | $0.38 | | |
+| **Total** | **$6.57** | | Paid: cash $7.00, change $0.43 |
+
+Bought event morning en route to HLMP setup — chilled the coffee/water station and rider hydration coolers. Register 2, Trans #8235, cashier Hunter.
+
+### Receipt 7 detail — Papa John's #1394 (101 Mount Rushmore Rd, 05/02 post-ride)
+
+| Item | Amt | Bucket | Notes |
+|---|---|---|---|
+| Papa Pairings deal (3 medium pizzas + breadsticks + 6pc wings) | $40.95 | Food/Snacks | Three Cheese; Pepperoni/Canadian Bacon/Onions/Banana Peppers; Parm-Romano |
+| Subtotal | $40.95 | | |
+| Tax | $2.95 | | |
+| Tip | $6.14 | | Driver gratuity |
+| Delivery fee | $0.00 | | |
+| **Total** | **$50.04** | | Post-ride feed @ Acme Bikes ~1 PM |
+
+Came in under the original ~$75 budget for post-ride pizza thanks to Papa Pairings deal — frees ~$25 of remaining grant capacity for donuts/coffee.
+
+### Receipt 8 detail — Jerry's Cakes and Donuts (109 E Omaha St, 05/02 9:06 AM)
+
+| Item | Amt | Bucket | Notes |
+|---|---|---|---|
+| 4 dozen assorted donuts (Jerry's Cakes and Donuts) | $57.89 | Food/Snacks | HLMP 10:30 AM coffee/donut service |
+| Subtotal | $57.89 | | |
+| Tax | $0.00 | | Bakery items not taxed |
+| **Total** | **$57.89** | | Paid: SBC debit ****7034 contactless |
+
+Picked up event morning at 9:06 AM en route to HLMP setup. AUTH 989371, Trans ID 5187, Invoice 019020526090639. Final AEP-funded receipt — closes the submission queue at $999.28 of $1,000 ($0.72 unused).
+
 ---
 
 ## Actuals vs. Plan
 
 | Bucket | Plan | Actual to date | Delta |
 |--------|------|----------------|-------|
-| Cleanup supplies | $200 | $87.77 (Sam's, pre-tax slice) | +$112 unused — donuts/printing/Amazon may eat this |
+| Cleanup supplies | $200 | $87.77 (Sam's, pre-tax slice) | +$112 unused |
 | Event materials | $150 | $125 (stickers + biz cards, pre-tax) | +$25 unused |
-| Food & snacks | $200 | $190.49 ($102.81 Sam's food + $77.74 Walmart food + $9.94 cups, pre-tax) | +$10 left |
+| Food & snacks | $200 | $296.05 ($102.81 Sam's food + $77.74 Walmart food + $9.94 cups + $6.19 Corner Pantry ice + $40.95 Papa John's + $57.89 Jerry's donuts, pre-tax where applicable; tip $6.14 broken out below) | -$96 over (absorbed by other-bucket underspend) |
+| Post-ride pizza (subset of Food) | $75 | $50.04 (Papa John's all-in) | +$25 to the good (Papa Pairings deal) |
+| Donuts (subset of Food) | $56 | $57.89 (Jerry's all-in, no tax) | -$2 over (within rounding) |
 | Social promotion | $100 | $100 (Trad Diff paid social) | $0 |
-| Tax (Trad Diff + Sam's + Walmart ×2) | — | $31.45 | (folded into actuals) |
+| Tax (Trad Diff + Sam's + Walmart ×2 + CP + PJ; Jerry's no tax) | — | $34.78 | (folded into actuals) |
+| Tip (Papa John's driver) | — | $6.14 | (folded into actuals) |
 | Feeding SD donation | $333 | $350 | -$17 over |
-| **Subtotal** | $983 | $884.78 | |
-| **Remaining** | $17 | **$115.22** | |
+| **Subtotal** | $983 | $999.28 | |
+| **Remaining** | $17 | **$0.72** | |
 
-**Decision points before May 2:** donuts from Jerry's (~$56), pizza from Papa John's (~$75), coffee grounds for HLMP (~$25), any printed flyers/posters not yet ordered, Amazon grabbers/vests if not yet shipped. **Combined estimate ~$156 vs $115.22 remaining → ~$41 short**, may need to trim donut/pizza qty or absorb in SBC operating account.
+**Decision point closed (2026-05-04):** Jerry's donuts came in at $57.89 (~$2 over the $56 placeholder) and consume essentially all remaining grant capacity. Coffee grounds (~$25), unfilled flyers/posters, and any Amazon top-ups will be absorbed by SBC operating account — they will NOT be filed against AEP. Next milestone is the **2026-05-15** AHA post-grant impact report (narrative + outcome metrics, no further expense filings).
 
 ---
 

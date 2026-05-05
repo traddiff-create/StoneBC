@@ -1,6 +1,8 @@
 # AEP Expense Tracker — JotForm Submissions
 
-**Status (2026-05-01):** ✅ 6 SUBMITTED to AHA expense tracker (5 on 2026-04-30, +1 on 2026-05-01). Total reported: $884.78 of $1,000 grant. Remaining: $115.22 for future receipts (Jerry's donuts, Papa John's pizza, coffee, any print/Amazon gaps) — each new receipt gets its own form submission using this same template.
+**Status (2026-05-04):** ✅ 9 SUBMITTED to AHA expense tracker (5 on 2026-04-30, +1 on 2026-05-01, +2 on 2026-05-03, +1 on 2026-05-04). Total reported: **$999.28 of $1,000 grant**. Remaining: **$0.72** — effectively closed. Coffee grounds and any other late receipts absorbed into SBC operating account.
+
+**2026-05-04 close-out:** Jerry's Cakes & Donuts receipt ($57.89, 4 dozen for HLMP morning service) filed as Submission #9 under Food/drinks for volunteers. Final receipt against the grant. Hard deadline still in effect: **May 15, 2026** (post-grant impact report due same day) — but no further submissions expected.
 
 **Form:** https://form.jotform.com/261046485449161 — "AEP Grant Expense Report Form"
 **Rule:** ONE expense at a time per form. The form re-prompts for another after each submission.
@@ -22,7 +24,7 @@
 - Advertising
 - Other
 
-## Submission queue (6 total, in order)
+## Submission queue (9 total, in order)
 
 | # | Receipt | Category | Amount | Date |
 |---|---------|----------|--------|------|
@@ -32,7 +34,10 @@
 | 4 | Feeding South Dakota donation | Goods to be donated (ie food for meal kits) | $350.00 | 2026-04-30 |
 | 5 | Walmart Supercenter (Stumer Rd, evening run) | Food/drinks for volunteers | $82.63 | 2026-04-30 |
 | 6 | Walmart Supercenter (LaCrosse St, cups) | Food/drinks for volunteers | $10.56 | 2026-05-01 |
-| | **Total** | | **$884.78** | |
+| 7 | Corner Pantry (Deadwood Ave, event-morning ice) | Food/drinks for volunteers | $6.57 | 2026-05-02 |
+| 8 | Papa John's #1394 (post-ride pizza at Acme) | Food/drinks for volunteers | $50.04 | 2026-05-02 |
+| 9 | Jerry's Cakes and Donuts (HLMP morning service) | Food/drinks for volunteers | $57.89 | 2026-05-02 |
+| | **Total** | | **$999.28** | |
 
 The Sam's Club PDF is attached to **both** #2 and #3 (same source receipt, two categories).
 
@@ -140,6 +145,62 @@ Submission #4 has TWO supporting documents both archived under receipts/: (a) BH
 
 ---
 
+## SUBMISSION 7 — Corner Pantry (Deadwood Ave, event-morning ice)
+
+| Field | Paste this |
+|---|---|
+| Name (First) | `Rory` |
+| Name (Last) | `Stone` |
+| Zip code | `57701 RS` |
+| Expense Date | `05 / 02 / 2026` |
+| Expense Category | **Food/drinks for volunteers** |
+| Expense description | `One large bag of ice from Corner Pantry (501 Deadwood Ave, Rapid City) purchased 9:36 AM event morning en route to setup. Used for the 10:30 AM coffee/water service at Hanson-Larsen Memorial Park (HLMP) and to chill rider hydration coolers along the bike path during the community ride and trail cleanup. Subtotal $6.19 + tax $0.38 = $6.57 cash.` |
+| Expense amount | `6.57` |
+| Upload | `business-docs/receipts/20260502-corner-pantry-ice-6.57.pdf` |
+| Additional Comments | `Cash purchase, $7.00 tendered, $0.43 change. Register 2, Trans #8235, cashier Hunter. Last small consumable for the morning HLMP gathering.` |
+
+**Submitted:** 2026-05-03 18:43 MDT (via Chrome JotForm submission). Confirmation: "Thank You! Your submission has been received." page captured.
+
+---
+
+## SUBMISSION 8 — Papa John's #1394 (post-ride pizza at Acme Bikes)
+
+| Field | Paste this |
+|---|---|
+| Name (First) | `Rory` |
+| Name (Last) | `Stone` |
+| Zip code | `57701 RS` |
+| Expense Date | `05 / 02 / 2026` |
+| Expense Category | **Food/drinks for volunteers** |
+| Expense description | `Post-ride feed for riders and volunteers at the ~1:00 PM Pedal for Empathy rendezvous at Acme Bikes. Order via Papa Pairings deal from Papa John's Store #1394 (101 Mount Rushmore Rd, Rapid City): three medium original-crust pizzas (Three Cheese; Pepperoni / Canadian Bacon / Onions / Banana Peppers; Parmesan-Romano), 6pc spicy buffalo wings, and breadsticks. Subtotal $40.95 + tax $2.95 + tip $6.14 = $50.04.` |
+| Expense amount | `50.04` |
+| Upload | `business-docs/receipts/20260502-papa-johns-acme-postride-50.04.pdf` |
+| Additional Comments | `Originally budgeted ~$75 for 6–8 large pizzas in the Food & Snacks bucket; Papa Pairings deal brought the actual cost down to $50.04 for the same coverage, freeing ~$25 of remaining grant capacity. Driver gratuity ($6.14) included on receipt.` |
+
+**Submitted:** 2026-05-03 18:46 MDT (via Chrome JotForm submission). Confirmation: "Thank You! Your submission has been received." page captured.
+
+---
+
+## SUBMISSION 9 — Jerry's Cakes and Donuts (HLMP morning service)
+
+| Field | Paste this |
+|---|---|
+| Name (First) | `Rory` |
+| Name (Last) | `Stone` |
+| Zip code | `57701 RS` |
+| Expense Date | `05 / 02 / 2026` |
+| Expense Category | **Food/drinks for volunteers** |
+| Expense description | `Four dozen assorted donuts from Jerry's Cakes and Donuts (109 E Omaha St, Rapid City) for the 10:30 AM Pedal for Empathy morning gathering at Hanson-Larsen Memorial Park (HLMP). Served alongside coffee/water for riders and volunteers staging the community ride and trail cleanup. Subtotal $57.89, no sales tax on bakery items, paid SBC debit ****7034 contactless 9:06 AM event-morning pickup.` |
+| Expense amount | `57.89` |
+| Upload | `business-docs/receipts/20260502-jerrys-cakes-donuts-57.89.pdf` |
+| Additional Comments | `Final AEP-funded receipt for the May 2 event. Brings total submitted to $999.28 of the $1,000 grant ($0.72 unused). Any remaining incidentals (coffee grounds, late flyers) will be absorbed by SBC operating account rather than re-opening this submission queue.` |
+
+**Submitted:** 2026-05-04 (via Chrome JotForm submission, finalized manually by Rory after a date-mask quirk in the automated path).
+
+Receipt details: Jerry's Cakes and Donuts, 109 E Omaha St, Rapid City SD 57701, (605) 341-4814. Sale 5/2/26 9:06 AM. Subtotal $57.89, total $57.89, paid US Debit (Visa) ****7034 contactless. AUTH 989371, Trans ID 5187, Invoice 019020526090639.
+
+---
+
 ## Walkthrough order on the form
 
 For each submission:
@@ -157,7 +218,7 @@ For each submission:
 
 ---
 
-## Running totals after all 6 submissions
+## Running totals after all 9 submissions
 
 | Submission | Amount |
 |---|---|
@@ -167,8 +228,11 @@ For each submission:
 | 4 — Feeding SD donation | $350.00 |
 | 5 — Walmart food/drinks | $82.63 |
 | 6 — Walmart cups | $10.56 |
-| **Total submitted** | **$884.78** |
-| **Remaining of $1,000 grant** | **$115.22** |
+| 7 — Corner Pantry ice | $6.57 |
+| 8 — Papa John's pizza | $50.04 |
+| 9 — Jerry's Cakes and Donuts | $57.89 |
+| **Total submitted** | **$999.28** |
+| **Remaining of $1,000 grant** | **$0.72** |
 
 ### By category
 
@@ -176,25 +240,36 @@ For each submission:
 |---|---|
 | Advertising | $238.95 |
 | Event supplies (ie trash bags) | $93.32 |
-| Food/drinks for volunteers | $202.51 |
+| Food/drinks for volunteers | $317.01 |
 | Goods to be donated | $350.00 |
-| **Total** | **$884.78** |
+| **Total** | **$999.28** |
 
 ---
 
-## Likely future submissions
+## Post-grant report — SUBMITTED 2026-05-05 ✅
 
-Each gets its own form with its own PDF receipt:
+The narrative post-grant report (separate from this receipts ledger) and the photo/video upload were both submitted to AHA via Google Forms on **2026-05-05**, ten days ahead of the May 15 deadline.
 
-- Jerry's Cakes & Donuts — 4 dozen donuts → **Food/drinks for volunteers**
-- Papa John's pizza (post-ride at Acme) → **Food/drinks for volunteers**
-- Coffee grounds for HLMP morning → **Food/drinks for volunteers**
-- Print shop (flyers/posters/route maps) → **Advertising** (or **Other** if the form pushes back)
-- Amazon (grabbers, vests, banner) → **Event supplies (ie trash bags)**
-- Meta ad boosts beyond the $100 already on the Trad Diff invoice → **Advertising**
+- **Post-grant report form:** https://forms.gle/omCNa7qUEaibRErY7 → "Your response has been recorded"
+- **Photo/video upload form:** https://forms.gle/TsYmwrVzif2H5ykm6 → "Your response has been recorded" (12 curated photos)
+- Companion files: `aep-post-grant-report.md` (narrative source), `aep-post-grant-google-form-answers.md` (14-question pasteable Q&A), `aep-post-grant-photos-manifest.md` (photo shortlist + captions), `aep-post-grant-paste-ready.md` (snippets used during fill).
 
-$115.22 remaining caps the queue — if Jerry's ($56) + Papa John's ($75) + coffee grounds (~$25) come to ~$156, need to trim ~$41 or absorb in SBC operating account.
+**Grant fully closed.** Receipts ledger below remains the canonical record of the 9 expense submissions ($999.28 / $1,000).
 
 ---
 
-*Created: 2026-04-30 · Rebuilt against actual JotForm fields after Chrome scout. Updated 2026-04-30 21:50 with Walmart submission #5. Updated 2026-05-01 with Walmart Cups submission #6 + FSD acknowledgement archived as supplemental documentation under Submission #4.*
+## ~~Likely future submissions~~ — CLOSED
+
+Submission queue is closed at $999.28 / $1,000.00 (cushion $0.72).
+
+- ✅ Jerry's Cakes & Donuts → filed as Submission #9 ($57.89)
+- ❌ Coffee grounds for HLMP morning (~$25) → **absorbed by SBC operating account**
+- ❌ Print shop (flyers/posters/route maps) → **absorbed by SBC operating account** (none ordered post-event)
+- ❌ Amazon (grabbers, vests, banner) → **absorbed by SBC operating account** (only items ordered before the cap)
+- ❌ Meta ad boosts beyond the $100 already on the Trad Diff invoice → none additional
+
+No further JotForm submissions to file. Next obligation is the AHA post-grant impact report due **2026-05-15**.
+
+---
+
+*Created: 2026-04-30 · Rebuilt against actual JotForm fields after Chrome scout. Updated 2026-04-30 21:50 with Walmart submission #5. Updated 2026-05-01 with Walmart Cups submission #6 + FSD acknowledgement archived as supplemental documentation under Submission #4. Updated 2026-05-03 with Submissions #7 (Corner Pantry ice) and #8 (Papa John's post-ride pizza), both event-day 2026-05-02. Updated 2026-05-04 with Submission #9 (Jerry's Cakes and Donuts) — final receipt; submission queue now closed at $999.28 of $1,000.*
