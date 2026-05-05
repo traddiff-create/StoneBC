@@ -1,8 +1,170 @@
 # AEP Grant — Spending Tracker
 
-**Grant:** $1,000 | **Status:** Funds transferring to BHCB account 765058
-**Event:** May 2, 2026 | **Today:** April 16 — 16 days out
+**Grant:** $1,000 | **Status:** Funds in BHCB account 765058
+**Event:** May 2, 2026 | **Today:** May 4 — 2 days post-event
 **Primary Source:** Sam's Club (Rapid City)
+
+---
+
+## Actuals — Receipts on File (as of 2026-05-04)
+
+Receipts archived at `business-docs/receipts/` (PDFs). All 9 JotForm submissions filed with AHA (5 on 2026-04-30, +1 on 2026-05-01, +2 on 2026-05-03, +1 on 2026-05-04). See `aep-jotform-submissions.md` for the per-submission record.
+
+| # | Date | Vendor | Total | Category | File | AHA Filed |
+|---|------|--------|-------|----------|------|-----------|
+| 1 | 2026-04-20 | Traditionally Different Technology, LLC (INV-0043) | $238.95 | Advertising | `20260420-trad-diff-marketing-INV0043-238.95.pdf` | ✅ 2026-04-30 |
+| 2a | 2026-04-29 | Sam's Club — supplies portion | $93.32 | Event supplies (ie trash bags) | `20260429-sams-club-supplies-202.64.pdf` | ✅ 2026-04-30 |
+| 2b | 2026-04-29 | Sam's Club — food portion | $109.32 | Food/drinks for volunteers | `20260429-sams-club-supplies-202.64.pdf` | ✅ 2026-04-30 |
+| 3 | 2026-04-30 | Feeding South Dakota (cashier's check #36604, BHCB) | $350.00 | Goods to be donated | `20260430-feeding-sd-cashiers-check-350.pdf` (+ FSD acknowledgement `20260501-feeding-sd-donation-acknowledgement-350.pdf` archived as supplemental, NOT re-filed) | ✅ 2026-04-30 |
+| 4 | 2026-04-30 | Walmart Supercenter (Stumer Rd, evening) | $82.63 | Food/drinks for volunteers | `20260430-walmart-food-drinks-82.63.pdf` | ✅ 2026-04-30 |
+| 5 | 2026-05-01 | Walmart Supercenter (LaCrosse St, cups) | $10.56 | Food/drinks for volunteers | `20260501-walmart-cups-10.56.pdf` | ✅ 2026-05-01 |
+| 6 | 2026-05-02 | Corner Pantry (Deadwood Ave, event-morning ice) | $6.57 | Food/drinks for volunteers | `20260502-corner-pantry-ice-6.57.pdf` | ✅ 2026-05-03 |
+| 7 | 2026-05-02 | Papa John's #1394 (post-ride pizza at Acme) | $50.04 | Food/drinks for volunteers | `20260502-papa-johns-acme-postride-50.04.pdf` | ✅ 2026-05-03 |
+| 8 | 2026-05-02 | Jerry's Cakes and Donuts (HLMP morning service) | $57.89 | Food/drinks for volunteers | `20260502-jerrys-cakes-donuts-57.89.pdf` | ✅ 2026-05-04 |
+| | | **Total reported** | **$999.28** | | | |
+
+**Remaining of $1,000 grant: $0.72** — submission queue closed. Coffee grounds, any late flyers/posters, and any Amazon top-ups now absorbed by SBC operating account. Next obligation is the AHA post-grant impact report due **2026-05-15**.
+
+### Receipt 1 detail — Trad Diff INV-0043
+
+| Line | Amount | Maps to budget |
+|------|--------|----------------|
+| Stickers (~150 branded SBC/event) | $75.00 | Event Materials |
+| Paid Social promo (RC audience) | $100.00 | Social Promotion |
+| SBC business cards (volunteer dist.) | $50.00 | Event Materials |
+| Tax (6.2%) | $13.95 | — |
+| **Total** | **$238.95** | |
+
+### Receipt 2 detail — Sam's Club (15 items, paid 04/29 8:18 PM)
+
+| Item (receipt code) | Amt | Bucket | Notes |
+|---|---|---|---|
+| 60CT THIN ITRTF | $13.41 | Cleanup Supplies | Thin nitrile gloves (60ct) |
+| 85311 FIRST AID | $28.52 | Cleanup Supplies | First aid kit |
+| 990439397 CLIF BLDERS (–$4 inst sav) | $17.48 | Food/Snacks | Clif Builders bars |
+| 508628 VEG TRAY | $11.84 | Food/Snacks | Vegetable tray |
+| 556445 42 GALLON BA | $22.88 | Cleanup Supplies | Trash bags |
+| 990520331 BLOOM ENERG | $17.98 | Food/Snacks | Energy drinks (riders) |
+| 362153 BANANAS (2 @ $1.56) | $3.12 | Food/Snacks | |
+| 990110243 EQPT IND GL | $14.98 | Cleanup Supplies | Industrial gloves |
+| 990373528 BEEF SNACK | $11.98 | Food/Snacks | |
+| 980242818 COSMIC CRISP | $6.67 | Food/Snacks | Apples |
+| 990012945 MM 27G TOTE | $7.98 | Cleanup Supplies | 27-gal Member's Mark tote (haul/store) |
+| 990486762 GAT 24PKLS | $13.68 | Food/Snacks | Gatorade 24-pack |
+| 561914 MM WATER | $4.28 | Food/Snacks | Bottled water |
+| 258863 GATORADE VPF | $15.78 | Food/Snacks | Gatorade variety pack |
+| Subtotal | $190.58 | | |
+| Tax (6.20%) | $12.06 | | |
+| **Total** | **$202.64** | | Paid: Sam's Business Credit (cardholder GREG) |
+
+**Resolved 2026-04-30:** SBC reimbursed Greg $202.64 from BHCB operating account 765058. Greg's Sam's card was used for purchase only; cost is borne by SBC.
+
+### Receipt 3 detail — Feeding South Dakota donation
+
+- BHCB Cashier's Check #36604, $350.00, dated 2026-04-30
+- Remitter: Stone Bicycle Coalition → Payee: Feeding South Dakota
+- **Note:** Original application budgeted $333; expanded budget said $350; actual $350 issued. The $17 over comes from buffer.
+
+### Receipt 3 supplemental — Feeding South Dakota acknowledgement
+
+- FSD's own donation acknowledgement form, dated 2026-05-01 · handwritten, signed by FSD staff at Rapid City location
+- References Check #36604 · Value $350.00
+- **Not re-filed to JotForm** (would double-count the $350 already filed under Submission #4 with the BHCB cashier's check copy as proof-of-payment)
+- Archived as supplemental documentation: `20260501-feeding-sd-donation-acknowledgement-350.pdf`
+
+### Receipt 4 detail — Walmart Supercenter (Rapid City, 04/30 8:57 PM)
+
+Mixed-cart run; SBC and Trad Diff items split at register across two debit cards ($82.63 SBC card 7034, $50.00 Trad Diff card 4737). Only the SBC portion is claimed against AEP grant.
+
+| Item (receipt code) | Amt | Bucket | Notes |
+|---|---|---|---|
+| 5 GAL HD JUG | $28.97 | Food/Snacks | 5-gal water jug (rider hydration) |
+| CKN RICE SUP | $3.97 | Food/Snacks | Chicken & rice soup (post-ride) |
+| MUSHROOMS | $2.17 | Food/Snacks | |
+| PINEAPPLE | $2.24 | Food/Snacks | |
+| GU GEL ESP (×2) | $3.94 | Food/Snacks | GU energy gel — espresso |
+| HS LCAFFCHEW | $2.27 | Food/Snacks | Honey Stinger low-caf chew |
+| GU GEL CHOCO (×2) | $3.96 | Food/Snacks | GU energy gel — chocolate |
+| GREEN GRAPE (1.46 lb) | $3.46 | Food/Snacks | |
+| BLACKBERRY | $2.57 | Food/Snacks | |
+| RASPBERRIES | $3.17 | Food/Snacks | |
+| GU SALT CRML | $1.98 | Food/Snacks | GU energy gel — salted caramel |
+| ORG BANANAS (2.43 lb) | $1.80 | Food/Snacks | |
+| BLUEBRY 48OZ | $7.82 | Food/Snacks | |
+| WHOLE STRAWB | $9.42 | Food/Snacks | |
+| SBC subtotal (16 items) | $77.74 | | |
+| Tax share (6.2%) | $4.82 | | |
+| **SBC claimed** | **$82.56** (filed as **$82.63** = exact debit charge) | | Paid: SBC debit ****7034 |
+
+**Trad Diff portion ($50.00 — NOT claimed against grant):** flowers $12.88, organic milk $9.97, cookie dough $6.48, cream peanut $6.48, Chobani $5.37, chicken noodle soup $5.97 (pre-tax $47.15 + tax $2.92 = $50.07; actual debit $50.00). Trad Diff to recognize separately in Xero `!cN9L8`.
+
+### Receipt 5 detail — Walmart Supercenter (LaCrosse St, 05/01 11:41 AM)
+
+| Item (receipt code) | Amt | Bucket | Notes |
+|---|---|---|---|
+| GV 16OZ 20CT (×2) | $9.94 | Food/Snacks | 2 packs × 20-ct Great Value 16oz disposable cups = 40 cups |
+| Subtotal | $9.94 | | |
+| Tax (6.20%) | $0.62 | | |
+| **Total** | **$10.56** | | Paid: SBC debit ****7034 |
+
+For the 10:30 AM coffee service at Hanson-Larsen Memorial Park (HLMP). 100% SBC purchase; no Trad Diff/personal items.
+
+### Receipt 6 detail — Corner Pantry (Deadwood Ave, 05/02 9:36 AM)
+
+| Item (receipt code) | Amt | Bucket | Notes |
+|---|---|---|---|
+| CORNER PANTRY ICE LARGE | $6.19 | Food/Snacks | Single large bag of ice |
+| Subtotal | $6.19 | | |
+| Tax | $0.38 | | |
+| **Total** | **$6.57** | | Paid: cash $7.00, change $0.43 |
+
+Bought event morning en route to HLMP setup — chilled the coffee/water station and rider hydration coolers. Register 2, Trans #8235, cashier Hunter.
+
+### Receipt 7 detail — Papa John's #1394 (101 Mount Rushmore Rd, 05/02 post-ride)
+
+| Item | Amt | Bucket | Notes |
+|---|---|---|---|
+| Papa Pairings deal (3 medium pizzas + breadsticks + 6pc wings) | $40.95 | Food/Snacks | Three Cheese; Pepperoni/Canadian Bacon/Onions/Banana Peppers; Parm-Romano |
+| Subtotal | $40.95 | | |
+| Tax | $2.95 | | |
+| Tip | $6.14 | | Driver gratuity |
+| Delivery fee | $0.00 | | |
+| **Total** | **$50.04** | | Post-ride feed @ Acme Bikes ~1 PM |
+
+Came in under the original ~$75 budget for post-ride pizza thanks to Papa Pairings deal — frees ~$25 of remaining grant capacity for donuts/coffee.
+
+### Receipt 8 detail — Jerry's Cakes and Donuts (109 E Omaha St, 05/02 9:06 AM)
+
+| Item | Amt | Bucket | Notes |
+|---|---|---|---|
+| 4 dozen assorted donuts (Jerry's Cakes and Donuts) | $57.89 | Food/Snacks | HLMP 10:30 AM coffee/donut service |
+| Subtotal | $57.89 | | |
+| Tax | $0.00 | | Bakery items not taxed |
+| **Total** | **$57.89** | | Paid: SBC debit ****7034 contactless |
+
+Picked up event morning at 9:06 AM en route to HLMP setup. AUTH 989371, Trans ID 5187, Invoice 019020526090639. Final AEP-funded receipt — closes the submission queue at $999.28 of $1,000 ($0.72 unused).
+
+---
+
+## Actuals vs. Plan
+
+| Bucket | Plan | Actual to date | Delta |
+|--------|------|----------------|-------|
+| Cleanup supplies | $200 | $87.77 (Sam's, pre-tax slice) | +$112 unused |
+| Event materials | $150 | $125 (stickers + biz cards, pre-tax) | +$25 unused |
+| Food & snacks | $200 | $296.05 ($102.81 Sam's food + $77.74 Walmart food + $9.94 cups + $6.19 Corner Pantry ice + $40.95 Papa John's + $57.89 Jerry's donuts, pre-tax where applicable; tip $6.14 broken out below) | -$96 over (absorbed by other-bucket underspend) |
+| Post-ride pizza (subset of Food) | $75 | $50.04 (Papa John's all-in) | +$25 to the good (Papa Pairings deal) |
+| Donuts (subset of Food) | $56 | $57.89 (Jerry's all-in, no tax) | -$2 over (within rounding) |
+| Social promotion | $100 | $100 (Trad Diff paid social) | $0 |
+| Tax (Trad Diff + Sam's + Walmart ×2 + CP + PJ; Jerry's no tax) | — | $34.78 | (folded into actuals) |
+| Tip (Papa John's driver) | — | $6.14 | (folded into actuals) |
+| Feeding SD donation | $333 | $350 | -$17 over |
+| **Subtotal** | $983 | $999.28 | |
+| **Remaining** | $17 | **$0.72** | |
+
+**Decision point closed (2026-05-04):** Jerry's donuts came in at $57.89 (~$2 over the $56 placeholder) and consume essentially all remaining grant capacity. Coffee grounds (~$25), unfilled flyers/posters, and any Amazon top-ups will be absorbed by SBC operating account — they will NOT be filed against AEP. Next milestone is the **2026-05-15** AHA post-grant impact report (narrative + outcome metrics, no further expense filings).
+
+---
 
 ## Event Schedule (Updated Apr 16)
 - **10:30 AM** — Coffee & donuts at Hanson-Larsen Memorial Park (HLMP)

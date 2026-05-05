@@ -21,7 +21,7 @@ People in the bike/outdoor/community world who should hear about this from Rory 
 | 2 | Mato & Tracy | Strong Bear Media | Community builders, outdoor culture | Text | |
 | 3 | Acme Bikes (owner/manager) | Event partner | Co-hosting — need their full team there | In-person | |
 | 4 | Melissa Petersen | City Parks & Rec | Event partner, confirmed volunteer waiver | Email/call | |
-| 5 | Laura | Minneluzahan Senior Center | Newsletter partner, bike donation collab | Text/email | |
+| 5 | Laura Armstrong | Minneluzahan Senior Center | Newsletter partner, bike donation collab | `Lauraarmstrongrc@gmail.com` / text | Apr 13 newsletter ask sent; T-2 check-in drafted Apr 30 |
 | 6 | Marinell Simpson | Client (Nells Gourmet) | Downtown community, community-minded | Text | |
 | 7 | Sheely | Client (Horsepower Ranch) | Outdoor lifestyle | Text | |
 | 8 | ATK contact | Client (ATK Landscaping) | Trades, outdoors, community cleanup angle | Text | |

@@ -1,6 +1,6 @@
 # American Empathy Project Grant — Stone Bicycle Coalition
 
-**Status:** FUNDED — $1,000 (transferring to bank as of 2026-04-14)
+**Status:** ✅ CLOSED — Post-grant report + photos submitted 2026-05-05 (10 days early, deadline was 2026-05-15)
 **Grantor:** American Humanist Association (American Empathy Project)
 **Recipient:** Stone Bicycle Coalition L.L.C.
 **Applied:** 2026-03-10 | **Notified:** 2026-03-23 | **Awarded:** 2026-03-31
@@ -63,6 +63,7 @@
 ### April — Event Planning
 - [x] **Contact City Parks & Rec** — Melissa Petersen confirmed, volunteer waiver provided
 - [ ] **Print volunteer liability waivers** — enough for all participants + extras
+- [ ] **Print AEP media waiver packet** — 4 QR signs + 30 paper backups
 - [ ] **Return signed waivers to Melissa** post-event via email
 - [ ] **Contact Acme Bikes** — promo partnership, volunteer mobilization, potential supply donations
 - [ ] **Purchase cleanup supplies** — see supply list below
@@ -73,13 +74,15 @@
 - [ ] **Recruit volunteers** — through SBC network, Acme Bikes, social media
 
 ### Event Day — May 2
-- [ ] **Execute Pedal for Empathy event**
-- [ ] **Photo documentation** throughout the day
+- [x] **Execute Pedal for Empathy event** (2026-05-02 — 9 riders, 9 volunteers, ~5 miles cleaned, 2 large bags)
+- [x] **Photo documentation** throughout the day (Fujifilm DSCF set, archived `business-docs/pedal-for-empathy-assets/event-day/`)
 
-### Post-Event — May 3-10
-- [ ] **Impact summary report** to AHA (participants, miles cleaned, photos)
-- [ ] **Social media recap** posts tagging AHA/AEP
-- [ ] **Donate $333 to Feeding South Dakota** — feedingsouthdakota.org/ways-to-give/donate (one-time gift) or in-person at 1111 N Creek Dr, RC
+### Post-Event — May 3-15
+- [x] **Submit photos/videos** (2026-05-05 via https://forms.gle/TsYmwrVzif2H5ykm6 — 12 curated photos)
+- [x] **Impact summary report** to AHA (2026-05-05 — `aep-post-grant-report.md` + Google Form post-grant report submitted)
+- [ ] **Social media recap** posts tagging AHA/AEP — optional, not required for grant close
+- [x] **Donate to Feeding South Dakota** (2026-04-30 — $350 BHCB cashier's check #36604, in-person delivery; FSD acknowledgement filed 2026-05-01)
+- [x] **Post-grant report** (2026-05-05 via https://forms.gle/omCNa7qUEaibRErY7 — confirmation: "Your response has been recorded")
 
 ---
 
@@ -167,12 +170,86 @@ Danielle (AEP team) sent an all-grantee update 2 weeks out from event. Status vs
 | 3 | AHA swag package | ✅ Onboarding done Apr 3 (before deadline) — package incoming |
 | 4 | Mobilize event page | ✅ Live: https://mobilize.us/s/JFgFN6 |
 | 5 | Promo video (optional) | ⚪ Skip or 5-min iPhone take if time allows |
-| 6 | Media release waiver QR code | ⏳ AEP sending ~Apr 24–25 — plan to use QR at registration |
+| 6 | Media release waiver QR code | ✅ Received Apr 27. Verified QR resolves to https://form.jotform.com/americanhumanist/AEP. Print packet created in `business-docs/pedal-for-empathy-assets/`, `business-docs/pedal-for-empathy-aep-media-qr-signs.pdf`, and `business-docs/pedal-for-empathy-checkin-sheet.pdf`. |
 | 7 | Host support Zoom | ✅ Apr 9 Zoom attended; 2 extra sessions optional (Apr 21 1pm CT / Apr 23 9pm CT) |
 
 **Organizer Resource Kit:** https://docs.google.com/document/d/1qilKWheIv6ullSIoRoPWua00ZQ35tPPZ8xp5KD5k4o0/edit — AEP logos/branding for any Pedal for Empathy flyers.
 
-**Net:** All required items done. Only passive waits (funds land, package arrives, waiver QR code arrives) and optional extras (promo video, extra Zooms) remain from Danielle's list.
+**Net:** All required AEP setup items are handled. Remaining work is event execution: print the waiver packet, buy supplies, run check-in, submit recap, and make the Feeding South Dakota donation.
+
+## Apr 29, 2026 — AEP All-Grantees Final Stretch Email
+
+Three new items + reminders. Captured here so they don't get lost:
+
+**Day-of contact (urgent only / media show-up):**
+- Court Beyer, AHA Comms Director — **202-936-3672** — `empathy@americanhumanist.org`
+- Added to `pedal-for-empathy-waiver-checkin-sop.md`.
+
+**AHA membership push:**
+- AEP team requests grantees print + display the AHA membership QR (links to AmericanHumanist.org/join).
+- Action: pull QR from AEP Organizer Resource Kit, print 2 copies 8.5x11, place at coffee/donuts table and Acme wrap-up table. Already added to SOP print packet.
+
+**Post-grant report:**
+- Due **May 15, 2026**.
+- Photos/videos can be submitted earlier via the upload link in the email (do this once Rory has cleared/no-face shots organized).
+- The May 3 post-event drafting agent (`trig_01VrdgAEmBsz6G2uiDh7F1TM`) will produce the AHA recap — make sure it covers everything the post-grant report asks for to avoid duplicate work.
+
+**Reminders re-confirmed:** Organizer Resource Kit, media waivers (✅ packet built), expense tracker (ongoing), Mobilize sign-ups (even known volunteers), photo/video documentation.
+
+## May 1, 2026 — AEP Day-of-Eve Email ("Tomorrow is the day!")
+
+Final cohort-wide email from the AEP team. No new asks beyond what's already in flight; mostly reminders and good-luck.
+
+**Asks:**
+- Send last-minute Mobilize reminder to volunteers — where, when, what to bring, who to contact. **Do today (May 1).**
+- Tag AEP/AHA on social posts: `@AmericanHumanist` (IG/Threads/X), American Humanist Association (FB/LinkedIn), `@americanhumanist.bsky.social` (Bluesky), `@HumanistTok` (TikTok). Add to event-day photo posts and the May 3 recap.
+
+**Reminders re-confirmed (no change in status):**
+- Day-of contact: Court Beyer 202-936-3672 / `empathy@americanhumanist.org` (already in SOP)
+- Media waivers: ✅ packet built (`pedal-for-empathy-aep-media-qr-signs.pdf`, paper backups)
+- AHA membership QR: ✅ in print packet (2 copies 8.5x11, coffee table + Acme table)
+- Mobilize: ongoing — sign people up at registration even if known
+- Organizer Resource Kit: bookmarked for any last-minute graphics
+- Photo/video documenting: ✅ check-in sheet tracks photo consent
+- **Expense tracker form: all expenses must be reported by May 15** — we're at 5/$874.22 of $1,000; ~$125.78 capacity left for Jerry's donuts + Papa John's + coffee receipts to be filed by May 15.
+- **Post-grant report: due May 15** — calendar event already set (id `n0ia3npv5oq8jc7073v629c68g`).
+
+**Net:** All operational items handled. Day-of action is the Mobilize nudge; everything else is execute-the-plan.
+
+### Round 2 receipts (May 1)
+
+- **Walmart Cups** (LaCrosse St store, 11:41 AM, $10.56) — 40 disposable 16oz cups for HLMP coffee service. Filed as **Submission #6** under Food/drinks for volunteers. Receipt archived `20260501-walmart-cups-10.56.pdf`. Paid SBC debit ****7034.
+- **Feeding South Dakota acknowledgement** (donor receipt issued 5/1, references Check #36604, Value $350) — archived as supplemental documentation under Submission #4 (`20260501-feeding-sd-donation-acknowledgement-350.pdf`). NOT re-filed to avoid double-counting the $350 already submitted.
+
+**Running totals after Round 2:** 6 submissions filed, $884.78 of $1,000 (88.5%). Remaining capacity: $115.22.
+
+## Apr 30, 2026 — Receipts Compiled, JotForm Submissions Filed
+
+4 receipts archived to `business-docs/receipts/` (Trad Diff INV-0043 marketing $238.95, Sam's Club supplies+food $202.64, Feeding SD donation $350.00, Walmart food/drinks $82.63). Total committed Apr 30: $874.22 of $1,000 grant.
+
+JotForm cheat sheet at `business-docs/aep-jotform-submissions.md` has 5 submissions filed with AHA on 2026-04-30 (Sam's Club splits into 2 by category since the form forces single-category-per-submission; Walmart added 21:46 MDT as the 5th). Status as of 04-30: ✅ 5 SUBMITTED. (See May 1 entry below for Submission #6 + FSD acknowledgement archive.)
+
+events.traddiff.com `pedal-for-empathy-2026` description patched $333→$350 and deployed via push to main (commit 04270af on `traddiff-create/events`).
+
+May 15 post-grant report deadline added to Trad Diff calendar (event id `n0ia3npv5oq8jc7073v629c68g`, 9–9:30 AM MDT, with form links + local file refs).
+
+Sam's Club paid on Greg Stone's family Sam's Business Credit; SBC reimbursed Greg $202.64 from BHCB operating account 765058 on 2026-04-30 — disclosed in JotForm Additional Comments.
+
+## Apr 27, 2026 — AEP Media Waiver Packet
+
+**QR target verified:** https://form.jotform.com/americanhumanist/AEP
+
+Files created for event-day check-in:
+
+- `business-docs/pedal-for-empathy-assets/aep-media-release-qr.png` — original QR asset for print.
+- `business-docs/pedal-for-empathy-assets/AHA-MEDIA-RELEASE-FORM.pdf` — paper backup media release.
+- `business-docs/pedal-for-empathy-aep-media-qr-signs.pdf` — four-page printable QR sign packet.
+- `business-docs/pedal-for-empathy-aep-media-qr-signs.html` — editable QR sign source.
+- `business-docs/pedal-for-empathy-checkin-sheet.pdf` — two-page printable waiver/photo tracker.
+- `business-docs/pedal-for-empathy-checkin-sheet.csv` — editable waiver/photo tracker.
+- `business-docs/pedal-for-empathy-waiver-checkin-sop.md` — waiver lead + photo lead SOP.
+
+**Event-day rule:** City liability waiver stays separate and is required for every participant. AEP media release is only for people whose identifiable face may appear in photos/videos shared with AEP/AHA.
 
 ---
 
